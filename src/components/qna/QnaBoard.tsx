@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SiteIcon } from "@/components/SiteIcon";
 import { DEFAULT_SITE_TEXT } from "@/lib/siteTextDefaults";
+import { EditableText } from "@/components/admin/EditableText";
 
 type AnswerItem = {
   id: string;
@@ -142,7 +143,7 @@ export function QnaBoard({ isLoggedIn }: Props) {
       <section className="game-card">
         <h2 className="mansion-title flex items-center gap-1.5 text-base">
           <SiteIcon value={icon} size={18} />
-          {boardTitle}
+          <EditableText siteTextKey="qna.board.title" value={boardTitle} />
         </h2>
         <p className="mt-2 text-sm text-stone-500">
           まだ問いは立てられていません。「質問する」から問いを立ててみましょう。
@@ -156,7 +157,7 @@ export function QnaBoard({ isLoggedIn }: Props) {
       <div className="flex items-center justify-between">
         <h2 className="mansion-title flex items-center gap-1.5 text-base">
           <SiteIcon value={icon} size={18} />
-          {boardTitle}
+          <EditableText siteTextKey="qna.board.title" value={boardTitle} />
         </h2>
         <span className="text-xs text-stone-500">
           出題: {question.authorName}

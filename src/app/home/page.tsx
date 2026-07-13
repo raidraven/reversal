@@ -22,6 +22,7 @@ import { CompanionGreeting } from "@/components/home/CompanionGreeting";
 import { CompanionChat } from "@/components/companion/CompanionChat";
 import { LoginBonusToast } from "@/components/home/LoginBonusToast";
 import { QnaBoard } from "@/components/qna/QnaBoard";
+import { EditableText } from "@/components/admin/EditableText";
 
 export const dynamic = "force-dynamic";
 
@@ -81,7 +82,7 @@ export default async function HomePage() {
       <header className="flex items-center justify-between py-4">
         <h1 className="mansion-title flex items-center gap-2 text-lg">
           <SiteIcon value={texts["home.emoji"]} size={24} />
-          {texts["site.name"]}
+          <EditableText siteTextKey="site.name" value={texts["site.name"]} />
         </h1>
         <div className="flex items-center gap-2">
           <Link

@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { SKILL_LABELS } from "@/lib/missions";
 import { SiteIcon } from "@/components/SiteIcon";
+import { EditableText } from "@/components/admin/EditableText";
 
 type Props = {
   skills: {
@@ -37,7 +38,7 @@ export function SkillRadarChart({ skills, boardTitle = "技量", icon = "📜" }
     <section className="game-card animate-fade-up" style={{ animationDelay: "0.15s" }}>
       <h2 className="mansion-title flex items-center gap-1.5 text-base">
         <SiteIcon value={icon} size={18} />
-        {boardTitle}
+        <EditableText siteTextKey="skill.board.title" value={boardTitle} />
       </h2>
       <div className="mt-2 h-64">
         <ResponsiveContainer width="100%" height="100%">

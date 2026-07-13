@@ -10,6 +10,7 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { QnaBoard } from "@/components/qna/QnaBoard";
 import { BoardFeed } from "@/components/board/BoardFeed";
 import { SiteIcon } from "@/components/SiteIcon";
+import { EditableText } from "@/components/admin/EditableText";
 
 export default async function LandingPage() {
   const session = await getServerSession(authOptions);
@@ -53,18 +54,20 @@ export default async function LandingPage() {
       <div className="order-1 mx-auto w-full max-w-md lg:order-2">
         <h1 className="mansion-title flex items-center gap-2 text-4xl">
           <SiteIcon value={texts["home.emoji"]} size={36} />
-          {texts["site.name"]}
+          <EditableText siteTextKey="site.name" value={texts["site.name"]} />
         </h1>
 
         <div className="game-card mt-8 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
-          {texts["landing.intro"]}
+          <EditableText siteTextKey="landing.intro" value={texts["landing.intro"]} multiline />
         </div>
 
         {/* 主催者から一言 */}
         <div className="game-card mt-4">
-          <h2 className="mansion-title text-base">{texts["landing.hostMessageTitle"]}</h2>
+          <h2 className="mansion-title text-base">
+            <EditableText siteTextKey="landing.hostMessageTitle" value={texts["landing.hostMessageTitle"]} />
+          </h2>
           <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
-            {texts["landing.hostMessage"]}
+            <EditableText siteTextKey="landing.hostMessage" value={texts["landing.hostMessage"]} multiline />
           </p>
         </div>
 
@@ -97,7 +100,7 @@ export default async function LandingPage() {
           <div className="game-card mt-4">
             <h2 className="mansion-title flex items-center gap-1.5 text-base">
               <SiteIcon value={texts["mission.board.icon"]} size={18} />
-              {texts["mission.board.title"]}
+              <EditableText siteTextKey="mission.board.title" value={texts["mission.board.title"]} />
             </h2>
             <ul className="mt-2 space-y-1.5">
               {missions.map((m) => (
@@ -120,7 +123,7 @@ export default async function LandingPage() {
         <div className="mt-4">
           <h2 className="mansion-title flex items-center gap-1.5 text-base">
             <SiteIcon value={texts["board.icon"]} size={18} />
-            {texts["board.name"]}
+            <EditableText siteTextKey="board.name" value={texts["board.name"]} />
           </h2>
           <div className="mt-2">
             <BoardFeed isLoggedIn={isLoggedIn} />

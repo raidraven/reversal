@@ -1,3 +1,5 @@
+import { EditableText } from "@/components/admin/EditableText";
+
 type Props = {
   currentStreak: number;
   longestStreak: number;
@@ -13,7 +15,9 @@ export function StreakCard({ currentStreak, longestStreak, atRisk, label = "本�
         🕯️
       </span>
       <div>
-        <p className="text-sm text-stone-400">{label}</p>
+        <p className="text-sm text-stone-400">
+          <EditableText siteTextKey="streak.label" value={label} />
+        </p>
         <p className="text-2xl font-black text-stone-100">
           {currentStreak}
           <span className="ml-1 text-sm font-normal text-stone-400">夜</span>

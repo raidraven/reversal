@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { SKILL_ICONS } from "@/lib/missions";
 import { titleForRank, type RankRow } from "@/lib/rankTitle";
 import { SiteIcon } from "@/components/SiteIcon";
+import { EditableText } from "@/components/admin/EditableText";
 
 export type MissionItem = {
   id: string;
@@ -117,7 +118,7 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命", 
       <div className="flex items-center justify-between">
         <h2 className="mansion-title flex items-center gap-1.5 text-base">
           <SiteIcon value={icon} size={18} />
-          {boardTitle}
+          <EditableText siteTextKey="mission.board.title" value={boardTitle} />
         </h2>
         <span className="text-xs text-stone-400">
           {doneCount} / {missions.length} 完了
