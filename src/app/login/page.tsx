@@ -94,6 +94,12 @@ function LoginForm() {
         {loading ? "扉を開いております…" : "扉を開く"}
       </button>
 
+      <p className="text-center text-sm">
+        <Link href="/forgot-password" className="text-stone-400 hover:text-gold-light hover:underline">
+          パスワードをお忘れですか?
+        </Link>
+      </p>
+
       <p className="text-center text-sm text-stone-400">
         まだ招待状をお持ちでない?{" "}
         <Link href="/signup" className="font-semibold text-gold-light hover:underline">

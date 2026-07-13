@@ -92,6 +92,12 @@ export function LoginPanel() {
         </button>
       </form>
 
+      <p className="text-center text-xs">
+        <Link href="/forgot-password" className="text-stone-400 hover:text-gold-light hover:underline">
+          パスワードをお忘れですか?
+        </Link>
+      </p>
+
       <Link href="/signup" className="neon-button block text-center">
         招待状を受け取る
       </Link>

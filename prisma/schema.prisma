@@ -39,6 +39,20 @@ model User {
   posts              Post[]
   postLikes          PostLike[]
   postReportsMade    PostReport[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+// パスワード再設定用トークン。トークン自体はハッシュ化して保存し(メール本文にのみ生の値を載せる)、
+// 有効期限切れ・使用済みは再利用不可にする
+model PasswordResetToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model LoginLog {
