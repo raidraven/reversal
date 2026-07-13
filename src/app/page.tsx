@@ -1,0 +1,132 @@
+import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { getSiteTexts } from "@/lib/siteText";
+import { getLandingStats } from "@/lib/landingStats";
+import { getTodaysMissions } from "@/lib/dailyMissions";
+import { HostRequestForm } from "@/components/landing/HostRequestForm";
+import { LoginPanel } from "@/components/landing/LoginPanel";
+import { LogoutButton } from "@/components/LogoutButton";
+import { QnaBoard } from "@/components/qna/QnaBoard";
+import { BoardFeed } from "@/components/board/BoardFeed";
+import { SiteIcon } from "@/components/SiteIcon";
+
+export default async function LandingPage() {
+  const session = await getServerSession(authOptions);
+  const isLoggedIn = !!session?.user?.id;
+
+  const [texts, stats, missions] = await Promise.all([
+    getSiteTexts(),
+    getLandingStats(),
+    getTodaysMissions(),
+  ]);
+
+  return (
+    <main className="mx-auto max-w-5xl px-6 py-12 lg:grid lg:grid-cols-[320px_1fr] lg:items-start lg:gap-10">
+      {/* 左側:ログイン状態・主催者への要望 */}
+      <aside className="order-2 mt-10 space-y-6 lg:order-1 lg:sticky lg:top-12 lg:mt-0">
+        {isLoggedIn ? (
+          <div className="game-card space-y-3 text-center">
+            <p className="text-2xl">🕯️</p>
+            <p className="text-sm text-stone-300">ログイン中でございます</p>
+            <Link href="/home" className="neon-button block text-center">
+              {texts["room.backLabel"]}
+            </Link>
+            <LogoutButton />
+          </div>
+        ) : (
+          <LoginPanel />
+        )}
+
+        <div className="game-card">
+          <h2 className="mansion-title text-base">主催者への要望</h2>
+          <p className="mt-1 text-xs text-stone-500">
+            館の運営についてのご意見・ご要望はこちらから。匿名でも構いません。
+          </p>
+          <div className="mt-3">
+            <HostRequestForm />
+          </div>
+        </div>
+      </aside>
+
+      {/* 中央:コンテンツ */}
+      <div className="order-1 mx-auto w-full max-w-md lg:order-2">
+        <h1 className="mansion-title flex items-center gap-2 text-4xl">
+          <SiteIcon value={texts["home.emoji"]} size={36} />
+          {texts["site.name"]}
+        </h1>
+
+        <div className="game-card mt-8 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
+          {texts["landing.intro"]}
+        </div>
+
+        {/* 主催者から一言 */}
+        <div className="game-card mt-4">
+          <h2 className="mansion-title text-base">{texts["landing.hostMessageTitle"]}</h2>
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
+            {texts["landing.hostMessage"]}
+          </p>
+        </div>
+
+        {/* 館の活気(実データのみ) */}
+        <div className="game-card mt-6 grid grid-cols-3 gap-2 text-center">
+          <div>
+            <p className="text-2xl font-black text-gold-light">{stats.guestCount}</p>
+            <p className="mt-1 text-[10px] leading-tight text-stone-500">名の来賓</p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-gold-light">{stats.missionCompletionCount}</p>
+            <p className="mt-1 text-[10px] leading-tight text-stone-500">
+              達成された
+              <br />
+              使命
+            </p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-gold-light">{stats.answerCount}</p>
+            <p className="mt-1 text-[10px] leading-tight text-stone-500">
+              問いへの
+              <br />
+              回答
+            </p>
+          </div>
+        </div>
+
+        {/* 今宵の使命プレビュー(鍵付き) */}
+        {missions.length > 0 && (
+          <div className="game-card mt-4">
+            <h2 className="mansion-title flex items-center gap-1.5 text-base">
+              <SiteIcon value={texts["mission.board.icon"]} size={18} />
+              {texts["mission.board.title"]}
+            </h2>
+            <ul className="mt-2 space-y-1.5">
+              {missions.map((m) => (
+                <li key={m.id} className="flex items-center justify-between text-sm text-stone-300">
+                  <span>{m.title}</span>
+                  <span className="text-xs text-stone-600">🔒</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-stone-600">詳細と経験値は、扉の先で確認できます。</p>
+          </div>
+        )}
+
+        {/* 今宵の問い(未ログインでも閲覧・いいね可) */}
+        <div className="mt-4">
+          <QnaBoard isLoggedIn={isLoggedIn} />
+        </div>
+
+        {/* 談話室の投稿(未ログインでも閲覧・いいね可) */}
+        <div className="mt-4">
+          <h2 className="mansion-title flex items-center gap-1.5 text-base">
+            <SiteIcon value={texts["board.icon"]} size={18} />
+            {texts["board.name"]}
+          </h2>
+          <div className="mt-2">
+            <BoardFeed isLoggedIn={isLoggedIn} />
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

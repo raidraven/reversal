@@ -1,0 +1,244 @@
+// リバーサル — データモデル
+// 本番: PostgreSQL(DATABASE_URL環境変数で接続先を指定)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  avatarId     String   @default("adventurer")
+  level        Int      @default(1)
+  exp          Int      @default(0)
+  // ログインボーナス解放フラグ(連続7日: 限定称号 / 連続30日: プレミアム)
+  badge7Days       Boolean @default(false)
+  premiumUnlocked  Boolean @default(false)
+  // 館の主(管理者)権限。ADMIN_EMAILS 環境変数に一致するメールで自動付与
+  isAdmin      Boolean  @default(false)
+  // 通報が一定数(3件、異なる通報者)溜まると自動的に追放(アクセス禁止)される
+  banned       Boolean   @default(false)
+  bannedAt     DateTime?
+  createdAt    DateTime @default(now())
+
+  loginLogs          LoginLog[]
+  streak             Streak?
+  missionCompletions MissionCompletion[]
+  skillScore         SkillScore?
+  companionMessages  CompanionMessage[]
+  questions          Question[]
+  answers            Answer[]
+  answerLikes        AnswerLike[]
+  posts              Post[]
+  postLikes          PostLike[]
+  postReportsMade    PostReport[]
+}
+
+model LoginLog {
+  id        String   @id @default(cuid())
+  userId    String
+  // "YYYY-MM-DD" 形式(日次ユニーク判定用)
+  loginDate String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, loginDate])
+}
+
+model Streak {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  currentStreak Int     @default(0)
+  longestStreak Int     @default(0)
+  // "YYYY-MM-DD" 形式
+  lastLoginDate String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Mission {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  expReward   Int
+  // "daily" | "weekly"
+  type        String @default("daily")
+  // 対応スキル軸: "writing" | "toolUsage" | "consistency" | "publishing" | "monetization"
+  skillKey    String @default("consistency")
+
+  completions MissionCompletion[]
+}
+
+model MissionCompletion {
+  id          String   @id @default(cuid())
+  userId      String
+  missionId   String
+  // "YYYY-MM-DD" 形式(デイリーミッションの日次ユニーク判定用)
+  completedDate String
+  completedAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, missionId, completedDate])
+}
+
+model SkillScore {
+  id           String @id @default(cuid())
+  userId       String @unique
+  writing      Int    @default(10)
+  toolUsage    Int    @default(10)
+  consistency  Int    @default(10)
+  publishing   Int    @default(10)
+  monetization Int    @default(10)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CompanionMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  // "user" | "assistant"
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// 「主催者への要望」— ランディングページから誰でも送信可(匿名可)
+model HostRequest {
+  id        String   @id @default(cuid())
+  name      String   @default("匿名の来賓")
+  content   String
+  createdAt DateTime @default(now())
+}
+
+// サイト全体の文言・アイコン(キー・バリュー)。管理ページから編集可能
+model SiteText {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+// 位階(レベル)の称号。管理ページから種類・しきい値(順位)を編集可能
+model Rank {
+  id       String @id @default(cuid())
+  minLevel Int    @unique
+  title    String
+}
+
+// 運営都合(サイト障害・大規模改修等)で来賓が来館できなかった日。
+// 管理ページから日付を登録すると、その日はストリーク(連夜の参加)判定で欠席扱いにしない。
+// 来賓個人の「ログイン忘れ」までは救済しない(あくまで運営側の落ち度がある日のみ手動登録)
+model IncidentDay {
+  id        String   @id @default(cuid())
+  // "YYYY-MM-DD" 形式(JST)
+  date      String   @unique
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
+// 一問一答:出題された質問(最新の1件が「今宵の問い」として表示される)
+model Question {
+  id        String   @id @default(cuid())
+  authorId  String?
+  content   String
+  // AIによる自動出題(誰もその日に質問を立てていない場合、遅延生成される)
+  isAiGenerated Boolean @default(false)
+  // AI自動出題の日次重複防止キー("YYYY-MM-DD"、ユーザー投稿はnull)
+  aiQuestionDate String? @unique
+  createdAt DateTime @default(now())
+
+  author  User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  answers Answer[]
+}
+
+// 一問一答への回答。速く回答するほど rank が小さく、expAwarded が大きい
+model Answer {
+  id         String   @id @default(cuid())
+  questionId String
+  authorId   String
+  content    String
+  rank       Int
+  expAwarded Int
+  createdAt  DateTime @default(now())
+
+  question Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  author   User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes    AnswerLike[]
+
+  @@unique([questionId, authorId])
+}
+
+// いいねは会員(userId)・非会員(anonId, Cookie発行の匿名ID)のどちらか一方が必ず入る
+model AnswerLike {
+  id        String   @id @default(cuid())
+  answerId  String
+  userId    String?
+  anonId    String?
+  createdAt DateTime @default(now())
+
+  answer Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([answerId, userId])
+  @@unique([answerId, anonId])
+}
+
+// 談話室:副業初心者が実績・学び・ツール活用のコツを共有する投稿(コメントはまだ無し)
+model Post {
+  id       String @id @default(cuid())
+  authorId String
+  // "achievement"(実績報告) | "tip"(学び・気づき) | "tool"(ツール活用のコツ)
+  category String
+  title    String
+  content  String
+  // 実績報告で「いくら稼いだか」を任意入力(円)。技量(収益化)の算出にも使う
+  revenueAmount Int?
+  createdAt DateTime @default(now())
+
+  author  User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes   PostLike[]
+  reports PostReport[]
+}
+
+// 談話室の投稿への通報。同一投稿への重複通報は1人1回まで。
+// 投稿者が異なる通報者から計3件以上通報されると、投稿者アカウントが自動的に追放される
+model PostReport {
+  id         String   @id @default(cuid())
+  postId     String
+  reporterId String
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  post     Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, reporterId])
+}
+
+// いいねは会員(userId)・非会員(anonId, Cookie発行の匿名ID)のどちらか一方が必ず入る
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String?
+  anonId    String?
+  createdAt DateTime @default(now())
+
+  post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@unique([postId, anonId])
+}

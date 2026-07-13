@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-surface text-stone-200 antialiased;
+  background-image:
+    radial-gradient(ellipse 70% 45% at 50% -10%, rgba(201, 162, 77, 0.14), transparent),
+    radial-gradient(ellipse 55% 40% at 85% 105%, rgba(124, 36, 56, 0.3), transparent),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.012) 0px,
+      rgba(255, 255, 255, 0.012) 1px,
+      transparent 1px,
+      transparent 6px
+    ),
+    linear-gradient(rgba(9, 6, 7, 0.86), rgba(9, 6, 7, 0.93)),
+    url("/images/mansion-bg.jpg");
+  background-repeat: no-repeat, no-repeat, repeat, no-repeat, no-repeat;
+  background-position: center, center, center, top center, top center;
+  background-size: auto, auto, auto, cover, cover;
+  background-attachment: scroll, scroll, scroll, fixed, fixed;
+  min-height: 100dvh;
+}
+
+@layer components {
+  /* 洋館の額縁のようなカード */
+  .game-card {
+    @apply rounded-lg border border-surface-border bg-surface-card p-4 shadow-lg;
+    box-shadow:
+      0 0 0 1px rgba(201, 162, 77, 0.08) inset,
+      0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .mansion-title {
+    @apply font-serif tracking-wide text-gold-light;
+  }
+
+  .neon-button {
+    @apply rounded-md border border-gold/50 bg-gradient-to-b from-gold-light to-gold px-4 py-3
+      font-serif font-bold tracking-wide text-surface
+      transition-all duration-200 hover:brightness-110 hover:shadow-gold
+      disabled:opacity-50 disabled:hover:brightness-100 disabled:hover:shadow-none;
+  }
+
+  .ghost-button {
+    @apply rounded-md border border-gold/40 bg-transparent px-4 py-3 font-serif tracking-wide
+      text-gold-light transition-colors hover:bg-gold/10 disabled:opacity-50;
+  }
+
+  .form-input {
+    @apply w-full rounded-md border border-surface-border bg-surface-raised px-4 py-3 text-stone-100
+      placeholder:text-stone-500 outline-none transition-colors
+      focus:border-gold focus:ring-1 focus:ring-gold/60;
+  }
+}
