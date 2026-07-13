@@ -19,11 +19,11 @@ export async function POST(req: Request) {
   const email = parsed.data.email.toLowerCase();
   const rateLimitKey = `reset:${email}`;
 
-  if (isRateLimited(rateLimitKey)) {
+  if (await isRateLimited(rateLimitKey)) {
     // レート制限中も同じ成功レスポンスを返す(探索・スパム両対策)
     return NextResponse.json({ ok: true });
   }
-  recordFailedAttempt(rateLimitKey);
+  await recordFailedAttempt(rateLimitKey);
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (user) {

@@ -55,6 +55,17 @@ model PasswordResetToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// ログイン・パスワード再設定などのレート制限をDBで一元管理する
+// (サーバーレス環境ではプロセスメモリがインスタンスごとに分かれるため、メモリ管理だと
+//  カウントが不安定になり、正しいパスワードでも誤ってブロックされることがあるため)
+model RateLimitAttempt {
+  id             String   @id @default(cuid())
+  // 用途ごとに衝突しないよう "login:foo@example.com" のようにprefixを付けて使う
+  key            String   @unique
+  count          Int      @default(1)
+  firstAttemptAt DateTime @default(now())
+}
+
 model LoginLog {
   id        String   @id @default(cuid())
   userId    String

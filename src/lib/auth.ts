@@ -29,25 +29,25 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const rateLimitKey = credentials.email.toLowerCase();
-        if (isRateLimited(rateLimitKey)) {
+        const rateLimitKey = `login:${credentials.email.toLowerCase()}`;
+        if (await isRateLimited(rateLimitKey)) {
           throw new Error("rate_limited");
         }
 
         const user = await prisma.user.findUnique({
-          where: { email: rateLimitKey },
+          where: { email: credentials.email.toLowerCase() },
         });
         if (!user) {
-          recordFailedAttempt(rateLimitKey);
+          await recordFailedAttempt(rateLimitKey);
           return null;
         }
 
         const valid = await bcrypt.compare(credentials.password, user.passwordHash);
         if (!valid) {
-          recordFailedAttempt(rateLimitKey);
+          await recordFailedAttempt(rateLimitKey);
           return null;
         }
-        clearAttempts(rateLimitKey);
+        await clearAttempts(rateLimitKey);
 
         // 通報の積み重ねで追放(banned)されたアカウントはログイン自体を拒否する
         if (user.banned) {
