@@ -16,6 +16,7 @@ type PostItem = {
   content: string;
   revenueAmount: number | null;
   authorName: string;
+  authorIsAdmin: boolean;
   createdAt: string;
   likeCount: number;
   likedByMe: boolean;
@@ -138,11 +139,21 @@ export function BoardFeed({ isLoggedIn }: Props) {
       {!loading && posts && posts.length > 0 && (
         <ul className="space-y-2">
           {posts.map((p) => (
-            <li key={p.id} className="game-card space-y-2">
+            <li
+              key={p.id}
+              className={`game-card space-y-2 ${
+                p.authorIsAdmin ? "border-gold/60 bg-gold/5" : ""
+              }`}
+            >
               <div className="flex items-center justify-between text-xs text-stone-500">
                 <span>
                   {POST_CATEGORY_ICONS[p.category]} {POST_CATEGORY_LABELS[p.category]} ·{" "}
                   {p.authorName}
+                  {p.authorIsAdmin && (
+                    <span className="ml-1 rounded-full border border-gold/50 bg-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-gold-light">
+                      🕯️ 運営
+                    </span>
+                  )}
                   {p.isMine && <span className="ml-1 text-gold-light">(あなた)</span>}
                 </span>
               </div>

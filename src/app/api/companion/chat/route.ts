@@ -8,6 +8,7 @@ import {
   getAnthropicClient,
   getRecentMessages,
   saveMessage,
+  toSystemBlocks,
 } from "@/lib/companion";
 import { COMPANION_CONFIG } from "@/config/companion";
 
@@ -68,7 +69,7 @@ export async function POST(req: Request) {
   const userMessage = parsed.data.message;
 
   try {
-    const [system, history] = await Promise.all([
+    const [systemParts, history] = await Promise.all([
       buildSystemPrompt(userId),
       getRecentMessages(userId),
     ]);
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
     const stream = client.messages.stream({
       model: COMPANION_CONFIG.model,
       max_tokens: COMPANION_CONFIG.maxTokens,
-      system,
+      system: toSystemBlocks(systemParts),
       messages: [
         ...trimmedHistory.map((m) => ({
           role: m.role as "user" | "assistant",

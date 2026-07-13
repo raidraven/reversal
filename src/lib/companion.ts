@@ -11,6 +11,7 @@ import { SKILL_LABELS } from "@/lib/missions";
 import { getTodaysMissions } from "@/lib/dailyMissions";
 import { getSiteText } from "@/lib/siteText";
 import { EMOTION_TAG_INSTRUCTION } from "@/lib/companionEmotion";
+import { SITE_POLICY } from "@/lib/sitePolicy";
 import { COMPANION_CONFIG } from "@/config/companion";
 import { computeSkillTotals, type SkillKey } from "@/lib/skills";
 
@@ -20,8 +21,19 @@ export function getAnthropicClient(): Anthropic | null {
   return new Anthropic({ apiKey });
 }
 
-/** ユーザーの状況を集めてシステムプロンプトを組み立てる */
-export async function buildSystemPrompt(userId: string): Promise<string> {
+export type SystemPromptParts = {
+  /** 全ユーザー・全リクエストで共通の固定文言(プロンプトキャッシュの対象) */
+  stable: string;
+  /** ユーザーごとに変動する状況(キャッシュ対象外、末尾に付与する) */
+  dynamic: string;
+};
+
+/**
+ * ユーザーの状況を集めてシステムプロンプトを組み立てる。
+ * 固定文言(stable)と可変文言(dynamic)を分けて返すことで、
+ * 呼び出し側で stable に cache_control を付けてプロンプトキャッシュを効かせられるようにする。
+ */
+export async function buildSystemPrompt(userId: string): Promise<SystemPromptParts> {
   const today = todayJst();
   const [user, completions, missions, ranks, companionName, skills] = await Promise.all([
     prisma.user.findUniqueOrThrow({
@@ -47,13 +59,15 @@ export async function buildSystemPrompt(userId: string): Promise<string> {
     .map((key) => `- ${SKILL_LABELS[key]}: ${skills[key]}/100`)
     .join("\n");
 
-  return `あなたの名前は「${companionName}」です。以下はあなたの基本設定です。
+  const stable = `あなたの名前は「${companionName}」です。以下はあなたの基本設定です。
 
 ${COMPANION_CONFIG.personality}
 
-${EMOTION_TAG_INSTRUCTION}
+${SITE_POLICY}
 
-## 現在の来賓(ユーザー)の状況(この情報を踏まえて文脈のある声かけをすること)
+${EMOTION_TAG_INSTRUCTION}`;
+
+  const dynamic = `## 現在の来賓(ユーザー)の状況(この情報を踏まえて文脈のある声かけをすること)
 - 名前: ${user.name}
 - 位階(レベル): ${user.level}(称号:「${titleForRank(user.level, ranks)}」)
 - 累計経験値: ${user.exp}
@@ -62,6 +76,16 @@ ${EMOTION_TAG_INSTRUCTION}
 ${missionLines}
 - 技量:
 ${skillLines}`;
+
+  return { stable, dynamic };
+}
+
+/** buildSystemPrompt の結果を、プロンプトキャッシュ用の system ブロック配列に変換する */
+export function toSystemBlocks(parts: SystemPromptParts): Anthropic.Messages.TextBlockParam[] {
+  return [
+    { type: "text", text: parts.stable, cache_control: { type: "ephemeral" } },
+    { type: "text", text: parts.dynamic },
+  ];
 }
 
 /** 今日送信済みのユーザーメッセージ数(レート制限用) */
@@ -107,11 +131,11 @@ export async function getOrCreateDailyGreeting(userId: string): Promise<string> 
   if (!client) return fallbackGreeting(user.name);
 
   try {
-    const system = await buildSystemPrompt(userId);
+    const systemParts = await buildSystemPrompt(userId);
     const response = await client.messages.create({
       model: COMPANION_CONFIG.model,
       max_tokens: 300,
-      system,
+      system: toSystemBlocks(systemParts),
       messages: [
         {
           role: "user",

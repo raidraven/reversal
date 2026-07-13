@@ -9,9 +9,11 @@ import { getAnthropicClient } from "@/lib/companion";
 import { getSiteText } from "@/lib/siteText";
 import { moderateText } from "@/lib/moderation";
 import { todayJst, toJstDateString } from "@/lib/date";
-import { COMPANION_CONFIG } from "@/config/companion";
 import type { Viewer } from "@/lib/anonId";
 import { isBanned } from "@/lib/bans";
+
+// 短文かつ低クリエイティブ要求(定型の問い出題)のため、コンパニオン会話本体より軽量なモデルを使う
+const QUESTION_GENERATION_MODEL = "claude-haiku-4-5";
 
 // 回答の着順ごとのEXP(1着=50, 2着=35, ... 5着以降は一律8)
 const ANSWER_XP_TIERS = [50, 35, 25, 15, 8];
@@ -39,7 +41,7 @@ async function generateQuestionContent(): Promise<string> {
 
   try {
     const response = await client.messages.create({
-      model: COMPANION_CONFIG.model,
+      model: QUESTION_GENERATION_MODEL,
       max_tokens: 150,
       system: `あなたは洋館「リバーサル」に仕える執事です。AI副業に挑戦する来賓たちに向けて、今宵の一問一答のお題となる「問い」をひとつ考えてください。
 

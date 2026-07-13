@@ -22,6 +22,7 @@ export type PostItem = {
   content: string;
   revenueAmount: number | null;
   authorName: string;
+  authorIsAdmin: boolean;
   createdAt: Date;
   likeCount: number;
   likedByMe: boolean;
@@ -35,7 +36,7 @@ export async function getPosts(viewer: Viewer, category?: PostCategory): Promise
     where: category ? { category } : undefined,
     orderBy: { createdAt: "desc" },
     include: {
-      author: { select: { name: true } },
+      author: { select: { name: true, isAdmin: true } },
       likes: { select: { userId: true, anonId: true } },
       reports: viewer.userId ? { where: { reporterId: viewer.userId }, select: { id: true } } : false,
     },
@@ -48,6 +49,7 @@ export async function getPosts(viewer: Viewer, category?: PostCategory): Promise
     content: p.content,
     revenueAmount: p.revenueAmount,
     authorName: p.author.name,
+    authorIsAdmin: p.author.isAdmin,
     createdAt: p.createdAt,
     likeCount: p.likes.length,
     likedByMe: p.likes.some(

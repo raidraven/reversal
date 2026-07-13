@@ -32,7 +32,7 @@ export default async function AdminPage() {
   const iconCandidates = listAllIconCandidates(ICON_SLOTS);
 
   return (
-    <main className="mx-auto max-w-2xl space-y-6 px-4 py-8">
+    <main className="mx-auto max-w-2xl space-y-6 px-4 py-8 lg:max-w-5xl">
       <header className="flex items-center justify-between">
         <div>
           <p className="text-xs uppercase tracking-widest text-gold/70">館の主 専用</p>

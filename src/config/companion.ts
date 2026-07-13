@@ -15,7 +15,7 @@ export const COMPANION_CONFIG = {
   dailyMessageLimit: 30,
 
   /** チャットのコンテキストに含める直近の往復数 */
-  contextExchanges: 20,
+  contextExchanges: 10,
 
   /** 応答の最大トークン数 */
   maxTokens: 1024,

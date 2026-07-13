@@ -45,7 +45,10 @@ export default async function LandingPage() {
             館の運営についてのご意見・ご要望はこちらから。匿名でも構いません。
           </p>
           <div className="mt-3">
-            <HostRequestForm />
+            <HostRequestForm
+              placeholder={texts["hostRequest.placeholder"]}
+              completedMessage={texts["hostRequest.completedMessage"]}
+            />
           </div>
         </div>
       </aside>

@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 
-export function HostRequestForm() {
+type Props = {
+  placeholder: string;
+  completedMessage: string;
+};
+
+export function HostRequestForm({ placeholder, completedMessage }: Props) {
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
@@ -37,11 +42,7 @@ export function HostRequestForm() {
   }
 
   if (status === "sent") {
-    return (
-      <div className="game-card text-sm text-gold-light">
-        要望をお預かりいたしました。館の主に必ずお届けいたします。
-      </div>
-    );
+    return <div className="game-card text-sm text-gold-light">{completedMessage}</div>;
   }
 
   return (
@@ -65,7 +66,7 @@ export function HostRequestForm() {
         required
         maxLength={2000}
         rows={4}
-        placeholder="館主へお伝えしたいことをお書きください"
+        placeholder={placeholder}
         className="form-input resize-none text-sm"
       />
       <button
