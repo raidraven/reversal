@@ -134,6 +134,12 @@ export default async function LandingPage() {
             <BoardFeed isLoggedIn={isLoggedIn} />
           </div>
         </div>
+
+        <footer className="mt-8 text-center text-xs text-stone-600">
+          <Link href="/privacy" className="hover:text-gold-light hover:underline">
+            プライバシーポリシー
+          </Link>
+        </footer>
       </div>
     </main>
   );
