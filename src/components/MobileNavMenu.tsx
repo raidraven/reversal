@@ -59,8 +59,15 @@ export function MobileNavMenu({ links }: Props) {
                 {l.label}
               </Link>
             ))}
-            <div className="mt-1">
+            <div className="mt-1 flex flex-col gap-2">
               <LogoutButton className={DRAWER_LINK_CLASS + " w-full text-left"} />
+              <Link
+                href="/withdraw"
+                onClick={() => setOpen(false)}
+                className={DRAWER_LINK_CLASS + " text-center text-stone-500"}
+              >
+                退会する
+              </Link>
             </div>
           </div>
         </div>

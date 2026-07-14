@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { getSiteTexts } from "@/lib/siteText";
 import { getLandingStats } from "@/lib/landingStats";
 import { getTodaysMissions } from "@/lib/dailyMissions";
+import { readAnonId } from "@/lib/anonId";
 import { HostRequestForm } from "@/components/landing/HostRequestForm";
 import { LoginPanel } from "@/components/landing/LoginPanel";
 import { LogoutButton } from "@/components/LogoutButton";
@@ -16,9 +17,14 @@ export default async function LandingPage() {
   const session = await getServerSession(authOptions);
   const isLoggedIn = !!session?.user?.id;
 
+  // 来賓数の重複排除キー: ログイン中はアカウント単位、未ログインは既存の匿名Cookie単位
+  // (Server Componentからは新規Cookieを発行できないため、未発行の初回訪問はカウント対象外とする)
+  const anonId = readAnonId();
+  const visitorKey = session?.user?.id ? `user:${session.user.id}` : anonId ? `anon:${anonId}` : null;
+
   const [texts, stats, missions] = await Promise.all([
     getSiteTexts(),
-    getLandingStats(),
+    getLandingStats(visitorKey),
     getTodaysMissions(),
   ]);
 

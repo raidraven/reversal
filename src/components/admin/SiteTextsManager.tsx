@@ -85,7 +85,7 @@ export function SiteTextsManager({ iconCandidates = {} }: Props) {
                 id={`text-${key}`}
                 value={values[key] ?? ""}
                 onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
-                rows={key.includes("intro") ? 3 : 1}
+                rows={key === "privacy.content" ? 20 : key.includes("intro") ? 3 : 1}
                 className="form-input resize-none text-sm"
               />
               {isIconField && (

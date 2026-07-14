@@ -12,7 +12,7 @@ const DEFAULT_CLASS =
 export function LogoutButton({ className = DEFAULT_CLASS }: Props) {
   return (
     <button onClick={() => signOut({ callbackUrl: "/" })} className={className}>
-      洋館を出る
+      ログアウト
     </button>
   );
 }
