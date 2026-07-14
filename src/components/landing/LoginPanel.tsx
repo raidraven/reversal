@@ -31,6 +31,8 @@ export function LoginPanel() {
         setError("このアカウントは通報の積み重ねにより利用停止されています");
       } else if (result.error === "rate_limited") {
         setError("ログイン試行回数が多すぎます。15分ほど時間をおいて再度お試しください");
+      } else if (result.error === "server_error") {
+        setError("一時的な通信エラーが発生しました。お手数ですがもう一度お試しください");
       } else {
         setError("メールアドレスまたはパスワードが正しくありません");
       }
