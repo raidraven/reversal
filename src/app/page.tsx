@@ -9,7 +9,7 @@ import { LoginPanel } from "@/components/landing/LoginPanel";
 import { LogoutButton } from "@/components/LogoutButton";
 import { QnaBoard } from "@/components/qna/QnaBoard";
 import { BoardFeed } from "@/components/board/BoardFeed";
-import { SiteIcon } from "@/components/SiteIcon";
+import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
 
 export default async function LandingPage() {
@@ -28,7 +28,9 @@ export default async function LandingPage() {
       <aside className="order-2 mt-10 space-y-6 lg:order-1 lg:sticky lg:top-12 lg:mt-0">
         {isLoggedIn ? (
           <div className="game-card space-y-3 text-center">
-            <p className="text-2xl">🕯️</p>
+            <p className="flex justify-center">
+              <Icon name="candle" size={24} />
+            </p>
             <p className="text-sm text-stone-300">ログイン中でございます</p>
             <Link href="/home" className="neon-button block text-center">
               {texts["room.backLabel"]}
@@ -56,7 +58,7 @@ export default async function LandingPage() {
       {/* 中央:コンテンツ */}
       <div className="order-1 mx-auto w-full max-w-md lg:order-2">
         <h1 className="mansion-title flex items-center gap-2 text-4xl">
-          <SiteIcon value={texts["home.emoji"]} size={36} />
+          <Icon name="candle" size={36} />
           <EditableText siteTextKey="site.name" value={texts["site.name"]} />
         </h1>
 
@@ -102,14 +104,14 @@ export default async function LandingPage() {
         {missions.length > 0 && (
           <div className="game-card mt-4">
             <h2 className="mansion-title flex items-center gap-1.5 text-base">
-              <SiteIcon value={texts["mission.board.icon"]} size={18} />
+              <Icon name="key-ornate" size={18} />
               <EditableText siteTextKey="mission.board.title" value={texts["mission.board.title"]} />
             </h2>
             <ul className="mt-2 space-y-1.5">
               {missions.map((m) => (
                 <li key={m.id} className="flex items-center justify-between text-sm text-stone-300">
                   <span>{m.title}</span>
-                  <span className="text-xs text-stone-600">🔒</span>
+                  <Icon name="lock" size={14} className="opacity-60" />
                 </li>
               ))}
             </ul>
@@ -125,7 +127,7 @@ export default async function LandingPage() {
         {/* 談話室の投稿(未ログインでも閲覧・いいね可) */}
         <div className="mt-4">
           <h2 className="mansion-title flex items-center gap-1.5 text-base">
-            <SiteIcon value={texts["board.icon"]} size={18} />
+            <Icon name="talk" size={18} />
             <EditableText siteTextKey="board.name" value={texts["board.name"]} />
           </h2>
           <div className="mt-2">

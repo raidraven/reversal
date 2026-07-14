@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SKILL_ICONS } from "@/lib/missions";
 import { titleForRank, type RankRow } from "@/lib/rankTitle";
-import { SiteIcon } from "@/components/SiteIcon";
 import { EditableText } from "@/components/admin/EditableText";
+import { Icon } from "@/components/Icon";
 
 export type MissionItem = {
   id: string;
@@ -20,7 +20,6 @@ type Props = {
   missions: MissionItem[];
   ranks?: RankRow[];
   boardTitle?: string;
-  icon?: string;
 };
 
 function ParticleBurst() {
@@ -61,7 +60,7 @@ function ParticleBurst() {
   );
 }
 
-export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命", icon = "🗝️" }: Props) {
+export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命" }: Props) {
   const router = useRouter();
   const [localDone, setLocalDone] = useState<Record<string, boolean>>({});
   const [pending, setPending] = useState<string | null>(null);
@@ -117,7 +116,7 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命", 
     <section className="game-card animate-fade-up relative" style={{ animationDelay: "0.1s" }}>
       <div className="flex items-center justify-between">
         <h2 className="mansion-title flex items-center gap-1.5 text-base">
-          <SiteIcon value={icon} size={18} />
+          <Icon name="key-ornate" size={18} />
           <EditableText siteTextKey="mission.board.title" value={boardTitle} />
         </h2>
         <span className="text-xs text-stone-400">
@@ -134,7 +133,7 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命", 
       <ul className="mt-3 space-y-2">
         {missions.map((m) => {
           const done = isDone(m);
-          const icon = SKILL_ICONS[m.skillKey] ?? "🕯️";
+          const icon = SKILL_ICONS[m.skillKey] ?? "candle";
           return (
             <li key={m.id} className="relative">
               <button
@@ -152,7 +151,7 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命", 
                       done ? "bg-gold/20" : "bg-surface-card"
                     }`}
                   >
-                    {done ? "✅" : icon}
+                    {done ? <Icon name="check" size={18} /> : <Icon name={icon} size={18} />}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span
@@ -180,8 +179,8 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命", 
       </ul>
 
       {doneCount === missions.length && missions.length > 0 && (
-        <p className="mt-3 text-center text-xs font-bold text-gold-light">
-          🕯️ 今宵の使命、すべて達せられました。また明日の夜会にて
+        <p className="mt-3 flex items-center justify-center gap-1 text-center text-xs font-bold text-gold-light">
+          <Icon name="candle" size={14} /> 今宵の使命、すべて達せられました。また明日の夜会にて
         </p>
       )}
 
@@ -189,7 +188,9 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命", 
       {levelUp !== null && (
         <div className="pointer-events-none fixed inset-x-0 top-16 z-50 flex justify-center">
           <div className="animate-fade-up rounded-lg border border-gold/60 bg-surface-card px-6 py-4 text-center shadow-gold">
-            <p className="text-2xl">🕯️</p>
+            <div className="flex justify-center">
+              <Icon name="candle" size={24} />
+            </div>
             <p className="mansion-title text-lg font-black">位階上昇</p>
             <p className="text-sm text-stone-200">
               Lv.{levelUp}「{titleForRank(levelUp, ranks)}」になりました

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { Icon } from "@/components/Icon";
 
 type EditModeContextValue = {
   isAdmin: boolean;
@@ -53,13 +54,13 @@ function EditModeToggleButton({ editMode, onToggle }: { editMode: boolean; onTog
   return (
     <button
       onClick={onToggle}
-      className={`fixed bottom-5 left-5 z-50 rounded-full border px-4 py-2 text-xs font-bold shadow-lg transition-colors ${
+      className={`fixed bottom-5 left-5 z-50 flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-bold shadow-lg transition-colors ${
         editMode
           ? "border-gold bg-gold text-surface"
           : "border-gold/50 bg-surface-card text-gold-light hover:bg-gold/10"
       }`}
     >
-      {editMode ? "✏️ 編集モード: ON" : "✏️ 編集モード: OFF"}
+      <Icon name="pencil" size={14} /> {editMode ? "編集モード: ON" : "編集モード: OFF"}
     </button>
   );
 }

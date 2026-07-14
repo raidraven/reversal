@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AVATARS, DIAGNOSTIC_QUESTIONS } from "@/lib/onboarding";
+import { Icon } from "@/components/Icon";
 
 type Step = "account" | "diagnostic";
 
@@ -82,7 +83,9 @@ export default function SignupPage() {
     <main className="flex min-h-dvh items-center justify-center p-4">
       <div className="game-card w-full max-w-sm space-y-5 animate-fade-up">
         <div className="text-center">
-          <p className="text-3xl">🎭</p>
+          <p className="flex justify-center">
+            <Icon name="mask" size={32} />
+          </p>
           <h1 className="mansion-title mt-2 text-2xl">
             {step === "account" ? "入館の儀" : "仮面を選ぶ"}
           </h1>
@@ -202,13 +205,13 @@ export default function SignupPage() {
                     type="button"
                     onClick={() => setAvatarId(a.id)}
                     title={a.label}
-                    className={`rounded-md border py-3 text-2xl transition-colors ${
+                    className={`flex items-center justify-center rounded-md border py-3 transition-colors ${
                       avatarId === a.id
                         ? "border-gold bg-gold/15 shadow-gold"
                         : "border-surface-border bg-surface-raised hover:border-gold/40"
                     }`}
                   >
-                    {a.emoji}
+                    <Icon name={a.icon} size={28} />
                   </button>
                 ))}
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { Icon } from "@/components/Icon";
 
 export default function GlobalError({
   error,
@@ -16,7 +17,9 @@ export default function GlobalError({
   return (
     <main className="flex min-h-dvh items-center justify-center p-4">
       <div className="game-card w-full max-w-sm space-y-4 text-center animate-fade-up">
-        <p className="text-4xl">🕯️</p>
+        <p className="flex justify-center">
+          <Icon name="candle" size={40} />
+        </p>
         <h1 className="mansion-title text-xl">館に何かが起こったようです</h1>
         <p className="text-sm text-stone-400">
           予期せぬ出来事が起きました。少し間を置いて、もう一度お試しください。

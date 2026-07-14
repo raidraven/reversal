@@ -4,6 +4,7 @@ import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { getSiteTexts } from "@/lib/siteText";
 import { QnaBoard } from "@/components/qna/QnaBoard";
+import { Icon } from "@/components/Icon";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,9 @@ export default async function QuestionsPage() {
   return (
     <main className="mx-auto max-w-md px-4 py-8">
       <header className="mb-4 flex items-center justify-between">
-        <h1 className="mansion-title text-xl">❓ 今宵の問い</h1>
+        <h1 className="mansion-title flex items-center gap-1.5 text-xl">
+          <Icon name="question" size={22} /> 今宵の問い
+        </h1>
         <Link href="/home" className="ghost-button !px-3 !py-2 text-xs">
           {texts["room.backLabel"]}
         </Link>

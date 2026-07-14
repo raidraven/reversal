@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 
 export function LoginPanel() {
   const router = useRouter();
@@ -43,7 +44,9 @@ export function LoginPanel() {
   return (
     <div className="game-card space-y-4 animate-fade-up">
       <div className="text-center">
-        <p className="text-2xl">🕯️</p>
+        <p className="flex justify-center">
+          <Icon name="candle" size={24} />
+        </p>
         <h2 className="mansion-title mt-1 text-lg">扉の前で</h2>
         <p className="mt-1 text-xs text-stone-400">すでに招待状をお持ちの方はこちらから</p>
       </div>

@@ -13,7 +13,7 @@ import { recordDailyActivity } from "@/lib/game";
 import { getTodaysMissions } from "@/lib/dailyMissions";
 import { computeSkillTotals } from "@/lib/skills";
 import { LogoutButton } from "@/components/LogoutButton";
-import { SiteIcon } from "@/components/SiteIcon";
+import { Icon } from "@/components/Icon";
 import { PlayerStatusCard } from "@/components/home/PlayerStatusCard";
 import { StreakCard } from "@/components/home/StreakCard";
 import { MissionBoard } from "@/components/home/MissionBoard";
@@ -81,7 +81,7 @@ export default async function HomePage() {
     <main className="mx-auto max-w-md px-4 pb-24 lg:max-w-5xl">
       <header className="flex items-center justify-between py-4">
         <h1 className="mansion-title flex items-center gap-2 text-lg">
-          <SiteIcon value={texts["home.emoji"]} size={24} />
+          <Icon name="candle" size={24} />
           <EditableText siteTextKey="site.name" value={texts["site.name"]} />
         </h1>
         <div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export default async function HomePage() {
           <CompanionGreeting name={user.name} />
           <PlayerStatusCard
             name={user.name}
-            avatarEmoji={avatar.emoji}
+            avatarIcon={avatar.icon}
             level={user.level}
             title={title}
             expCurrent={progress.current}
@@ -148,11 +148,9 @@ export default async function HomePage() {
             missions={missionItems}
             ranks={ranks}
             boardTitle={texts["mission.board.title"]}
-            icon={texts["mission.board.icon"]}
           />
           <SkillRadarChart
             boardTitle={texts["skill.board.title"]}
-            icon={texts["skill.board.icon"]}
             skills={{
               writing: skills.writing,
               toolUsage: skills.toolUsage,

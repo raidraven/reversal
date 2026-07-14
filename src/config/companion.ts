@@ -5,8 +5,8 @@ export const COMPANION_CONFIG = {
   /** キャラクター名(UI表示・システムプロンプトの両方で使用) */
   name: "クロエ",
 
-  /** UI表示用の絵文字アイコン */
-  emoji: "🐦‍⬛",
+  /** UI表示用アイコン(表情画像が読み込めなかった場合のフォールバック。画像パスまたは絵文字) */
+  emoji: "/icons/crow.png",
 
   /** 使用モデル */
   model: "claude-sonnet-4-6",

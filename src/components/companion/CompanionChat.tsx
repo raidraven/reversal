@@ -26,7 +26,6 @@ export function CompanionChat() {
   const [error, setError] = useState<string | null>(null);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [companionName, setCompanionName] = useState(COMPANION_CONFIG.name);
-  const [companionEmoji, setCompanionEmoji] = useState(COMPANION_CONFIG.emoji);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // フローティングボタンの名前・アイコンは開閉に関わらず必要なため、マウント時に取得
@@ -37,7 +36,6 @@ export function CompanionChat() {
       .then((data) => {
         if (cancelled || !data?.texts) return;
         if (data.texts["companion.name"]) setCompanionName(data.texts["companion.name"]);
-        if (data.texts["companion.emoji"]) setCompanionEmoji(data.texts["companion.emoji"]);
       })
       .catch(() => {
         /* デフォルト値のまま */
@@ -162,7 +160,7 @@ export function CompanionChat() {
         ) : (
           <CompanionAvatar
             emotion={latestEmotion}
-            fallbackEmoji={companionEmoji}
+            fallbackEmoji={COMPANION_CONFIG.emoji}
             sizeClass="h-14 w-14"
             className="!border-0"
           />
@@ -175,7 +173,7 @@ export function CompanionChat() {
           <header className="flex items-center gap-2 border-b border-surface-border bg-surface-raised px-4 py-3">
             <CompanionAvatar
               emotion={latestEmotion}
-              fallbackEmoji={companionEmoji}
+              fallbackEmoji={COMPANION_CONFIG.emoji}
               sizeClass="h-9 w-9"
             />
             <div>
@@ -202,7 +200,7 @@ export function CompanionChat() {
                 {m.role === "assistant" && (
                   <CompanionAvatar
                     emotion={m.emotion}
-                    fallbackEmoji={companionEmoji}
+                    fallbackEmoji={COMPANION_CONFIG.emoji}
                     sizeClass="h-8 w-8"
                   />
                 )}

@@ -15,7 +15,6 @@ export function CompanionGreeting({ name }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [emotion, setEmotion] = useState<CompanionEmotion>(DEFAULT_EMOTION);
   const [companionName, setCompanionName] = useState(COMPANION_CONFIG.name);
-  const [companionEmoji, setCompanionEmoji] = useState(COMPANION_CONFIG.emoji);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,7 +33,6 @@ export function CompanionGreeting({ name }: Props) {
       .then((data) => {
         if (cancelled || !data?.texts) return;
         if (data.texts["companion.name"]) setCompanionName(data.texts["companion.name"]);
-        if (data.texts["companion.emoji"]) setCompanionEmoji(data.texts["companion.emoji"]);
       })
       .catch(() => {
         /* デフォルト値のまま */
@@ -46,7 +44,7 @@ export function CompanionGreeting({ name }: Props) {
 
   return (
     <section className="game-card animate-fade-up flex items-start gap-3 border-gold/30">
-      <CompanionAvatar emotion={emotion} fallbackEmoji={companionEmoji} sizeClass="h-12 w-12" />
+      <CompanionAvatar emotion={emotion} fallbackEmoji={COMPANION_CONFIG.emoji} sizeClass="h-12 w-12" />
       <div>
         <p className="text-xs font-bold text-gold-light">{companionName}(執事)</p>
         <p className={`mt-1 text-sm leading-relaxed text-stone-200 ${message === null ? "opacity-80" : ""}`}>

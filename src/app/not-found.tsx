@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSiteTexts } from "@/lib/siteText";
+import { Icon } from "@/components/Icon";
 
 export default async function NotFound() {
   const texts = await getSiteTexts();
@@ -7,7 +8,9 @@ export default async function NotFound() {
   return (
     <main className="flex min-h-dvh items-center justify-center p-4">
       <div className="game-card w-full max-w-sm space-y-4 text-center animate-fade-up">
-        <p className="text-4xl">🚪</p>
+        <p className="flex justify-center">
+          <Icon name="door" size={40} />
+        </p>
         <h1 className="mansion-title text-xl">その扉の先には何もございません</h1>
         <p className="text-sm text-stone-400">
           道に迷われたようです。ご自身の部屋へお戻りください。

@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -53,7 +54,9 @@ function ResetPasswordForm() {
     <main className="flex min-h-dvh items-center justify-center p-4">
       <div className="game-card w-full max-w-sm space-y-4 animate-fade-up">
         <div className="text-center">
-          <p className="text-3xl">🔑</p>
+          <p className="flex justify-center">
+            <Icon name="key" size={32} />
+          </p>
           <h1 className="mansion-title mt-2 text-2xl">新しいパスワードの設定</h1>
         </div>
 

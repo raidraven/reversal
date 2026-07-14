@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { POST_CATEGORIES, POST_CATEGORY_LABELS, type PostCategory } from "@/lib/boardCategories";
+import { Icon } from "@/components/Icon";
 
 type Props = {
   boardName: string;
@@ -54,7 +55,9 @@ export function NewPostForm({ boardName }: Props) {
     <main className="flex min-h-dvh items-center justify-center p-4">
       <form onSubmit={handleSubmit} className="game-card w-full max-w-sm space-y-4 animate-fade-up">
         <div className="text-center">
-          <p className="text-3xl">🗣️</p>
+          <p className="flex justify-center">
+            <Icon name="talk" size={32} />
+          </p>
           <h1 className="mansion-title mt-2 text-2xl">{boardName}へ投稿</h1>
           <p className="mt-1 text-sm text-stone-400">仲間の来賓に、実績や学びを届けましょう</p>
         </div>

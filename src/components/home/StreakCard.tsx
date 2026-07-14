@@ -1,4 +1,5 @@
 import { EditableText } from "@/components/admin/EditableText";
+import { Icon } from "@/components/Icon";
 
 type Props = {
   currentStreak: number;
@@ -11,8 +12,8 @@ type Props = {
 export function StreakCard({ currentStreak, longestStreak, atRisk, label = "本日の来館" }: Props) {
   return (
     <section className="game-card animate-fade-up relative flex items-center gap-4" style={{ animationDelay: "0.05s" }}>
-      <span className={`text-4xl ${currentStreak > 0 ? "animate-flicker" : "grayscale opacity-40"}`}>
-        🕯️
+      <span className={currentStreak > 0 ? "animate-flicker" : "grayscale opacity-40"}>
+        <Icon name="candle" size={40} />
       </span>
       <div>
         <p className="text-sm text-stone-400">
@@ -28,8 +29,8 @@ export function StreakCard({ currentStreak, longestStreak, atRisk, label = "本�
         <p className="text-lg font-bold text-gold-light">{longestStreak}夜</p>
       </div>
       {atRisk && currentStreak > 0 && (
-        <p className="absolute -top-2 right-3 rounded-full border border-wine-light/60 bg-wine/30 px-2 py-0.5 text-[10px] font-bold text-gold-light">
-          ⚠️ 今宵の使命が未達成
+        <p className="absolute -top-2 right-3 flex items-center gap-1 rounded-full border border-wine-light/60 bg-wine/30 px-2 py-0.5 text-[10px] font-bold text-gold-light">
+          <Icon name="warning" size={12} /> 今宵の使命が未達成
         </p>
       )}
     </section>

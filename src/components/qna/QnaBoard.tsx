@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { SiteIcon } from "@/components/SiteIcon";
 import { DEFAULT_SITE_TEXT } from "@/lib/siteTextDefaults";
 import { EditableText } from "@/components/admin/EditableText";
+import { Icon } from "@/components/Icon";
 
 type AnswerItem = {
   id: string;
@@ -40,7 +40,6 @@ export function QnaBoard({ isLoggedIn }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultMsg, setResultMsg] = useState<string | null>(null);
-  const [icon, setIcon] = useState(DEFAULT_SITE_TEXT["qna.icon"]);
   const [boardTitle, setBoardTitle] = useState(DEFAULT_SITE_TEXT["qna.board.title"]);
 
   useEffect(() => {
@@ -48,7 +47,6 @@ export function QnaBoard({ isLoggedIn }: Props) {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!data?.texts) return;
-        if (data.texts["qna.icon"]) setIcon(data.texts["qna.icon"]);
         if (data.texts["qna.board.title"]) setBoardTitle(data.texts["qna.board.title"]);
       })
       .catch(() => {
@@ -142,7 +140,7 @@ export function QnaBoard({ isLoggedIn }: Props) {
     return (
       <section className="game-card">
         <h2 className="mansion-title flex items-center gap-1.5 text-base">
-          <SiteIcon value={icon} size={18} />
+          <Icon name="question" size={18} />
           <EditableText siteTextKey="qna.board.title" value={boardTitle} />
         </h2>
         <p className="mt-2 text-sm text-stone-500">
@@ -156,7 +154,7 @@ export function QnaBoard({ isLoggedIn }: Props) {
     <section className="game-card space-y-3 animate-fade-up" style={{ animationDelay: "0.2s" }}>
       <div className="flex items-center justify-between">
         <h2 className="mansion-title flex items-center gap-1.5 text-base">
-          <SiteIcon value={icon} size={18} />
+          <Icon name="question" size={18} />
           <EditableText siteTextKey="qna.board.title" value={boardTitle} />
         </h2>
         <span className="text-xs text-stone-500">
@@ -230,7 +228,7 @@ export function QnaBoard({ isLoggedIn }: Props) {
                   a.likedByMe ? "text-gold-light" : "text-stone-500 hover:text-gold-light"
                 }`}
               >
-                {a.likedByMe ? "❤️" : "🤍"} {a.likeCount}
+                <Icon name={a.likedByMe ? "heart-filled" : "heart-outline"} size={14} /> {a.likeCount}
               </button>
             </li>
           ))}

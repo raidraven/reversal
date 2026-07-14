@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { DEFAULT_SITE_TEXT } from "@/lib/siteTextDefaults";
+import { Icon } from "@/components/Icon";
 
 export default function NewQuestionPage() {
   const router = useRouter();
@@ -52,7 +53,9 @@ export default function NewQuestionPage() {
     <main className="flex min-h-dvh items-center justify-center p-4">
       <form onSubmit={handleSubmit} className="game-card w-full max-w-sm space-y-4 animate-fade-up">
         <div className="text-center">
-          <p className="text-3xl">🖋️</p>
+          <p className="flex justify-center">
+            <Icon name="quill" size={32} />
+          </p>
           <h1 className="mansion-title mt-2 text-2xl">問いを立てる</h1>
           <p className="mt-1 text-sm text-stone-400">この問いが、今宵の一問一答になります</p>
         </div>

@@ -1,10 +1,11 @@
 // 初期診断・仮面定義(signup画面とAPIで共有)
+import type { IconName } from "@/components/Icon";
 
 export const AVATARS = [
-  { id: "mask-gold", emoji: "🎭", label: "黄金の仮面" },
-  { id: "mask-owl", emoji: "🦉", label: "梟の仮面" },
-  { id: "mask-rose", emoji: "🌹", label: "薔薇の仮面" },
-  { id: "mask-bat", emoji: "🦇", label: "蝙蝠の仮面" },
+  { id: "mask-gold", icon: "mask" as IconName, label: "黄金の仮面" },
+  { id: "mask-owl", icon: "owl" as IconName, label: "梟の仮面" },
+  { id: "mask-rose", icon: "rose" as IconName, label: "薔薇の仮面" },
+  { id: "mask-bat", icon: "bat" as IconName, label: "蝙蝠の仮面" },
 ] as const;
 
 export type AvatarId = (typeof AVATARS)[number]["id"];

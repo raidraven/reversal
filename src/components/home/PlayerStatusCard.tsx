@@ -1,10 +1,11 @@
 "use client";
 
 import { useCountUp } from "./useCountUp";
+import { Icon, type IconName } from "@/components/Icon";
 
 type Props = {
   name: string;
-  avatarEmoji: string;
+  avatarIcon: IconName;
   level: number;
   title: string;
   expCurrent: number;
@@ -13,7 +14,7 @@ type Props = {
 
 export function PlayerStatusCard({
   name,
-  avatarEmoji,
+  avatarIcon,
   level,
   title,
   expCurrent,
@@ -25,8 +26,8 @@ export function PlayerStatusCard({
   return (
     <section className="game-card animate-fade-up">
       <div className="flex items-center gap-4">
-        <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-surface-raised text-4xl shadow-gold">
-          {avatarEmoji}
+        <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-surface-raised shadow-gold">
+          <Icon name={avatarIcon} size={36} />
         </span>
         <div className="min-w-0">
           <p className="truncate font-serif text-xl font-bold text-stone-100">{name} 様</p>

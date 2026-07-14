@@ -10,8 +10,8 @@ import {
   Tooltip,
 } from "recharts";
 import { SKILL_LABELS } from "@/lib/missions";
-import { SiteIcon } from "@/components/SiteIcon";
 import { EditableText } from "@/components/admin/EditableText";
+import { Icon } from "@/components/Icon";
 
 type Props = {
   skills: {
@@ -22,13 +22,12 @@ type Props = {
     monetization: number;
   };
   boardTitle?: string;
-  icon?: string;
 };
 
 // チャート色はダーク背景(#160f11)でのコントラスト検証済みの値を使用
 const CHART_COLOR = "#ad8025";
 
-export function SkillRadarChart({ skills, boardTitle = "技量", icon = "📜" }: Props) {
+export function SkillRadarChart({ skills, boardTitle = "技量" }: Props) {
   const data = (Object.keys(SKILL_LABELS) as Array<keyof typeof skills>).map((key) => ({
     skill: SKILL_LABELS[key],
     value: skills[key],
@@ -37,7 +36,7 @@ export function SkillRadarChart({ skills, boardTitle = "技量", icon = "📜" }
   return (
     <section className="game-card animate-fade-up" style={{ animationDelay: "0.15s" }}>
       <h2 className="mansion-title flex items-center gap-1.5 text-base">
-        <SiteIcon value={icon} size={18} />
+        <Icon name="scroll" size={18} />
         <EditableText siteTextKey="skill.board.title" value={boardTitle} />
       </h2>
       <div className="mt-2 h-64">

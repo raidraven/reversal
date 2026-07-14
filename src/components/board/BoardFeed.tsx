@@ -8,6 +8,7 @@ import {
   POST_CATEGORY_LABELS,
   type PostCategory,
 } from "@/lib/boardCategories";
+import { Icon } from "@/components/Icon";
 
 type PostItem = {
   id: string;
@@ -146,12 +147,12 @@ export function BoardFeed({ isLoggedIn }: Props) {
               }`}
             >
               <div className="flex items-center justify-between text-xs text-stone-500">
-                <span>
-                  {POST_CATEGORY_ICONS[p.category]} {POST_CATEGORY_LABELS[p.category]} ·{" "}
-                  {p.authorName}
+                <span className="inline-flex items-center gap-1">
+                  <Icon name={POST_CATEGORY_ICONS[p.category]} size={14} />
+                  {POST_CATEGORY_LABELS[p.category]} · {p.authorName}
                   {p.authorIsAdmin && (
-                    <span className="ml-1 rounded-full border border-gold/50 bg-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-gold-light">
-                      🕯️ 運営
+                    <span className="ml-1 inline-flex items-center gap-0.5 rounded-full border border-gold/50 bg-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-gold-light">
+                      <Icon name="candle" size={10} /> 運営
                     </span>
                   )}
                   {p.isMine && <span className="ml-1 text-gold-light">(あなた)</span>}
@@ -160,8 +161,8 @@ export function BoardFeed({ isLoggedIn }: Props) {
               <p className="text-sm font-semibold text-stone-100">{p.title}</p>
               <p className="whitespace-pre-wrap text-sm text-stone-300">{p.content}</p>
               {p.revenueAmount != null && (
-                <p className="text-xs font-bold text-gold-light">
-                  💰 報告収益: {p.revenueAmount.toLocaleString()}円
+                <p className="flex items-center gap-1 text-xs font-bold text-gold-light">
+                  <Icon name="coin" size={14} /> 報告収益: {p.revenueAmount.toLocaleString()}円
                 </p>
               )}
               <div className="flex items-center justify-between">
@@ -171,15 +172,21 @@ export function BoardFeed({ isLoggedIn }: Props) {
                     p.likedByMe ? "text-gold-light" : "text-stone-500 hover:text-gold-light"
                   }`}
                 >
-                  {p.likedByMe ? "❤️" : "🤍"} {p.likeCount}
+                  <Icon name={p.likedByMe ? "heart-filled" : "heart-outline"} size={14} /> {p.likeCount}
                 </button>
                 {isLoggedIn && !p.isMine && (
                   <button
                     onClick={() => report(p.id)}
                     disabled={p.reportedByMe}
-                    className="text-[10px] text-stone-600 transition-colors hover:text-wine-light disabled:cursor-default disabled:hover:text-stone-600"
+                    className="flex items-center gap-1 text-[10px] text-stone-600 transition-colors hover:text-wine-light disabled:cursor-default disabled:hover:text-stone-600"
                   >
-                    {p.reportedByMe ? "通報済み" : "🚩 通報する"}
+                    {p.reportedByMe ? (
+                      "通報済み"
+                    ) : (
+                      <>
+                        <Icon name="flag" size={12} /> 通報する
+                      </>
+                    )}
                   </button>
                 )}
               </div>

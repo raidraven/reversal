@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -36,7 +37,9 @@ export default function ForgotPasswordPage() {
     <main className="flex min-h-dvh items-center justify-center p-4">
       <div className="game-card w-full max-w-sm space-y-4 animate-fade-up">
         <div className="text-center">
-          <p className="text-3xl">🕯️</p>
+          <p className="flex justify-center">
+            <Icon name="candle" size={32} />
+          </p>
           <h1 className="mansion-title mt-2 text-2xl">パスワードをお忘れですか</h1>
           <p className="mt-1 text-sm text-stone-400">
             登録済みのメールアドレスに、再設定用のリンクをお送りします
