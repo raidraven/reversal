@@ -77,25 +77,32 @@ export default async function LandingPage() {
         </div>
 
         {/* 館の活気(実データのみ) */}
-        <div className="game-card mt-6 grid grid-cols-3 gap-2 text-center">
+        <div className="game-card mt-6 grid grid-cols-2 gap-3 text-center">
           <div>
             <p className="text-2xl font-black text-gold-light">{stats.guestCount}</p>
-            <p className="mt-1 text-[10px] leading-tight text-stone-500">名の来賓</p>
+            <p className="mt-1 text-[10px] leading-tight text-stone-500">
+              <EditableText siteTextKey="landing.stats.guestLabel" value={texts["landing.stats.guestLabel"]} />
+            </p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-gold-light">{stats.registeredCount}</p>
+            <p className="mt-1 text-[10px] leading-tight text-stone-500">
+              <EditableText
+                siteTextKey="landing.stats.registeredLabel"
+                value={texts["landing.stats.registeredLabel"]}
+              />
+            </p>
           </div>
           <div>
             <p className="text-2xl font-black text-gold-light">{stats.missionCompletionCount}</p>
             <p className="mt-1 text-[10px] leading-tight text-stone-500">
-              達成された
-              <br />
-              使命
+              <EditableText siteTextKey="landing.stats.missionLabel" value={texts["landing.stats.missionLabel"]} />
             </p>
           </div>
           <div>
             <p className="text-2xl font-black text-gold-light">{stats.answerCount}</p>
             <p className="mt-1 text-[10px] leading-tight text-stone-500">
-              問いへの
-              <br />
-              回答
+              <EditableText siteTextKey="landing.stats.answerLabel" value={texts["landing.stats.answerLabel"]} />
             </p>
           </div>
         </div>

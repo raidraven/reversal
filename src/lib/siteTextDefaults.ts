@@ -19,6 +19,10 @@ export const DEFAULT_SITE_TEXT: Record<string, string> = {
     "AI副業という慣れない挑戦に踏み出したあなたを、心から歓迎します。焦らず、しかし着実に。この洋館が、その一歩を支える場所になれば幸いです。",
   "hostRequest.placeholder": "主催者へお伝えしたいことをお書きください",
   "hostRequest.completedMessage": "要望をお預かりいたしました。主催者に必ずお届けいたします。",
+  "landing.stats.guestLabel": "名の来賓",
+  "landing.stats.registeredLabel": "名の登録者",
+  "landing.stats.missionLabel": "達成された使命",
+  "landing.stats.answerLabel": "問いへの回答",
 };
 
 export const SITE_TEXT_LABELS: Record<string, string> = {
@@ -37,6 +41,10 @@ export const SITE_TEXT_LABELS: Record<string, string> = {
   "landing.hostMessage": "ランディングページ「主催者から一言」の本文",
   "hostRequest.placeholder": "主催者への要望フォームの入力欄プレースホルダー",
   "hostRequest.completedMessage": "主催者への要望フォームの送信完了メッセージ",
+  "landing.stats.guestLabel": "ランディングページの統計「来賓数」のラベル",
+  "landing.stats.registeredLabel": "ランディングページの統計「登録者数」のラベル",
+  "landing.stats.missionLabel": "ランディングページの統計「達成された使命」のラベル",
+  "landing.stats.answerLabel": "ランディングページの統計「問いへの回答」のラベル",
 };
 
 export const SITE_TEXT_KEYS = Object.keys(DEFAULT_SITE_TEXT);

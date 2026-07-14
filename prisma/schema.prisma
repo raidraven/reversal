@@ -156,6 +156,13 @@ model SiteText {
   value String
 }
 
+// サイト全体の単純なカウンター(キー・値)。ランディングページのアクセス数などに使用
+model SiteCounter {
+  id    String @id @default(cuid())
+  key   String @unique
+  count Int    @default(0)
+}
+
 // 位階(レベル)の称号。管理ページから種類・しきい値(順位)を編集可能
 model Rank {
   id       String @id @default(cuid())
