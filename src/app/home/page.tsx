@@ -1,6 +1,5 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AVATARS } from "@/lib/onboarding";
@@ -12,8 +11,8 @@ import { todayJst } from "@/lib/date";
 import { recordDailyActivity } from "@/lib/game";
 import { getTodaysMissions } from "@/lib/dailyMissions";
 import { computeSkillTotals } from "@/lib/skills";
-import { LogoutButton } from "@/components/LogoutButton";
 import { Icon } from "@/components/Icon";
+import { HeaderNav, type NavLink } from "@/components/home/HeaderNav";
 import { PlayerStatusCard } from "@/components/home/PlayerStatusCard";
 import { StreakCard } from "@/components/home/StreakCard";
 import { MissionBoard } from "@/components/home/MissionBoard";
@@ -77,6 +76,14 @@ export default async function HomePage() {
   const streak = user.streak;
   const atRisk = completedIds.size === 0;
 
+  const navLinks: NavLink[] = [
+    { href: "/", label: "ホームに戻る" },
+    { href: "/questions", label: "質問に答える" },
+    { href: "/questions/new", label: "質問する" },
+    { href: "/board", label: texts["board.name"] },
+    ...(session.user.isAdmin ? [{ href: "/admin", label: "館の主ページ", gold: true }] : []),
+  ];
+
   return (
     <main className="mx-auto max-w-md px-4 pb-24 lg:max-w-5xl">
       <header className="flex items-center justify-between py-4">
@@ -84,41 +91,7 @@ export default async function HomePage() {
           <Icon name="candle" size={24} />
           <EditableText siteTextKey="site.name" value={texts["site.name"]} />
         </h1>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/"
-            className="rounded-md border border-surface-border px-3 py-1.5 text-xs text-stone-400 transition-colors hover:border-gold/40 hover:text-stone-200"
-          >
-            ホームに戻る
-          </Link>
-          <Link
-            href="/questions"
-            className="rounded-md border border-surface-border px-3 py-1.5 text-xs text-stone-400 transition-colors hover:border-gold/40 hover:text-stone-200"
-          >
-            質問に答える
-          </Link>
-          <Link
-            href="/questions/new"
-            className="rounded-md border border-surface-border px-3 py-1.5 text-xs text-stone-400 transition-colors hover:border-gold/40 hover:text-stone-200"
-          >
-            質問する
-          </Link>
-          <Link
-            href="/board"
-            className="rounded-md border border-surface-border px-3 py-1.5 text-xs text-stone-400 transition-colors hover:border-gold/40 hover:text-stone-200"
-          >
-            {texts["board.name"]}
-          </Link>
-          {session.user.isAdmin && (
-            <Link
-              href="/admin"
-              className="rounded-md border border-gold/40 px-3 py-1.5 text-xs text-gold-light transition-colors hover:bg-gold/10"
-            >
-              館の主ページ
-            </Link>
-          )}
-          <LogoutButton />
-        </div>
+        <HeaderNav links={navLinks} />
       </header>
 
       <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">

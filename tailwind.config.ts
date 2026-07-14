@@ -50,11 +50,16 @@ const config: Config = {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.85" },
         },
+        "slide-in-right": {
+          from: { transform: "translateX(100%)" },
+          to: { transform: "translateX(0)" },
+        },
       },
       animation: {
         "bar-grow": "bar-grow 0.8s ease-out",
         "fade-up": "fade-up 0.4s ease-out both",
         flicker: "flicker 3s ease-in-out infinite",
+        "slide-in-right": "slide-in-right 0.25s ease-out",
       },
     },
   },
