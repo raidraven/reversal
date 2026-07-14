@@ -72,12 +72,11 @@ export function PostsManager() {
     }
   }
 
-  if (loading) return <section className="game-card animate-pulse h-40" />;
+  if (loading) return <div className="h-40 animate-pulse rounded-md bg-surface-raised" />;
 
   return (
-    <section className="game-card">
-      <h2 className="mansion-title text-lg">談話室の投稿管理</h2>
-      <p className="mt-1 text-xs text-stone-500">
+    <>
+      <p className="text-xs text-stone-500">
         投稿の削除、および通報の積み重ねで自動追放されたユーザーの追放解除ができます(全 {posts.length} 件)。
       </p>
 
@@ -132,6 +131,6 @@ export function PostsManager() {
           ))}
         </ul>
       )}
-    </section>
+    </>
   );
 }

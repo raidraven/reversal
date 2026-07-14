@@ -41,11 +41,11 @@ export function HeaderNav({ links }: Props) {
         <LogoutButton />
       </nav>
 
-      {/* モバイル: ハンバーガーボタン */}
+      {/* モバイル: ハンバーガーボタン(スクロールしても常に表示) */}
       <button
         onClick={() => setOpen(true)}
         aria-label="メニューを開く"
-        className="flex h-9 w-9 flex-col items-center justify-center gap-1 rounded-md border border-surface-border transition-colors hover:border-gold/40 lg:hidden"
+        className="fixed right-4 top-4 z-40 flex h-9 w-9 flex-col items-center justify-center gap-1 rounded-md border border-surface-border bg-surface-card/90 shadow-lg backdrop-blur transition-colors hover:border-gold/40 lg:hidden"
       >
         <span className="h-0.5 w-5 rounded-full bg-gold-light" />
         <span className="h-0.5 w-5 rounded-full bg-gold-light" />

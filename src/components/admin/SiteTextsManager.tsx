@@ -50,12 +50,11 @@ export function SiteTextsManager({ iconCandidates = {} }: Props) {
     }
   }
 
-  if (loading) return <section className="game-card animate-pulse h-40" />;
+  if (loading) return <div className="h-40 animate-pulse rounded-md bg-surface-raised" />;
 
   return (
-    <section className="game-card">
-      <h2 className="mansion-title text-lg">文言・アイコンの編集</h2>
-      <p className="mt-1 text-xs text-stone-500">
+    <>
+      <p className="text-xs text-stone-500">
         サイト各所の文言やアイコンを編集できます。アイコン欄は絵文字を直接入力するか、下に候補画像があればクリックして選べます。
       </p>
 
@@ -122,6 +121,6 @@ export function SiteTextsManager({ iconCandidates = {} }: Props) {
           {saving ? "保存中…" : "保存する"}
         </button>
       </form>
-    </section>
+    </>
   );
 }

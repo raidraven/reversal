@@ -8,6 +8,7 @@ import { RanksManager } from "@/components/admin/RanksManager";
 import { MissionsManager } from "@/components/admin/MissionsManager";
 import { IncidentDaysManager } from "@/components/admin/IncidentDaysManager";
 import { PostsManager } from "@/components/admin/PostsManager";
+import { AdminSection } from "@/components/admin/AdminSection";
 import { listAllIconCandidates } from "@/lib/iconCandidates";
 import { ICON_SLOTS } from "@/lib/siteTextDefaults";
 
@@ -43,38 +44,50 @@ export default async function AdminPage() {
         </Link>
       </header>
 
-      <SiteTextsManager iconCandidates={iconCandidates} />
-      <RanksManager />
-      <MissionsManager />
-      <PostsManager />
-      <IncidentDaysManager />
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+        <AdminSection title="文言・アイコンの編集" defaultOpen>
+          <SiteTextsManager iconCandidates={iconCandidates} />
+        </AdminSection>
 
-      <section>
-        <h2 className="mansion-title text-lg">主催者への要望</h2>
-        <p className="mb-4 mt-1 text-sm text-stone-400">
-          来賓たちから届いた要望・感想の一覧です(全 {requests.length} 件)。
-        </p>
+        <AdminSection title="位階(称号)の設定" description="レベルごとの称号を編集・追加・削除できます">
+          <RanksManager />
+        </AdminSection>
 
-        {requests.length === 0 ? (
-          <div className="game-card text-center text-sm text-stone-500">
-            まだ要望は届いていません。
-          </div>
-        ) : (
-          <ul className="space-y-3">
-            {requests.map((r) => (
-              <li key={r.id} className="game-card">
-                <div className="flex items-center justify-between text-xs text-stone-500">
-                  <span className="font-serif text-gold-light">{r.name}</span>
-                  <span>{formatDate(r.createdAt)}</span>
-                </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-200">
-                  {r.content}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+        <AdminSection title="今宵の使命(デイリーミッション)の設定">
+          <MissionsManager />
+        </AdminSection>
+
+        <AdminSection title="談話室の投稿管理">
+          <PostsManager />
+        </AdminSection>
+
+        <AdminSection
+          title="障害日(ストリーク救済)の登録"
+          description="サイト障害等で欠席扱いにしたくない日を登録します"
+        >
+          <IncidentDaysManager />
+        </AdminSection>
+
+        <AdminSection title="主催者への要望" description={`来賓たちから届いた要望・感想(全 ${requests.length} 件)`}>
+          {requests.length === 0 ? (
+            <p className="text-center text-sm text-stone-500">まだ要望は届いていません。</p>
+          ) : (
+            <ul className="space-y-3">
+              {requests.map((r) => (
+                <li key={r.id} className="rounded-md border border-surface-border bg-surface-raised p-3">
+                  <div className="flex items-center justify-between text-xs text-stone-500">
+                    <span className="font-serif text-gold-light">{r.name}</span>
+                    <span>{formatDate(r.createdAt)}</span>
+                  </div>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-200">
+                    {r.content}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AdminSection>
+      </div>
     </main>
   );
 }

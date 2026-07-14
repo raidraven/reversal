@@ -119,12 +119,11 @@ export function MissionsManager() {
     }
   }
 
-  if (loading) return <section className="game-card animate-pulse h-40" />;
+  if (loading) return <div className="h-40 animate-pulse rounded-md bg-surface-raised" />;
 
   return (
-    <section className="game-card">
-      <h2 className="mansion-title text-lg">今宵の使命(デイリーミッション)の設定</h2>
-      <p className="mt-1 text-xs text-stone-500">
+    <>
+      <p className="text-xs text-stone-500">
         ここに登録された項目の中から、日替わりで3つがランダムに選ばれます(全 {missions.length} 件登録中)。
       </p>
 
@@ -239,6 +238,6 @@ export function MissionsManager() {
           </button>
         </div>
       </form>
-    </section>
+    </>
   );
 }

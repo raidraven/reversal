@@ -110,13 +110,16 @@ export async function saveMessage(userId: string, role: "user" | "assistant", co
 }
 
 /** APIキー未設定・エラー時のフォールバック挨拶 */
-export function fallbackGreeting(name: string): string {
+export function fallbackGreeting(name: string, isFirstEver = false): string {
+  if (isFirstEver) {
+    return `はじめまして、${name}様。私、この洋館で秘書兼執事を務めております、クロエと申します。以後、${name}様の副業の歩みに寄り添わせていただきますので、何なりとお申し付けくださいませ。`;
+  }
   return `お帰りなさいませ、${name}様。今宵も雇われの身の荒波を生き抜いてこられたのですね。さあ、ご自身の力を築くお時間でございます。まずは今宵の使命からいかがでしょうか。`;
 }
 
 /**
  * その日初回のみ、状況に応じた挨拶を生成して保存する。
- * すでに今日の挨拶があればそれを返す。
+ * すでに今日の挨拶があればそれを返す。会員登録後はじめての挨拶生成の場合は、自己紹介を含めた挨拶にする。
  */
 export async function getOrCreateDailyGreeting(userId: string): Promise<string> {
   // 今日すでにコンパニオンからのメッセージがあれば挨拶済みとみなす
@@ -127,22 +130,23 @@ export async function getOrCreateDailyGreeting(userId: string): Promise<string> 
   if (existing) return existing.content;
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
+  const isFirstEver =
+    (await prisma.companionMessage.count({ where: { userId, role: "assistant" } })) === 0;
+
   const client = getAnthropicClient();
-  if (!client) return fallbackGreeting(user.name);
+  if (!client) return fallbackGreeting(user.name, isFirstEver);
 
   try {
     const systemParts = await buildSystemPrompt(userId);
+    const instruction = isFirstEver
+      ? `(システム: 来賓「${user.name}様」が、たった今はじめてこの館を訪れ、あなたと初めて顔を合わせます。まずあなた自身の名前と役割を簡潔に名乗ってから、歓迎の言葉をかけてください。この挨拶は今日一日そのまま表示され続けるため、今宵の使命の達成状況など、これから来賓の行動によって変わりうる事柄には具体的に言及しないこと。執事口調で3〜4文。)`
+      : "(システム: 来賓が今日はじめて館を訪れました。状況に応じた今宵の挨拶をひとこと生成してください。連夜の参加が続いているなら労いを。この挨拶は今日一日そのまま表示され続けるため、今宵の使命の達成状況など、これから来賓の行動によって変わりうる事柄には具体的に言及しないこと(例:「使命はまだ白紙」「未達ですね」等は禁止)。執事口調で2〜3文。)";
+
     const response = await client.messages.create({
       model: COMPANION_CONFIG.model,
       max_tokens: 300,
       system: toSystemBlocks(systemParts),
-      messages: [
-        {
-          role: "user",
-          content:
-            "(システム: 来賓が今日はじめて館を訪れました。状況に応じた今宵の挨拶をひとこと生成してください。連夜の参加が続いているなら労いを。この挨拶は今日一日そのまま表示され続けるため、今宵の使命の達成状況など、これから来賓の行動によって変わりうる事柄には具体的に言及しないこと(例:「使命はまだ白紙」「未達ですね」等は禁止)。執事口調で2〜3文。)",
-        },
-      ],
+      messages: [{ role: "user", content: instruction }],
     });
 
     const text = response.content
@@ -150,12 +154,12 @@ export async function getOrCreateDailyGreeting(userId: string): Promise<string> 
       .map((b) => (b.type === "text" ? b.text : ""))
       .join("");
 
-    if (!text) return fallbackGreeting(user.name);
+    if (!text) return fallbackGreeting(user.name, isFirstEver);
 
     await saveMessage(userId, "assistant", text);
     return text;
   } catch (e) {
     console.error("greeting generation error:", e);
-    return fallbackGreeting(user.name);
+    return fallbackGreeting(user.name, isFirstEver);
   }
 }

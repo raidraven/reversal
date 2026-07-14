@@ -94,17 +94,12 @@ export function RanksManager() {
     }
   }
 
-  if (loading) return <section className="game-card animate-pulse h-40" />;
+  if (loading) return <div className="h-40 animate-pulse rounded-md bg-surface-raised" />;
 
   const sorted = [...ranks].sort((a, b) => a.minLevel - b.minLevel);
 
   return (
-    <section className="game-card">
-      <h2 className="mansion-title text-lg">位階(称号)の設定</h2>
-      <p className="mt-1 text-xs text-stone-500">
-        レベル(位階)ごとの称号を編集・追加・削除できます。到達レベルの小さい順に適用されます。
-      </p>
-
+    <>
       {error && (
         <p className="mt-3 rounded-md border border-wine-light/50 bg-wine/20 px-3 py-2 text-xs text-gold-light">
           {error}
@@ -165,6 +160,6 @@ export function RanksManager() {
           追加
         </button>
       </form>
-    </section>
+    </>
   );
 }

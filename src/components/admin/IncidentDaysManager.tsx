@@ -67,15 +67,10 @@ export function IncidentDaysManager() {
     }
   }
 
-  if (loading) return <section className="game-card animate-pulse h-40" />;
+  if (loading) return <div className="h-40 animate-pulse rounded-md bg-surface-raised" />;
 
   return (
-    <section className="game-card">
-      <h2 className="mansion-title text-lg">障害日(ストリーク救済)の登録</h2>
-      <p className="mt-1 text-xs text-stone-500">
-        サイト障害・大規模改修などで来賓が来館できなかった日を登録すると、その日は「連夜の参加」判定で欠席扱いにしません。来賓個人のログイン忘れは対象外です。
-      </p>
-
+    <>
       {error && (
         <p className="mt-3 rounded-md border border-wine-light/50 bg-wine/20 px-3 py-2 text-xs text-gold-light">
           {error}
@@ -122,6 +117,6 @@ export function IncidentDaysManager() {
           登録
         </button>
       </form>
-    </section>
+    </>
   );
 }
