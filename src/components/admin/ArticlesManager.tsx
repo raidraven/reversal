@@ -2,17 +2,22 @@
 
 import { useEffect, useState } from "react";
 
+type Category = "guide" | "novel";
+
 type Article = {
   id: string;
   slug: string;
   title: string;
   description: string;
   content: string;
+  category: Category;
   published: boolean;
   publishedAt: string | null;
 };
 
-const EMPTY_FORM = { slug: "", title: "", description: "", content: "" };
+const EMPTY_FORM = { slug: "", title: "", description: "", content: "", category: "guide" as Category };
+
+const CATEGORY_LABELS: Record<Category, string> = { guide: "攻略記事", novel: "小説" };
 
 export function ArticlesManager() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -52,6 +57,7 @@ export function ArticlesManager() {
           title: article.title,
           description: article.description,
           content: article.content,
+          category: article.category,
           published: publishedOverride ?? article.published,
         }),
       });
@@ -134,6 +140,9 @@ export function ArticlesManager() {
               >
                 {a.published ? "公開中" : "下書き"}
               </span>
+              <span className="rounded-full border border-surface-border px-1.5 py-0.5 text-[10px] text-stone-400">
+                {CATEGORY_LABELS[a.category]}
+              </span>
               <button
                 onClick={() => setOpenId(openId === a.id ? null : a.id)}
                 className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-stone-100 hover:text-gold-light"
@@ -168,6 +177,17 @@ export function ArticlesManager() {
                     onChange={(e) => updateLocal(a.id, { title: e.target.value })}
                     className="form-input mt-1 !py-1.5 text-sm"
                   />
+                </label>
+                <label className="block text-xs text-stone-500">
+                  区分
+                  <select
+                    value={a.category}
+                    onChange={(e) => updateLocal(a.id, { category: e.target.value as Category })}
+                    className="form-input mt-1 !py-1.5 text-sm"
+                  >
+                    <option value="guide">攻略記事</option>
+                    <option value="novel">小説</option>
+                  </select>
                 </label>
                 <label className="block text-xs text-stone-500">
                   説明文(検索結果・OGPに表示)
@@ -235,6 +255,14 @@ export function ArticlesManager() {
           onChange={(e) => setNewForm((p) => ({ ...p, title: e.target.value }))}
           className="form-input !py-1.5 text-sm"
         />
+        <select
+          value={newForm.category}
+          onChange={(e) => setNewForm((p) => ({ ...p, category: e.target.value as Category }))}
+          className="form-input !py-1.5 text-sm"
+        >
+          <option value="guide">攻略記事</option>
+          <option value="novel">小説</option>
+        </select>
         <textarea
           placeholder="説明文(検索結果に表示される120字前後の紹介文)"
           value={newForm.description}

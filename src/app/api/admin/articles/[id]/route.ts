@@ -17,6 +17,7 @@ const updateSchema = z.object({
     .min(1, "説明文を入力してください")
     .max(300, "説明文は300文字以内で入力してください"),
   content: z.string().min(1, "本文を入力してください").max(100_000),
+  category: z.enum(["guide", "novel"]),
   published: z.boolean(),
 });
 

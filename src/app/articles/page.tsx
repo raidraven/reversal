@@ -21,8 +21,37 @@ function formatDate(d: Date): string {
   return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium" }).format(d);
 }
 
+function ArticleList({ articles }: { articles: Awaited<ReturnType<typeof getPublishedArticles>> }) {
+  if (articles.length === 0) {
+    return (
+      <p className="game-card text-center text-sm text-stone-500">
+        書物はまだ棚に並んでいません。近日、最初の一冊が収められます。
+      </p>
+    );
+  }
+  return (
+    <ul className="space-y-3">
+      {articles.map((a) => (
+        <li key={a.slug}>
+          <Link
+            href={`/articles/${a.slug}`}
+            className="game-card block space-y-1 transition-colors hover:border-gold/40"
+          >
+            <p className="text-base font-semibold text-stone-100">{a.title}</p>
+            <p className="text-xs leading-relaxed text-stone-400">{a.description}</p>
+            {a.publishedAt && <p className="text-[10px] text-stone-600">{formatDate(a.publishedAt)}</p>}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default async function ArticlesPage() {
-  const articles = await getPublishedArticles();
+  const [guides, novels] = await Promise.all([
+    getPublishedArticles("guide"),
+    getPublishedArticles("novel"),
+  ]);
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
@@ -36,28 +65,16 @@ export default async function ArticlesPage() {
         </p>
       </header>
 
-      {articles.length === 0 ? (
-        <p className="game-card text-center text-sm text-stone-500">
-          書物はまだ棚に並んでいません。近日、最初の一冊が収められます。
-        </p>
-      ) : (
-        <ul className="space-y-3">
-          {articles.map((a) => (
-            <li key={a.slug}>
-              <Link
-                href={`/articles/${a.slug}`}
-                className="game-card block space-y-1 transition-colors hover:border-gold/40"
-              >
-                <p className="text-base font-semibold text-stone-100">{a.title}</p>
-                <p className="text-xs leading-relaxed text-stone-400">{a.description}</p>
-                {a.publishedAt && (
-                  <p className="text-[10px] text-stone-600">{formatDate(a.publishedAt)}</p>
-                )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <section>
+        <h2 className="mansion-title mb-3 text-base">攻略記事</h2>
+        <ArticleList articles={guides} />
+      </section>
+
+      <section className="mt-8">
+        <h2 className="mansion-title mb-3 text-base">小説</h2>
+        <p className="mb-3 text-xs text-stone-500">この館の世界観を題材にした読み物です。</p>
+        <ArticleList articles={novels} />
+      </section>
 
       <p className="mt-8 text-center text-xs text-stone-500">
         <Link href="/" className="text-gold-light hover:underline">

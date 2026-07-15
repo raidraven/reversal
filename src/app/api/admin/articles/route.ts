@@ -26,6 +26,7 @@ const createSchema = z.object({
     .min(1, "説明文を入力してください")
     .max(300, "説明文は300文字以内で入力してください"),
   content: z.string().min(1, "本文を入力してください").max(100_000),
+  category: z.enum(["guide", "novel"]).optional(),
   published: z.boolean().optional(),
 });
 
@@ -43,10 +44,11 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { published, ...rest } = parsed.data;
+    const { published, category, ...rest } = parsed.data;
     const article = await prisma.article.create({
       data: {
         ...rest,
+        category: category ?? "guide",
         published: published ?? false,
         publishedAt: published ? new Date() : null,
       },

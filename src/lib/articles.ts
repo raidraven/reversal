@@ -2,12 +2,12 @@
 import { prisma } from "@/lib/prisma";
 import { marked } from "marked";
 
-/** 公開済み記事の一覧(新しい順) */
-export async function getPublishedArticles() {
+/** 公開済み記事の一覧(新しい順)。categoryを指定するとその区分のみ返す */
+export async function getPublishedArticles(category?: "guide" | "novel") {
   return prisma.article.findMany({
-    where: { published: true },
+    where: { published: true, ...(category ? { category } : {}) },
     orderBy: { publishedAt: "desc" },
-    select: { slug: true, title: true, description: true, publishedAt: true },
+    select: { slug: true, title: true, description: true, publishedAt: true, category: true },
   });
 }
 
