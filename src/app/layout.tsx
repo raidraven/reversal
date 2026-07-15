@@ -5,11 +5,19 @@ import { EditModeProvider } from "@/components/admin/EditModeProvider";
 import { MobileNavMenu, type NavLink } from "@/components/MobileNavMenu";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { getSiteText } from "@/lib/siteText";
+import { SITE_URL } from "@/lib/siteUrl";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "リバーサル",
   description: "AI副業で人生を反転させたい者たちが集う、秘密の仮面舞踏会",
+  openGraph: {
+    title: "リバーサル",
+    description: "AI副業で人生を反転させたい者たちが集う、秘密の仮面舞踏会",
+    type: "website",
+    url: SITE_URL,
+  },
 };
 
 export const viewport: Viewport = {
