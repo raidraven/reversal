@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { EditModeProvider } from "@/components/admin/EditModeProvider";
 import { MobileNavMenu, type NavLink } from "@/components/MobileNavMenu";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { getSiteText } from "@/lib/siteText";
 import "./globals.css";
 
@@ -37,6 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="ja">
       <body>
+        <GoogleAnalytics />
         <EditModeProvider isAdmin={!!session?.user?.isAdmin}>
           {children}
           {session?.user?.id && <MobileNavMenu links={navLinks} />}
