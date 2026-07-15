@@ -8,6 +8,7 @@ import { RanksManager } from "@/components/admin/RanksManager";
 import { MissionsManager } from "@/components/admin/MissionsManager";
 import { IncidentDaysManager } from "@/components/admin/IncidentDaysManager";
 import { PostsManager } from "@/components/admin/PostsManager";
+import { ArticlesManager } from "@/components/admin/ArticlesManager";
 import { AdminSection } from "@/components/admin/AdminSection";
 import { listAllIconCandidates } from "@/lib/iconCandidates";
 import { ICON_SLOTS } from "@/lib/siteTextDefaults";
@@ -45,7 +46,11 @@ export default async function AdminPage() {
       </header>
 
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
-        <AdminSection title="文言・アイコンの編集" defaultOpen>
+        <AdminSection title="書庫(攻略記事)の管理" defaultOpen>
+          <ArticlesManager />
+        </AdminSection>
+
+        <AdminSection title="文言・アイコンの編集">
           <SiteTextsManager iconCandidates={iconCandidates} />
         </AdminSection>
 

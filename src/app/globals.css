@@ -58,3 +58,61 @@ body {
       focus:border-gold focus:ring-1 focus:ring-gold/60;
   }
 }
+
+/* 書庫(攻略記事)のMarkdown本文スタイル */
+.article-body {
+  @apply text-sm leading-relaxed text-stone-300;
+}
+.article-body h2 {
+  @apply mansion-title mt-8 border-b border-surface-border pb-2 text-lg;
+}
+.article-body h3 {
+  @apply mansion-title mt-6 text-base;
+}
+.article-body p {
+  @apply mt-3;
+}
+.article-body ul,
+.article-body ol {
+  @apply mt-3 space-y-1 pl-5;
+}
+.article-body ul {
+  @apply list-disc;
+}
+.article-body ol {
+  @apply list-decimal;
+}
+.article-body a {
+  @apply text-gold-light underline underline-offset-2 hover:brightness-110;
+}
+.article-body strong {
+  @apply font-bold text-stone-100;
+}
+.article-body blockquote {
+  @apply mt-3 border-l-2 border-gold/40 pl-3 text-stone-400;
+}
+.article-body code {
+  @apply rounded bg-surface-raised px-1.5 py-0.5 text-xs text-gold-light;
+}
+.article-body pre {
+  @apply mt-3 overflow-x-auto rounded-md border border-surface-border bg-surface-raised p-3;
+}
+.article-body pre code {
+  @apply bg-transparent p-0 text-stone-300;
+}
+.article-body hr {
+  @apply my-6 border-surface-border;
+}
+.article-body table {
+  @apply mt-3 w-full border-collapse text-xs;
+}
+.article-body th,
+.article-body td {
+  @apply border border-surface-border px-2 py-1.5 text-left;
+}
+.article-body th {
+  @apply bg-surface-raised text-gold-light;
+}
+.article-body img {
+  @apply mt-3 max-w-full rounded-md;
+}

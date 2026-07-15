@@ -29,6 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       { href: "/questions", label: "質問に答える" },
       { href: "/questions/new", label: "質問する" },
       { href: "/board", label: boardName },
+      { href: "/articles", label: "書庫" },
       ...(session.user.isAdmin ? [{ href: "/admin", label: "主人の部屋", gold: true }] : []),
     ];
   }
