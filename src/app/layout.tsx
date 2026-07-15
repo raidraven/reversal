@@ -17,6 +17,13 @@ export const metadata: Metadata = {
     description: "人生を反転させたい者たちが集う、秘密の洋館",
     type: "website",
     url: SITE_URL,
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "REVERSAL",
+    description: "人生を反転させたい者たちが集う、秘密の洋館",
+    images: ["/og-image.jpg"],
   },
 };
 
