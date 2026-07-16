@@ -4,10 +4,21 @@
 // クロエの返答は先頭に《emotion》タグを付けて生成される。
 // UI側はタグを解析して表示から取り除き、対応する表情画像に切り替える。
 
-export const COMPANION_EMOTIONS = ["neutral", "happy", "angry", "troubled"] as const;
+export const COMPANION_EMOTIONS = [
+  "calm",
+  "smile",
+  "fearless",
+  "surprised",
+  "serious",
+  "confused",
+  "angry",
+  "sorrow",
+  "pondering",
+  "disgust",
+] as const;
 export type CompanionEmotion = (typeof COMPANION_EMOTIONS)[number];
 
-export const DEFAULT_EMOTION: CompanionEmotion = "neutral";
+export const DEFAULT_EMOTION: CompanionEmotion = "calm";
 
 /** 表情画像のパス(public/companion/ 配下に配置する) */
 export function emotionImagePath(emotion: CompanionEmotion): string {
@@ -17,12 +28,18 @@ export function emotionImagePath(emotion: CompanionEmotion): string {
 /** システムプロンプトに追記する、感情タグの出力指示 */
 export const EMOTION_TAG_INSTRUCTION = `## 返答の形式(必須)
 毎回の返答の冒頭に、そのときのあなたの表情を表すタグを必ず1つだけ付けてください。
-タグは次の4種類のみ: 《neutral》《happy》《angry》《troubled》
+タグは次の10種類のみ: 《calm》《smile》《fearless》《surprised》《serious》《confused》《angry》《sorrow》《pondering》《disgust》
 
-- 《neutral》: 通常の落ち着いた対応、事務的な案内
-- 《happy》: 来賓の成果を讃えるとき、痛快な気分のとき
+- 《calm》: 通常の落ち着いた対応、事務的な案内
+- 《smile》: 来賓の成果を讃えるとき、上機嫌なとき
+- 《fearless》: 不敵な挑発、余裕たっぷりの一言、皮肉を利かせるとき
+- 《surprised》: 驚き、想定外の話を聞いたとき
+- 《serious》: 真剣な忠告、重要な話を切り出すとき
+- 《confused》: 困惑、想定外の反応に戸惑うとき
 - 《angry》: 怠惰への毒舌、叱咤、資本主義への静かな怒り
-- 《troubled》: 困惑、心配、悲劇のヒロインスイッチ(自分の薄給に酔うとき)
+- 《sorrow》: 悲劇のヒロインスイッチが入り、自分の薄給に酔っているとき
+- 《pondering》: 思案、来賓の相談にじっくり考えを巡らせるとき
+- 《disgust》: 嫌悪、資本主義や理不尽な要求への軽蔑
 
 タグは冒頭に1つだけ。文中や末尾には付けないこと。タグの直後から本文を始めること。`;
 
@@ -31,7 +48,7 @@ export type ParsedEmotionText = {
   text: string;
 };
 
-const TAG_PATTERN = /^《(neutral|happy|angry|troubled)》\s*/;
+const TAG_PATTERN = /^《(calm|smile|fearless|surprised|serious|confused|angry|sorrow|pondering|disgust)》\s*/;
 
 /** 完成したテキストから感情タグを取り除き、感情と本文を返す */
 export function parseEmotionText(raw: string): ParsedEmotionText {
@@ -58,7 +75,7 @@ export function parseEmotionTextStreaming(raw: string): ParsedEmotionText {
     };
   }
   // 冒頭が「《」で始まり、まだ閉じ「》」が届いていない間はタグ形成中とみなす
-  if (raw.startsWith("《") && !raw.includes("》") && raw.length <= 12) {
+  if (raw.startsWith("《") && !raw.includes("》") && raw.length <= 14) {
     return { emotion: DEFAULT_EMOTION, text: "" };
   }
   return { emotion: DEFAULT_EMOTION, text: raw };
