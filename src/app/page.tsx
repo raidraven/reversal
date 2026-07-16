@@ -68,6 +68,17 @@ export default async function LandingPage() {
           <EditableText siteTextKey="site.name" value={texts["site.name"]} />
         </h1>
 
+        {!isLoggedIn && (
+          <div className="mt-3 space-y-3">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-stone-200">
+              <EditableText siteTextKey="landing.benefit" value={texts["landing.benefit"]} multiline />
+            </p>
+            <Link href="/signup" className="neon-button block text-center">
+              無料で招待状を受け取る
+            </Link>
+          </div>
+        )}
+
         <div className="game-card mt-8 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
           <EditableText siteTextKey="landing.intro" value={texts["landing.intro"]} multiline />
         </div>

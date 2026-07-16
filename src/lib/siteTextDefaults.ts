@@ -6,6 +6,8 @@ export const DEFAULT_SITE_TEXT: Record<string, string> = {
   "site.tagline": "AI副業で人生を反転させたいと誓う者たちが集う、秘密の仮面舞踏会",
   "landing.intro":
     "とある場所に佇む、古びた洋館。\nそこは、AI副業で人生を反転させたいと誓う者たちが、仮面をつけて集う秘密の夜会場——",
+  "landing.benefit":
+    "収益0円から始めて、AI副業を挫折せず続けるための実践コミュニティ。日々の小さな前進を、位階・使命システムで可視化します。",
   "landing.cta": "招待状を受け取る",
   "companion.name": "クロエ",
   "mission.board.title": "今宵の使命",
@@ -102,6 +104,7 @@ export const SITE_TEXT_LABELS: Record<string, string> = {
   "site.name": "サイト名",
   "site.tagline": "サイトの説明文(メタ情報)",
   "landing.intro": "ランディングページの紹介文",
+  "landing.benefit": "ランディングページのベネフィット文(見出し直下・登録CTAの上)",
   "landing.cta": "ランディングページのボタン文言",
   "companion.name": "AIコンパニオンの名前",
   "mission.board.title": "ミッションボードの見出し",
