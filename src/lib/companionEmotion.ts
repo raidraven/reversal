@@ -48,14 +48,28 @@ export type ParsedEmotionText = {
   text: string;
 };
 
-const TAG_PATTERN = /^《(calm|smile|fearless|surprised|serious|confused|angry|sorrow|pondering|disgust)》\s*/;
+// 旧タグ(4種類時代の名残)を新しい表情セットへ読み替える対応表。
+// 過去に保存されたメッセージ(DB内)にはまだ旧タグが残っているため、表示のたびに変換する
+const LEGACY_TAG_MAP: Record<string, CompanionEmotion> = {
+  neutral: "calm",
+  happy: "smile",
+  troubled: "sorrow",
+};
+
+const CURRENT_TAGS = "calm|smile|fearless|surprised|serious|confused|angry|sorrow|pondering|disgust";
+const LEGACY_TAGS = "neutral|happy|troubled";
+const TAG_PATTERN = new RegExp(`^《(${CURRENT_TAGS}|${LEGACY_TAGS})》\\s*`);
+
+function resolveEmotion(tag: string): CompanionEmotion {
+  return (LEGACY_TAG_MAP[tag] ?? tag) as CompanionEmotion;
+}
 
 /** 完成したテキストから感情タグを取り除き、感情と本文を返す */
 export function parseEmotionText(raw: string): ParsedEmotionText {
   const match = raw.match(TAG_PATTERN);
   if (match) {
     return {
-      emotion: match[1] as CompanionEmotion,
+      emotion: resolveEmotion(match[1]),
       text: raw.slice(match[0].length),
     };
   }
@@ -70,7 +84,7 @@ export function parseEmotionTextStreaming(raw: string): ParsedEmotionText {
   const match = raw.match(TAG_PATTERN);
   if (match) {
     return {
-      emotion: match[1] as CompanionEmotion,
+      emotion: resolveEmotion(match[1]),
       text: raw.slice(match[0].length),
     };
   }
