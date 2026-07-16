@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        // 旧Vercelサブドメインからのアクセスを独自ドメインへ301リダイレクト
+        source: "/:path*",
+        has: [{ type: "host", value: "reversal-plum.vercel.app" }],
+        destination: "https://th-reversal.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
