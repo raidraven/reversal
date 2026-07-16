@@ -15,6 +15,8 @@ import { Icon } from "@/components/Icon";
 import { HeaderNav } from "@/components/home/HeaderNav";
 import type { NavLink } from "@/components/MobileNavMenu";
 import { PlayerStatusCard } from "@/components/home/PlayerStatusCard";
+import { MemberCard } from "@/components/home/MemberCard";
+import { CardSettingsPanel } from "@/components/home/CardSettingsPanel";
 import { StreakCard } from "@/components/home/StreakCard";
 import { MissionBoard } from "@/components/home/MissionBoard";
 import { SkillRadarChart } from "@/components/home/SkillRadarChart";
@@ -23,6 +25,7 @@ import { CompanionChat } from "@/components/companion/CompanionChat";
 import { LoginBonusToast } from "@/components/home/LoginBonusToast";
 import { QnaBoard } from "@/components/qna/QnaBoard";
 import { EditableText } from "@/components/admin/EditableText";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +45,7 @@ export default async function HomePage() {
   const dailyResult = await recordDailyActivity(session.user.id);
 
   const today = todayJst();
-  const [user, missions, completions, ranks, texts, skills] = await Promise.all([
+  const [user, missions, completions, ranks, texts, skills, referralCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       include: { streak: true },
@@ -55,6 +58,7 @@ export default async function HomePage() {
     getRanks(),
     getSiteTexts(),
     computeSkillTotals(session.user.id),
+    prisma.user.count({ where: { referredById: session.user.id } }),
   ]);
   if (!user) redirect("/login");
 
@@ -113,6 +117,19 @@ export default async function HomePage() {
             longestStreak={streak?.longestStreak ?? 0}
             atRisk={atRisk}
             label={texts["streak.label"]}
+          />
+          <MemberCard
+            name={user.name}
+            avatarIcon={avatar.icon}
+            level={user.level}
+            title={title}
+            memberSince={user.createdAt}
+          />
+          <CardSettingsPanel
+            userId={user.id}
+            siteUrl={SITE_URL}
+            initialCardPublic={user.cardPublic}
+            referralCount={referralCount}
           />
           <QnaBoard isLoggedIn />
         </div>

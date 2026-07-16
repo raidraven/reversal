@@ -14,6 +14,7 @@ const signupSchema = z.object({
     toolUsage: z.number().int().min(1).max(3),
     publishing: z.number().int().min(1).max(3),
   }),
+  referredBy: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, email, password, avatarId, answers } = parsed.data;
+    const { name, email, password, avatarId, answers, referredBy } = parsed.data;
     const normalizedEmail = email.toLowerCase();
 
     const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
@@ -41,6 +42,10 @@ export async function POST(req: Request) {
     const passwordHash = await bcrypt.hash(password, 10);
     const skills = computeInitialSkills(answers);
 
+    // 紹介リンク(?ref=紹介者のユーザーID)経由の登録なら、実在するユーザーの場合のみ記録する
+    // (無効な値は黙って無視し、登録自体は失敗させない)
+    const referrer = referredBy ? await prisma.user.findUnique({ where: { id: referredBy } }) : null;
+
     await prisma.user.create({
       data: {
         name,
@@ -49,6 +54,7 @@ export async function POST(req: Request) {
         avatarId,
         skillScore: { create: skills },
         streak: { create: {} },
+        ...(referrer ? { referredById: referrer.id } : {}),
       },
     });
 

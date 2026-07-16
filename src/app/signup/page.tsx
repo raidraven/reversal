@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AVATARS, DIAGNOSTIC_QUESTIONS } from "@/lib/onboarding";
 import { Icon } from "@/components/Icon";
@@ -10,7 +10,17 @@ import { Icon } from "@/components/Icon";
 type Step = "account" | "diagnostic";
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const referredBy = searchParams.get("ref");
   const [step, setStep] = useState<Step>("account");
 
   // アカウント情報
@@ -54,6 +64,7 @@ export default function SignupPage() {
             toolUsage: answers.toolUsage,
             publishing: answers.publishing,
           },
+          ...(referredBy ? { referredBy } : {}),
         }),
       });
 

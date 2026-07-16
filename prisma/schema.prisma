@@ -28,6 +28,14 @@ model User {
   bannedAt     DateTime?
   createdAt    DateTime @default(now())
 
+  // 紹介ループ: このユーザーを招待したユーザー(自分のIDを ?ref= に付けたリンク経由で登録)
+  referredById String?
+  referrer     User?   @relation("Referrals", fields: [referredById], references: [id], onDelete: SetNull)
+  referrals    User[]  @relation("Referrals")
+
+  // 会員証(自室ページ)を /card/[id] で第三者に公開するかどうか
+  cardPublic   Boolean @default(false)
+
   loginLogs          LoginLog[]
   streak             Streak?
   missionCompletions MissionCompletion[]
