@@ -13,6 +13,7 @@ import { QnaBoard } from "@/components/qna/QnaBoard";
 import { BoardFeed } from "@/components/board/BoardFeed";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
+import { AffiliateBanner } from "@/components/AffiliateBanner";
 
 export default async function LandingPage() {
   const session = await getServerSession(authOptions);
@@ -59,6 +60,10 @@ export default async function LandingPage() {
               completedMessage={texts["hostRequest.completedMessage"]}
             />
           </div>
+        </div>
+
+        <div className="game-card">
+          <AffiliateBanner />
         </div>
       </aside>
 
