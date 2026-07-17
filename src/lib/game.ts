@@ -6,12 +6,28 @@ import { getTodaysMissions } from "@/lib/dailyMissions";
 import { effectivePreviousLoginDay } from "@/lib/incidentDays";
 import { isBanned } from "@/lib/bans";
 
-/** 日次初回の来訪(入館)で得られるEXP */
+/** 日次初回の来訪(入館)で得られる基礎EXP */
 export const LOGIN_EXP = 15;
+
+/** 連続ログイン1日につき加算されるボーナスEXP(上限あり) */
+const STREAK_BONUS_PER_DAY = 2;
+const STREAK_BONUS_CAP = 50;
+
+/** 連続ログイン日数に応じたボーナスEXPを計算する */
+export function streakBonusExp(currentStreak: number): number {
+  return Math.min(currentStreak * STREAK_BONUS_PER_DAY, STREAK_BONUS_CAP);
+}
 
 export type DailyActivityResult =
   | { firstToday: false }
-  | { firstToday: true; expGained: number; leveledUp: boolean; newLevel: number };
+  | {
+      firstToday: true;
+      expGained: number;
+      streakBonus: number;
+      leveledUp: boolean;
+      newLevel: number;
+      currentStreak: number;
+    };
 
 /**
  * 日次アクティビティを記録する(冪等)。
@@ -41,7 +57,9 @@ export async function recordDailyActivity(userId: string): Promise<DailyActivity
   const longestStreak = Math.max(currentStreak, streak.longestStreak);
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
-  const newExp = user.exp + LOGIN_EXP;
+  const streakBonus = streakBonusExp(currentStreak);
+  const expGained = LOGIN_EXP + streakBonus;
+  const newExp = user.exp + expGained;
   const newLevel = levelFromExp(newExp);
   const leveledUp = newLevel > user.level;
 
@@ -62,7 +80,7 @@ export async function recordDailyActivity(userId: string): Promise<DailyActivity
     }),
   ]);
 
-  return { firstToday: true, expGained: LOGIN_EXP, leveledUp, newLevel };
+  return { firstToday: true, expGained, streakBonus, leveledUp, newLevel, currentStreak };
 }
 
 export type CompleteMissionResult =

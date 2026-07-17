@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AVATARS } from "@/lib/onboarding";
@@ -94,8 +95,10 @@ export default async function HomePage() {
     <main className="mx-auto max-w-md px-4 pb-24 lg:max-w-5xl">
       <header className="flex items-center justify-between py-4">
         <h1 className="mansion-title flex items-center gap-2 text-lg">
-          <Icon name="candle" size={24} />
-          <EditableText siteTextKey="site.name" value={texts["site.name"]} />
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80">
+            <Icon name="candle" size={24} />
+            <EditableText siteTextKey="site.name" value={texts["site.name"]} />
+          </Link>
         </h1>
         <HeaderNav links={navLinks} />
       </header>

@@ -197,6 +197,13 @@ model Rank {
   title    String
 }
 
+// LPの「クロエお試しチャット」の利用回数(匿名Cookie単位、生涯上限のカウントのみ。会話内容は保存しない)
+model AnonCompanionUsage {
+  anonId    String   @id
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
 // 運営都合(サイト障害・大規模改修等)で来賓が来館できなかった日。
 // 管理ページから日付を登録すると、その日はストリーク(連夜の参加)判定で欠席扱いにしない。
 // 来賓個人の「ログイン忘れ」までは救済しない(あくまで運営側の落ち度がある日のみ手動登録)

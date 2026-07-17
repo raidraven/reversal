@@ -29,6 +29,14 @@ type Props = {
   isLoggedIn: boolean;
 };
 
+function formatDateTime(iso: string): string {
+  return new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(iso));
+}
+
 const TABS: Array<{ key: PostCategory | "all"; label: string }> = [
   { key: "all", label: "すべて" },
   ...POST_CATEGORIES.map((c) => ({ key: c, label: POST_CATEGORY_LABELS[c] })),
@@ -157,6 +165,7 @@ export function BoardFeed({ isLoggedIn }: Props) {
                   )}
                   {p.isMine && <span className="ml-1 text-gold-light">(あなた)</span>}
                 </span>
+                <span className="shrink-0 text-[10px] text-stone-600">{formatDateTime(p.createdAt)}</span>
               </div>
               <p className="text-sm font-semibold text-stone-100">{p.title}</p>
               <p className="whitespace-pre-wrap text-sm text-stone-300">{p.content}</p>

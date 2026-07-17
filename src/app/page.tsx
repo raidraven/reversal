@@ -7,6 +7,7 @@ import { getTodaysMissions } from "@/lib/dailyMissions";
 import { readAnonId } from "@/lib/anonId";
 import { HostRequestForm } from "@/components/landing/HostRequestForm";
 import { LoginPanel } from "@/components/landing/LoginPanel";
+import { CompanionTrial } from "@/components/landing/CompanionTrial";
 import { LogoutButton } from "@/components/LogoutButton";
 import { QnaBoard } from "@/components/qna/QnaBoard";
 import { BoardFeed } from "@/components/board/BoardFeed";
@@ -76,6 +77,12 @@ export default async function LandingPage() {
             <Link href="/signup" className="neon-button block text-center">
               無料で招待状を受け取る
             </Link>
+          </div>
+        )}
+
+        {!isLoggedIn && (
+          <div className="mt-4">
+            <CompanionTrial />
           </div>
         )}
 

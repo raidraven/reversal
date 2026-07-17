@@ -30,6 +30,11 @@ export function LoginBonusToast({ result, ranks }: Props) {
         </p>
         <p className="mansion-title text-sm">本日の入館を歓迎いたします</p>
         <p className="mt-1 text-xs text-stone-300">+{result.expGained} 経験値を授かりました</p>
+        {result.streakBonus > 0 && (
+          <p className="mt-0.5 text-[10px] text-gold-light">
+            連続{result.currentStreak}日ボーナス +{result.streakBonus}
+          </p>
+        )}
         {result.leveledUp && (
           <p className="mt-2 text-sm font-bold text-gold-light">
             位階が上がり、Lv.{result.newLevel}「{titleForRank(result.newLevel, ranks)}」になりました

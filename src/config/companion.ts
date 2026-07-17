@@ -14,6 +14,9 @@ export const COMPANION_CONFIG = {
   /** 1ユーザーあたりの1日のメッセージ上限(無料枠設計) */
   dailyMessageLimit: 30,
 
+  /** LPの未登録来訪者向け「お試しチャット」の生涯メッセージ上限(匿名Cookie単位) */
+  trialMessageLimit: 10,
+
   /** チャットのコンテキストに含める直近の往復数 */
   contextExchanges: 10,
 

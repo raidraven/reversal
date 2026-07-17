@@ -80,6 +80,40 @@ ${skillLines}`;
   return { stable, dynamic };
 }
 
+/**
+ * LP向け「お試しチャット」用のシステムプロンプト(未登録来訪者向け)。
+ * 位階・使命など来賓固有の状態は存在しないため、buildSystemPrompt とは別に用意する。
+ */
+export async function buildTrialSystemPrompt(): Promise<string> {
+  const companionName = await getSiteText("companion.name");
+
+  return `あなたの名前は「${companionName}」です。以下はあなたの基本設定です。
+
+${COMPANION_CONFIG.personality}
+
+${SITE_POLICY}
+
+${EMOTION_TAG_INSTRUCTION}
+
+## 現在の状況(重要)
+話しかけているのは、まだ会員登録をしていない「訪問者」です(来賓ではありません)。位階・使命・技量などの情報は一切存在しないため、それらに言及したり尋ねたりしないでください。副業の悩みや疑問に短く実務的に答えつつ、執事としての人格を保ってください。何度かのやり取りの中で一度だけ、押し付けがましくなく、登録すれば継続支援が受けられる旨を自然に伝えてください。`;
+}
+
+/** 匿名来訪者(anonId単位)の「お試しチャット」利用回数を取得する */
+export async function countTrialMessages(anonId: string): Promise<number> {
+  const row = await prisma.anonCompanionUsage.findUnique({ where: { anonId } });
+  return row?.count ?? 0;
+}
+
+/** 匿名来訪者の利用回数を1件加算する */
+export async function incrementTrialMessages(anonId: string): Promise<void> {
+  await prisma.anonCompanionUsage.upsert({
+    where: { anonId },
+    create: { anonId, count: 1 },
+    update: { count: { increment: 1 } },
+  });
+}
+
 /** buildSystemPrompt の結果を、プロンプトキャッシュ用の system ブロック配列に変換する */
 export function toSystemBlocks(parts: SystemPromptParts): Anthropic.Messages.TextBlockParam[] {
   return [
