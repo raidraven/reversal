@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedArticles } from "@/lib/articles";
+import { getSiteTexts } from "@/lib/siteText";
 import { Icon } from "@/components/Icon";
+import { EditableText } from "@/components/admin/EditableText";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +23,17 @@ function formatDate(d: Date): string {
   return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium" }).format(d);
 }
 
-function ArticleList({ articles }: { articles: Awaited<ReturnType<typeof getPublishedArticles>> }) {
+function ArticleList({
+  articles,
+  emptyMessage,
+}: {
+  articles: Awaited<ReturnType<typeof getPublishedArticles>>;
+  emptyMessage: string;
+}) {
   if (articles.length === 0) {
     return (
       <p className="game-card text-center text-sm text-stone-500">
-        書物はまだ棚に並んでいません。近日、最初の一冊が収められます。
+        <EditableText siteTextKey="articles.emptyMessage" value={emptyMessage} />
       </p>
     );
   }
@@ -48,9 +56,10 @@ function ArticleList({ articles }: { articles: Awaited<ReturnType<typeof getPubl
 }
 
 export default async function ArticlesPage() {
-  const [guides, novels] = await Promise.all([
+  const [guides, novels, texts] = await Promise.all([
     getPublishedArticles("guide"),
     getPublishedArticles("novel"),
+    getSiteTexts(),
   ]);
 
   return (
@@ -59,21 +68,29 @@ export default async function ArticlesPage() {
         <p className="flex justify-center">
           <Icon name="scroll" size={32} />
         </p>
-        <h1 className="mansion-title mt-2 text-2xl">書庫</h1>
+        <h1 className="mansion-title mt-2 text-2xl">
+          <EditableText siteTextKey="articles.title" value={texts["articles.title"]} />
+        </h1>
         <p className="mt-1 text-sm text-stone-400">
-          AI副業の始め方・続け方の攻略記事。運営者自身の実践記録とともに
+          <EditableText siteTextKey="articles.description" value={texts["articles.description"]} />
         </p>
       </header>
 
       <section>
-        <h2 className="mansion-title mb-3 text-base">攻略記事</h2>
-        <ArticleList articles={guides} />
+        <h2 className="mansion-title mb-3 text-base">
+          <EditableText siteTextKey="articles.guideSectionTitle" value={texts["articles.guideSectionTitle"]} />
+        </h2>
+        <ArticleList articles={guides} emptyMessage={texts["articles.emptyMessage"]} />
       </section>
 
       <section className="mt-8">
-        <h2 className="mansion-title mb-3 text-base">小説</h2>
-        <p className="mb-3 text-xs text-stone-500">この館の世界観を題材にした読み物です。</p>
-        <ArticleList articles={novels} />
+        <h2 className="mansion-title mb-3 text-base">
+          <EditableText siteTextKey="articles.novelSectionTitle" value={texts["articles.novelSectionTitle"]} />
+        </h2>
+        <p className="mb-3 text-xs text-stone-500">
+          <EditableText siteTextKey="articles.novelDescription" value={texts["articles.novelDescription"]} />
+        </p>
+        <ArticleList articles={novels} emptyMessage={texts["articles.emptyMessage"]} />
       </section>
 
       <p className="mt-8 text-center text-xs text-stone-500">

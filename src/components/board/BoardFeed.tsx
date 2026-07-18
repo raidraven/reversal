@@ -9,6 +9,7 @@ import {
   type PostCategory,
 } from "@/lib/boardCategories";
 import { Icon } from "@/components/Icon";
+import { EditableText } from "@/components/admin/EditableText";
 
 type PostItem = {
   id: string;
@@ -27,6 +28,7 @@ type PostItem = {
 
 type Props = {
   isLoggedIn: boolean;
+  emptyMessage?: string;
 };
 
 function formatDateTime(iso: string): string {
@@ -42,7 +44,7 @@ const TABS: Array<{ key: PostCategory | "all"; label: string }> = [
   ...POST_CATEGORIES.map((c) => ({ key: c, label: POST_CATEGORY_LABELS[c] })),
 ];
 
-export function BoardFeed({ isLoggedIn }: Props) {
+export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありません。最初の一件を届けてみましょう。" }: Props) {
   const [tab, setTab] = useState<PostCategory | "all">("all");
   const [posts, setPosts] = useState<PostItem[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -141,7 +143,7 @@ export function BoardFeed({ isLoggedIn }: Props) {
 
       {!loading && posts && posts.length === 0 && (
         <p className="game-card text-sm text-stone-500">
-          まだ投稿がありません。最初の一件を届けてみましょう。
+          <EditableText siteTextKey="board.emptyMessage" value={emptyMessage} />
         </p>
       )}
 

@@ -24,10 +24,10 @@ export default async function BoardPage() {
         </Link>
       </header>
       <p className="mb-4 text-xs text-stone-500">
-        副業初心者の来賓たちが、実績・学び・ツール活用のコツを持ち寄る場所です。
+        <EditableText siteTextKey="board.description" value={texts["board.description"]} />
       </p>
 
-      <BoardFeed isLoggedIn={!!session?.user?.id} />
+      <BoardFeed isLoggedIn={!!session?.user?.id} emptyMessage={texts["board.emptyMessage"]} />
     </main>
   );
 }

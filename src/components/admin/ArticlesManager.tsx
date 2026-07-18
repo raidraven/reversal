@@ -15,7 +15,7 @@ type Article = {
   publishedAt: string | null;
 };
 
-const EMPTY_FORM = { slug: "", title: "", description: "", content: "", category: "guide" as Category };
+const EMPTY_FORM = { title: "", description: "", content: "", category: "guide" as Category };
 
 const CATEGORY_LABELS: Record<Category, string> = { guide: "攻略記事", novel: "小説" };
 
@@ -53,7 +53,6 @@ export function ArticlesManager() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          slug: article.slug,
           title: article.title,
           description: article.description,
           content: article.content,
@@ -160,15 +159,9 @@ export function ArticlesManager() {
 
             {openId === a.id && (
               <div className="mt-3 space-y-2 border-t border-surface-border pt-3">
-                <label className="block text-xs text-stone-500">
-                  スラッグ(URL: /articles/◯◯)
-                  <input
-                    type="text"
-                    value={a.slug}
-                    onChange={(e) => updateLocal(a.id, { slug: e.target.value })}
-                    className="form-input mt-1 !py-1.5 font-mono text-xs"
-                  />
-                </label>
+                <p className="text-xs text-stone-500">
+                  URL: <span className="font-mono text-stone-400">/articles/{a.slug}</span>
+                </p>
                 <label className="block text-xs text-stone-500">
                   タイトル
                   <input
@@ -241,13 +234,6 @@ export function ArticlesManager() {
 
       <form onSubmit={addArticle} className="mt-4 space-y-2 border-t border-surface-border pt-4">
         <p className="text-xs font-semibold text-stone-300">新しい記事を書く(下書きとして作成)</p>
-        <input
-          type="text"
-          placeholder="スラッグ(例: ai-fukugyou-hajimekata)"
-          value={newForm.slug}
-          onChange={(e) => setNewForm((p) => ({ ...p, slug: e.target.value }))}
-          className="form-input !py-1.5 font-mono text-xs"
-        />
         <input
           type="text"
           placeholder="タイトル"

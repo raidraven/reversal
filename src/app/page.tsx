@@ -39,20 +39,27 @@ export default async function LandingPage() {
             <p className="flex justify-center">
               <Icon name="candle" size={24} />
             </p>
-            <p className="text-sm text-stone-300">ログイン中でございます</p>
+            <p className="text-sm text-stone-300">
+              <EditableText siteTextKey="landing.loggedInMessage" value={texts["landing.loggedInMessage"]} />
+            </p>
             <Link href="/home" className="neon-button block text-center">
               {texts["room.backLabel"]}
             </Link>
             <LogoutButton />
           </div>
         ) : (
-          <LoginPanel />
+          <LoginPanel title={texts["login.title"]} subtitle={texts["login.subtitle"]} />
         )}
 
         <div className="game-card">
-          <h2 className="mansion-title text-base">主催者への要望</h2>
+          <h2 className="mansion-title text-base">
+            <EditableText siteTextKey="landing.hostRequestTitle" value={texts["landing.hostRequestTitle"]} />
+          </h2>
           <p className="mt-1 text-xs text-stone-500">
-            館の運営についてのご意見・ご要望はこちらから。匿名でも構いません。
+            <EditableText
+              siteTextKey="landing.hostRequestDescription"
+              value={texts["landing.hostRequestDescription"]}
+            />
           </p>
           <div className="mt-3">
             <HostRequestForm
@@ -80,7 +87,7 @@ export default async function LandingPage() {
               <EditableText siteTextKey="landing.benefit" value={texts["landing.benefit"]} multiline />
             </p>
             <Link href="/signup" className="neon-button block text-center">
-              無料で招待状を受け取る
+              <EditableText siteTextKey="landing.cta" value={texts["landing.cta"]} />
             </Link>
           </div>
         )}
@@ -151,7 +158,9 @@ export default async function LandingPage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-2 text-xs text-stone-600">詳細と経験値は、扉の先で確認できます。</p>
+            <p className="mt-2 text-xs text-stone-600">
+              <EditableText siteTextKey="landing.missionPreviewNote" value={texts["landing.missionPreviewNote"]} />
+            </p>
           </div>
         )}
 
@@ -167,7 +176,7 @@ export default async function LandingPage() {
             <EditableText siteTextKey="board.name" value={texts["board.name"]} />
           </h2>
           <div className="mt-2">
-            <BoardFeed isLoggedIn={isLoggedIn} />
+            <BoardFeed isLoggedIn={isLoggedIn} emptyMessage={texts["board.emptyMessage"]} />
           </div>
         </div>
 

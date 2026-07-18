@@ -5,8 +5,14 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { EditableText } from "@/components/admin/EditableText";
 
-export function LoginPanel() {
+type Props = {
+  title: string;
+  subtitle: string;
+};
+
+export function LoginPanel({ title, subtitle }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -49,8 +55,12 @@ export function LoginPanel() {
         <p className="flex justify-center">
           <Icon name="candle" size={24} />
         </p>
-        <h2 className="mansion-title mt-1 text-lg">扉の前で</h2>
-        <p className="mt-1 text-xs text-stone-400">すでに招待状をお持ちの方はこちらから</p>
+        <h2 className="mansion-title mt-1 text-lg">
+          <EditableText siteTextKey="login.title" value={title} />
+        </h2>
+        <p className="mt-1 text-xs text-stone-400">
+          <EditableText siteTextKey="login.subtitle" value={subtitle} />
+        </p>
       </div>
 
       {error && (

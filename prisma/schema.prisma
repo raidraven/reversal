@@ -48,6 +48,8 @@ model User {
   postLikes          PostLike[]
   postReportsMade    PostReport[]
   passwordResetTokens PasswordResetToken[]
+  articleLikes        ArticleLike[]
+  articleComments     ArticleComment[]
 }
 
 // パスワード再設定用トークン。トークン自体はハッシュ化して保存し(メール本文にのみ生の値を載せる)、
@@ -176,7 +178,7 @@ model LandingVisit {
 // content はMarkdownで保存し、表示時にサーバー側でHTMLへ変換する
 model Article {
   id          String    @id @default(cuid())
-  // URLの一部になる英小文字スラッグ(例: "ai-fukugyou-roadmap")
+  // URLの一部になるスラッグ(自動生成。手入力はしない)
   slug        String    @unique
   title       String
   // 検索結果・OGPに使う説明文
@@ -188,6 +190,38 @@ model Article {
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  likes    ArticleLike[]
+  comments ArticleComment[]
+}
+
+// 記事・小説への「いいね」。未ログインは匿名ID(Cookie)で判定する(談話室の投稿と同じ方式)
+model ArticleLike {
+  id        String   @id @default(cuid())
+  articleId String
+  userId    String?
+  anonId    String?
+  createdAt DateTime @default(now())
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, userId])
+  @@unique([articleId, anonId])
+}
+
+// 記事・小説へのコメント。未ログインでも投稿できる(表示名は任意入力、モデレーション対象)
+model ArticleComment {
+  id         String   @id @default(cuid())
+  articleId  String
+  userId     String?
+  anonId     String?
+  authorName String
+  content    String
+  createdAt  DateTime @default(now())
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // 位階(レベル)の称号。管理ページから種類・しきい値(順位)を編集可能

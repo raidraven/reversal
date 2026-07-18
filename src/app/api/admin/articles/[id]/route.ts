@@ -6,11 +6,6 @@ import { requireAdmin } from "@/lib/adminAuth";
 export const dynamic = "force-dynamic";
 
 const updateSchema = z.object({
-  slug: z
-    .string()
-    .min(1, "スラッグを入力してください")
-    .max(100, "スラッグは100文字以内で入力してください")
-    .regex(/^[a-z0-9-]+$/, "スラッグは英小文字・数字・ハイフンのみ使用できます"),
   title: z.string().min(1, "タイトルを入力してください").max(100, "タイトルは100文字以内で入力してください"),
   description: z
     .string()

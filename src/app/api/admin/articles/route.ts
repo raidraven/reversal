@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminAuth";
+import { generateArticleSlug } from "@/lib/articles";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +16,6 @@ export async function GET() {
 }
 
 const createSchema = z.object({
-  slug: z
-    .string()
-    .min(1, "スラッグを入力してください")
-    .max(100, "スラッグは100文字以内で入力してください")
-    .regex(/^[a-z0-9-]+$/, "スラッグは英小文字・数字・ハイフンのみ使用できます"),
   title: z.string().min(1, "タイトルを入力してください").max(100, "タイトルは100文字以内で入力してください"),
   description: z
     .string()
@@ -30,7 +26,7 @@ const createSchema = z.object({
   published: z.boolean().optional(),
 });
 
-// 記事の新規作成
+// 記事の新規作成(スラッグは自動生成。衝突時は数回だけ再試行する)
 export async function POST(req: Request) {
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status });
@@ -43,21 +39,26 @@ export async function POST(req: Request) {
     );
   }
 
-  try {
-    const { published, category, ...rest } = parsed.data;
-    const article = await prisma.article.create({
-      data: {
-        ...rest,
-        category: category ?? "guide",
-        published: published ?? false,
-        publishedAt: published ? new Date() : null,
-      },
-    });
-    return NextResponse.json({ article }, { status: 201 });
-  } catch (e: unknown) {
-    if (typeof e === "object" && e !== null && "code" in e && e.code === "P2002") {
-      return NextResponse.json({ error: "そのスラッグは既に使われています" }, { status: 409 });
+  const { published, category, ...rest } = parsed.data;
+  const resolvedCategory = category ?? "guide";
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const article = await prisma.article.create({
+        data: {
+          ...rest,
+          slug: generateArticleSlug(resolvedCategory),
+          category: resolvedCategory,
+          published: published ?? false,
+          publishedAt: published ? new Date() : null,
+        },
+      });
+      return NextResponse.json({ article }, { status: 201 });
+    } catch (e: unknown) {
+      const isSlugConflict = typeof e === "object" && e !== null && "code" in e && e.code === "P2002";
+      if (isSlugConflict && attempt < 4) continue;
+      throw e;
     }
-    throw e;
   }
+  return NextResponse.json({ error: "記事の作成に失敗しました" }, { status: 500 });
 }
