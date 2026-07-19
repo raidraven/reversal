@@ -5,14 +5,18 @@
 // (documentへの書き込みでReactの想定と実際のDOMがズレて)removeChildエラーで
 // アプリが落ちる不具合が起きた。iframeでページ本体のDOMから完全に隔離して解決する。
 
+// サイトのテーマ背景色(layout.tsxのviewport themeColorと合わせる)。
+// 広告が未配信で空のときでも、白い帯として浮かないようにするため
+const THEME_BG = "#0a0708";
+
 function AdIframe({ src, height, title }: { src: string; height: number; title: string }) {
-  const html = `<!doctype html><html><body style="margin:0;overflow:hidden"><script src="${src}"></script></body></html>`;
+  const html = `<!doctype html><html><body style="margin:0;overflow:hidden;background:${THEME_BG}"><script src="${src}"></script></body></html>`;
   return (
     <iframe
       srcDoc={html}
       title={title}
       scrolling="no"
-      style={{ display: "block", width: "100%", height, border: 0 }}
+      style={{ display: "block", width: "100%", height, border: 0, backgroundColor: THEME_BG }}
     />
   );
 }
