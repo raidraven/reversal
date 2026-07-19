@@ -4,7 +4,6 @@ import { authOptions } from "@/lib/auth";
 import { EditModeProvider } from "@/components/admin/EditModeProvider";
 import { MobileNavMenu, type NavLink } from "@/components/MobileNavMenu";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
-import { EnglishButton } from "@/components/EnglishButton";
 import { getSiteText } from "@/lib/siteText";
 import { SITE_URL } from "@/lib/siteUrl";
 import "./globals.css";
@@ -58,7 +57,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <EditModeProvider isAdmin={!!session?.user?.isAdmin}>
           {children}
           {session?.user?.id && <MobileNavMenu links={navLinks} />}
-          <EnglishButton />
         </EditModeProvider>
       </body>
     </html>
