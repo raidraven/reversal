@@ -36,26 +36,24 @@ export default async function LandingPage() {
       <AdMaxSP />
       <AdMaxPC />
       <main className="mx-auto flex max-w-5xl flex-col px-6 py-12 lg:grid lg:grid-cols-[320px_1fr] lg:items-start lg:gap-10">
-      {/* 左側:ログイン状態・主催者への要望(縦長の固定サイドバー) */}
+      {/* 左側:ログイン状態・主催者への要望(縦長サイドバー) */}
       <aside className="order-2 mt-10 space-y-6 lg:order-1 lg:mt-0">
-        <div className="sticky top-4">
-          {isLoggedIn ? (
-            <div className="game-card space-y-3 text-center">
-              <p className="flex justify-center">
-                <Icon name="candle" size={24} />
-              </p>
-              <p className="text-sm text-stone-300">
-                <EditableText siteTextKey="landing.loggedInMessage" value={texts["landing.loggedInMessage"]} />
-              </p>
-              <Link href="/home" className="neon-button block text-center">
-                {texts["room.backLabel"]}
-              </Link>
-              <LogoutButton />
-            </div>
-          ) : (
-            <LoginPanel title={texts["login.title"]} subtitle={texts["login.subtitle"]} />
-          )}
-        </div>
+        {isLoggedIn ? (
+          <div className="game-card space-y-3 text-center">
+            <p className="flex justify-center">
+              <Icon name="candle" size={24} />
+            </p>
+            <p className="text-sm text-stone-300">
+              <EditableText siteTextKey="landing.loggedInMessage" value={texts["landing.loggedInMessage"]} />
+            </p>
+            <Link href="/home" className="neon-button block text-center">
+              {texts["room.backLabel"]}
+            </Link>
+            <LogoutButton />
+          </div>
+        ) : (
+          <LoginPanel title={texts["login.title"]} subtitle={texts["login.subtitle"]} />
+        )}
 
         <div className="game-card">
           <h2 className="mansion-title text-base">
