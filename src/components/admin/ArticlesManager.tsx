@@ -182,15 +182,17 @@ export function ArticlesManager() {
                     <option value="novel">小説</option>
                   </select>
                 </label>
-                <label className="block text-xs text-stone-500">
-                  説明文(検索結果・OGPに表示)
-                  <textarea
-                    value={a.description}
-                    onChange={(e) => updateLocal(a.id, { description: e.target.value })}
-                    rows={2}
-                    className="form-input mt-1 resize-none !py-1.5 text-xs"
-                  />
-                </label>
+                {a.category === "novel" && (
+                  <label className="block text-xs text-stone-500">
+                    説明文(検索結果・OGPに表示。120文字程度推奨)
+                    <textarea
+                      value={a.description}
+                      onChange={(e) => updateLocal(a.id, { description: e.target.value })}
+                      rows={5}
+                      className="form-input mt-1 !py-1.5 text-xs"
+                    />
+                  </label>
+                )}
                 <label className="block text-xs text-stone-500">
                   本文(Markdown)
                   <textarea
@@ -249,13 +251,15 @@ export function ArticlesManager() {
           <option value="guide">攻略記事</option>
           <option value="novel">小説</option>
         </select>
-        <textarea
-          placeholder="説明文(検索結果に表示される120字前後の紹介文)"
-          value={newForm.description}
-          onChange={(e) => setNewForm((p) => ({ ...p, description: e.target.value }))}
-          rows={2}
-          className="form-input resize-none !py-1.5 text-xs"
-        />
+        {newForm.category === "novel" && (
+          <textarea
+            placeholder="説明文(検索結果に表示される120字前後の紹介文)"
+            value={newForm.description}
+            onChange={(e) => setNewForm((p) => ({ ...p, description: e.target.value }))}
+            rows={5}
+            className="form-input !py-1.5 text-xs"
+          />
+        )}
         <textarea
           placeholder="本文(Markdown)&#10;&#10;## 見出し&#10;本文テキスト…"
           value={newForm.content}

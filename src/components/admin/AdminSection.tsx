@@ -1,6 +1,6 @@
 type Props = {
-  title: string;
-  description?: string;
+  title: React.ReactNode;
+  description?: React.ReactNode;
   defaultOpen?: boolean;
   children: React.ReactNode;
 };

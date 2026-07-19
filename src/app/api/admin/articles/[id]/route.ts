@@ -2,15 +2,13 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminAuth";
+import { deriveDescriptionFromContent } from "@/lib/articles";
 
 export const dynamic = "force-dynamic";
 
 const updateSchema = z.object({
   title: z.string().min(1, "タイトルを入力してください").max(100, "タイトルは100文字以内で入力してください"),
-  description: z
-    .string()
-    .min(1, "説明文を入力してください")
-    .max(300, "説明文は300文字以内で入力してください"),
+  description: z.string().max(500, "説明文は500文字以内で入力してください").optional(),
   content: z.string().min(1, "本文を入力してください").max(100_000),
   category: z.enum(["guide", "novel"]),
   published: z.boolean(),
@@ -34,11 +32,15 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     return NextResponse.json({ error: "記事が見つかりません" }, { status: 404 });
   }
 
+  const resolvedDescription =
+    parsed.data.description?.trim() || deriveDescriptionFromContent(parsed.data.content);
+
   try {
     const article = await prisma.article.update({
       where: { id: params.id },
       data: {
         ...parsed.data,
+        description: resolvedDescription,
         // 初めて公開状態になった時刻を publishedAt として記録する(公開日は以後変えない)
         publishedAt:
           parsed.data.published && !existing.publishedAt ? new Date() : existing.publishedAt,

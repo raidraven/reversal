@@ -32,6 +32,21 @@ export function generateArticleSlug(category: string): string {
   return `${category}-${randomUUID().slice(0, 8)}`;
 }
 
+/**
+ * 説明文が未入力の記事(主に攻略記事)向けに、本文からMarkdown記法を除いた
+ * 冒頭テキストを検索結果・OGP用の説明文として自動生成する
+ */
+export function deriveDescriptionFromContent(content: string, maxLen = 150): string {
+  const plain = content
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[#*_>`~-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return plain.length > maxLen ? `${plain.slice(0, maxLen)}…` : plain;
+}
+
 /** 記事・小説への「いいね」状態(件数・自分が押しているか)を取得する */
 export async function getArticleLikeState(viewer: Viewer, articleId: string) {
   const [likeCount, likedByMe] = await Promise.all([

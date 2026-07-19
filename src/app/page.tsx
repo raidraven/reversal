@@ -35,24 +35,26 @@ export default async function LandingPage() {
     <main className="mx-auto flex max-w-5xl flex-col px-6 py-12 lg:grid lg:grid-cols-[320px_1fr] lg:items-start lg:gap-10">
       <AdMaxSP />
       <AdMaxPC />
-      {/* 左側:ログイン状態・主催者への要望 */}
-      <aside className="order-2 mt-10 space-y-6 lg:order-1 lg:sticky lg:top-12 lg:mt-0">
-        {isLoggedIn ? (
-          <div className="game-card space-y-3 text-center">
-            <p className="flex justify-center">
-              <Icon name="candle" size={24} />
-            </p>
-            <p className="text-sm text-stone-300">
-              <EditableText siteTextKey="landing.loggedInMessage" value={texts["landing.loggedInMessage"]} />
-            </p>
-            <Link href="/home" className="neon-button block text-center">
-              {texts["room.backLabel"]}
-            </Link>
-            <LogoutButton />
-          </div>
-        ) : (
-          <LoginPanel title={texts["login.title"]} subtitle={texts["login.subtitle"]} />
-        )}
+      {/* 左側:ログイン状態・主催者への要望(縦長の固定サイドバー) */}
+      <aside className="order-2 mt-10 space-y-6 lg:order-1 lg:mt-0">
+        <div className="sticky top-4">
+          {isLoggedIn ? (
+            <div className="game-card space-y-3 text-center">
+              <p className="flex justify-center">
+                <Icon name="candle" size={24} />
+              </p>
+              <p className="text-sm text-stone-300">
+                <EditableText siteTextKey="landing.loggedInMessage" value={texts["landing.loggedInMessage"]} />
+              </p>
+              <Link href="/home" className="neon-button block text-center">
+                {texts["room.backLabel"]}
+              </Link>
+              <LogoutButton />
+            </div>
+          ) : (
+            <LoginPanel title={texts["login.title"]} subtitle={texts["login.subtitle"]} />
+          )}
+        </div>
 
         <div className="game-card">
           <h2 className="mansion-title text-base">
@@ -77,8 +79,8 @@ export default async function LandingPage() {
         </div>
       </aside>
 
-      {/* 中央:コンテンツ */}
-      <div className="order-1 mx-auto w-full max-w-md lg:order-2">
+      {/* 中央:コンテンツ(横長) */}
+      <div className="order-1 mx-auto w-full max-w-2xl lg:order-2">
         <h1 className="mansion-title flex items-center gap-2 text-4xl">
           <Icon name="candle" size={36} />
           <EditableText siteTextKey="site.name" value={texts["site.name"]} />

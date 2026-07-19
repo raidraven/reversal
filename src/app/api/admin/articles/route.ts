@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminAuth";
-import { generateArticleSlug } from "@/lib/articles";
+import { deriveDescriptionFromContent, generateArticleSlug } from "@/lib/articles";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +17,7 @@ export async function GET() {
 
 const createSchema = z.object({
   title: z.string().min(1, "タイトルを入力してください").max(100, "タイトルは100文字以内で入力してください"),
-  description: z
-    .string()
-    .min(1, "説明文を入力してください")
-    .max(300, "説明文は300文字以内で入力してください"),
+  description: z.string().max(500, "説明文は500文字以内で入力してください").optional(),
   content: z.string().min(1, "本文を入力してください").max(100_000),
   category: z.enum(["guide", "novel"]).optional(),
   published: z.boolean().optional(),
@@ -39,14 +36,16 @@ export async function POST(req: Request) {
     );
   }
 
-  const { published, category, ...rest } = parsed.data;
+  const { published, category, description, ...rest } = parsed.data;
   const resolvedCategory = category ?? "guide";
+  const resolvedDescription = description?.trim() || deriveDescriptionFromContent(rest.content);
 
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       const article = await prisma.article.create({
         data: {
           ...rest,
+          description: resolvedDescription,
           slug: generateArticleSlug(resolvedCategory),
           category: resolvedCategory,
           published: published ?? false,
