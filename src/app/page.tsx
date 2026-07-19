@@ -14,7 +14,7 @@ import { BoardFeed } from "@/components/board/BoardFeed";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
 import { AffiliateBanner } from "@/components/AffiliateBanner";
-import { AdMax } from "@/components/AdMax";
+import { AdMaxSP, AdMaxPC } from "@/components/AdMax";
 
 export default async function LandingPage() {
   const session = await getServerSession(authOptions);
@@ -33,7 +33,8 @@ export default async function LandingPage() {
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col px-6 py-12 lg:grid lg:grid-cols-[320px_1fr] lg:items-start lg:gap-10">
-      <AdMax />
+      <AdMaxSP />
+      <AdMaxPC />
       {/* 左側:ログイン状態・主催者への要望 */}
       <aside className="order-2 mt-10 space-y-6 lg:order-1 lg:sticky lg:top-12 lg:mt-0">
         {isLoggedIn ? (
