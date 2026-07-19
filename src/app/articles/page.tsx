@@ -65,8 +65,6 @@ export default async function ArticlesPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
-      <AdMaxSP />
-      <AdMaxPC />
       <header className="mb-6 text-center">
         <p className="flex justify-center">
           <Icon name="scroll" size={32} />
@@ -95,6 +93,11 @@ export default async function ArticlesPage() {
         </p>
         <ArticleList articles={novels} emptyMessage={texts["articles.emptyMessage"]} />
       </section>
+
+      <div className="mt-8">
+        <AdMaxSP />
+        <AdMaxPC />
+      </div>
 
       <p className="mt-8 text-center text-xs text-stone-500">
         <Link href="/" className="text-gold-light hover:underline">

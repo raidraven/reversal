@@ -58,8 +58,6 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
-      <AdMaxSP />
-      <AdMaxPC />
       <article className="game-card">
         <header className="border-b border-surface-border pb-4">
           <h1 className="mansion-title text-2xl">{article.title}</h1>
@@ -93,6 +91,10 @@ export default async function ArticlePage({ params }: Props) {
               書庫へ戻る
             </Link>
           </p>
+          <div>
+            <AdMaxSP />
+            <AdMaxPC />
+          </div>
         </footer>
       </article>
     </main>
