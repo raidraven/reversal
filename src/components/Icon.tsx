@@ -48,6 +48,7 @@ export function Icon({ name, size = 20, className }: Props) {
       alt=""
       width={size}
       height={size}
+      unoptimized
       className={className}
       style={{ display: "inline-block", objectFit: "contain" }}
     />
