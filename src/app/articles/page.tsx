@@ -4,6 +4,7 @@ import { getPublishedArticles } from "@/lib/articles";
 import { getSiteTexts } from "@/lib/siteText";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
+import { AdMax } from "@/components/AdMax";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +65,7 @@ export default async function ArticlesPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
+      <AdMax />
       <header className="mb-6 text-center">
         <p className="flex justify-center">
           <Icon name="scroll" size={32} />

@@ -14,6 +14,7 @@ import { getSiteTexts } from "@/lib/siteText";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
 import { ArticleEngagement } from "@/components/articles/ArticleEngagement";
+import { AdMax } from "@/components/AdMax";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,7 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
+      <AdMax />
       <article className="game-card">
         <header className="border-b border-surface-border pb-4">
           <h1 className="mansion-title text-2xl">{article.title}</h1>
