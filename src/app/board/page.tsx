@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function BoardPage() {
   const session = await getServerSession(authOptions);
+  const isLoggedIn = !!session?.user?.id;
   const texts = await getSiteTexts();
 
   return (
@@ -19,15 +20,18 @@ export default async function BoardPage() {
           <Icon name="talk" size={22} />
           <EditableText siteTextKey="board.name" value={texts["board.name"]} />
         </h1>
-        <Link href="/home" className="ghost-button !px-3 !py-2 text-xs">
-          {texts["room.backLabel"]}
+        <Link href={isLoggedIn ? "/home" : "/"} className="ghost-button !px-3 !py-2 text-xs">
+          {isLoggedIn ? texts["room.backLabel"] : "館の入口へ戻る"}
         </Link>
       </header>
       <p className="mb-4 text-xs text-stone-500">
         <EditableText siteTextKey="board.description" value={texts["board.description"]} />
       </p>
+      <p className="mb-4 text-xs text-stone-500">
+        <EditableText siteTextKey="board.postNote" value={texts["board.postNote"]} />
+      </p>
 
-      <BoardFeed isLoggedIn={!!session?.user?.id} emptyMessage={texts["board.emptyMessage"]} />
+      <BoardFeed isLoggedIn={isLoggedIn} emptyMessage={texts["board.emptyMessage"]} />
     </main>
   );
 }

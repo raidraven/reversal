@@ -22,9 +22,12 @@ type PostItem = {
   createdAt: string;
   likeCount: number;
   likedByMe: boolean;
+  commentCount: number;
   isMine: boolean;
   reportedByMe: boolean;
 };
+
+type Comment = { id: string; authorName: string; content: string; createdAt: string };
 
 type Props = {
   isLoggedIn: boolean;
@@ -44,10 +47,114 @@ const TABS: Array<{ key: PostCategory | "all"; label: string }> = [
   ...POST_CATEGORIES.map((c) => ({ key: c, label: POST_CATEGORY_LABELS[c] })),
 ];
 
+function PostComments({
+  postId,
+  isLoggedIn,
+  onPosted,
+}: {
+  postId: string;
+  isLoggedIn: boolean;
+  onPosted: () => void;
+}) {
+  const [comments, setComments] = useState<Comment[] | null>(null);
+  const [name, setName] = useState("");
+  const [content, setContent] = useState("");
+  const [posting, setPosting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/posts/${postId}/comments`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setComments(data?.comments ?? []))
+      .catch(() => setComments([]));
+  }, [postId]);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!content.trim() || posting) return;
+    setPosting(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ authorName: name.trim() || undefined, content }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setError(data?.error ?? "投稿に失敗しました");
+        return;
+      }
+      setComments((prev) => [...(prev ?? []), data.comment]);
+      setContent("");
+      onPosted();
+    } catch {
+      setError("通信エラーが発生しました");
+    } finally {
+      setPosting(false);
+    }
+  }
+
+  return (
+    <div className="space-y-2 border-t border-surface-border pt-2">
+      {comments === null ? (
+        <p className="text-xs text-stone-600">読み込み中…</p>
+      ) : comments.length === 0 ? (
+        <p className="text-xs text-stone-600">まだコメントはありません。</p>
+      ) : (
+        <ul className="space-y-1.5">
+          {comments.map((c) => (
+            <li key={c.id} className="rounded-md bg-surface-card p-2">
+              <div className="flex items-center justify-between text-[10px] text-stone-500">
+                <span className="font-semibold text-stone-300">{c.authorName}</span>
+                <span>{formatDateTime(c.createdAt)}</span>
+              </div>
+              <p className="mt-0.5 whitespace-pre-wrap text-xs text-stone-200">{c.content}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {error && <p className="text-[10px] text-gold-light">{error}</p>}
+
+      <form onSubmit={submit} className="space-y-1.5">
+        {!isLoggedIn && (
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="お名前(任意・空欄なら「匿名の来賓」)"
+            maxLength={50}
+            className="form-input !py-1 text-xs"
+          />
+        )}
+        <div className="flex gap-1.5">
+          <input
+            type="text"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="コメントする"
+            maxLength={1000}
+            className="form-input !py-1 flex-1 text-xs"
+          />
+          <button
+            type="submit"
+            disabled={posting || !content.trim()}
+            className="ghost-button shrink-0 !px-3 !py-1 text-xs"
+          >
+            送信
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありません。最初の一件を届けてみましょう。" }: Props) {
   const [tab, setTab] = useState<PostCategory | "all">("all");
   const [posts, setPosts] = useState<PostItem[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openCommentsId, setOpenCommentsId] = useState<string | null>(null);
 
   async function load(category: PostCategory | "all") {
     setLoading(true);
@@ -128,15 +235,9 @@ export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありま
           ))}
         </div>
 
-        {isLoggedIn ? (
-          <Link href="/board/new" className="ghost-button !px-3 !py-2 text-xs">
-            投稿する
-          </Link>
-        ) : (
-          <Link href="/signup" className="ghost-button !px-3 !py-2 text-xs">
-            招待状を受け取って投稿する
-          </Link>
-        )}
+        <Link href="/board/new" className="ghost-button !px-3 !py-2 text-xs">
+          投稿する
+        </Link>
       </div>
 
       {loading && <div className="game-card h-24 animate-pulse" />}
@@ -177,14 +278,22 @@ export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありま
                 </p>
               )}
               <div className="flex items-center justify-between">
-                <button
-                  onClick={() => like(p.id)}
-                  className={`flex items-center gap-1 text-xs transition-colors ${
-                    p.likedByMe ? "text-gold-light" : "text-stone-500 hover:text-gold-light"
-                  }`}
-                >
-                  <Icon name={p.likedByMe ? "heart-filled" : "heart-outline"} size={14} /> {p.likeCount}
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => like(p.id)}
+                    className={`flex items-center gap-1 text-xs transition-colors ${
+                      p.likedByMe ? "text-gold-light" : "text-stone-500 hover:text-gold-light"
+                    }`}
+                  >
+                    <Icon name={p.likedByMe ? "heart-filled" : "heart-outline"} size={14} /> {p.likeCount}
+                  </button>
+                  <button
+                    onClick={() => setOpenCommentsId(openCommentsId === p.id ? null : p.id)}
+                    className="flex items-center gap-1 text-xs text-stone-500 transition-colors hover:text-gold-light"
+                  >
+                    <Icon name="talk" size={14} /> {p.commentCount}
+                  </button>
+                </div>
                 {isLoggedIn && !p.isMine && (
                   <button
                     onClick={() => report(p.id)}
@@ -201,6 +310,20 @@ export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありま
                   </button>
                 )}
               </div>
+
+              {openCommentsId === p.id && (
+                <PostComments
+                  postId={p.id}
+                  isLoggedIn={isLoggedIn}
+                  onPosted={() =>
+                    setPosts((prev) =>
+                      prev
+                        ? prev.map((x) => (x.id === p.id ? { ...x, commentCount: x.commentCount + 1 } : x))
+                        : prev
+                    )
+                  }
+                />
+              )}
             </li>
           ))}
         </ul>

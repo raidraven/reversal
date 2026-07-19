@@ -5,7 +5,8 @@ const ANON_ID_COOKIE = "reversal_anon_id";
 
 // 認証必須ページ(未ログイン時は /login へリダイレクト)。
 // /admin は館の主(isAdmin)のみ通過できる。
-const AUTH_REQUIRED_PREFIXES = ["/home", "/missions", "/settings", "/admin", "/questions", "/board/new"];
+// /board/new(談話室への投稿)は未ログインでも投稿できる仕様のため対象外
+const AUTH_REQUIRED_PREFIXES = ["/home", "/missions", "/settings", "/admin", "/questions"];
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

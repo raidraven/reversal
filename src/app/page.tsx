@@ -181,6 +181,9 @@ export default async function LandingPage() {
             <Icon name="talk" size={18} />
             <EditableText siteTextKey="board.name" value={texts["board.name"]} />
           </h2>
+          <p className="mt-1 text-xs text-stone-500">
+            <EditableText siteTextKey="board.postNote" value={texts["board.postNote"]} />
+          </p>
           <div className="mt-2">
             <BoardFeed isLoggedIn={isLoggedIn} emptyMessage={texts["board.emptyMessage"]} />
           </div>

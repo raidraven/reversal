@@ -8,11 +8,13 @@ import { Icon } from "@/components/Icon";
 
 type Props = {
   boardName: string;
+  isLoggedIn: boolean;
 };
 
-export function NewPostForm({ boardName }: Props) {
+export function NewPostForm({ boardName, isLoggedIn }: Props) {
   const router = useRouter();
   const [category, setCategory] = useState<PostCategory>("achievement");
+  const [authorName, setAuthorName] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [revenueAmount, setRevenueAmount] = useState("");
@@ -32,6 +34,7 @@ export function NewPostForm({ boardName }: Props) {
           category,
           title,
           content,
+          ...(!isLoggedIn && authorName.trim() ? { authorName: authorName.trim() } : {}),
           ...(category === "achievement" && revenueAmount.trim()
             ? { revenueAmount: Number(revenueAmount) }
             : {}),
@@ -84,6 +87,17 @@ export function NewPostForm({ boardName }: Props) {
             </button>
           ))}
         </div>
+
+        {!isLoggedIn && (
+          <input
+            type="text"
+            value={authorName}
+            onChange={(e) => setAuthorName(e.target.value)}
+            maxLength={50}
+            placeholder="お名前(任意・空欄なら「匿名の来賓」)"
+            className="form-input"
+          />
+        )}
 
         <input
           type="text"

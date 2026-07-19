@@ -10,7 +10,7 @@ type AdminPost = {
   content: string;
   revenueAmount: number | null;
   authorName: string;
-  authorId: string;
+  authorId: string | null;
   authorBanned: boolean;
   createdAt: string;
   reportCount: number;
@@ -117,9 +117,9 @@ export function PostsManager() {
                 >
                   投稿を削除
                 </button>
-                {p.authorBanned && (
+                {p.authorBanned && p.authorId && (
                   <button
-                    onClick={() => handleUnban(p.authorId)}
+                    onClick={() => handleUnban(p.authorId!)}
                     disabled={busyId === p.authorId}
                     className="ghost-button !px-3 !py-1.5 text-xs"
                   >

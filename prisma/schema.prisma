@@ -50,6 +50,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   articleLikes        ArticleLike[]
   articleComments     ArticleComment[]
+  postComments        PostComment[]
 }
 
 // パスワード再設定用トークン。トークン自体はハッシュ化して保存し(メール本文にのみ生の値を載せる)、
@@ -296,10 +297,14 @@ model AnswerLike {
   @@unique([answerId, anonId])
 }
 
-// 談話室:副業初心者が実績・学び・ツール活用のコツを共有する投稿(コメントはまだ無し)
+// 談話室:副業初心者が実績・学び・ツール活用のコツを共有する投稿
 model Post {
-  id       String @id @default(cuid())
-  authorId String
+  id       String  @id @default(cuid())
+  // 未ログイン投稿の場合は空(authorNameを使う)。ログイン投稿の場合はauthorNameは使わない(常にauthor.nameを参照)
+  authorId String?
+  // 未ログイン投稿者が自由入力した表示名(空欄なら「匿名の来賓」)
+  authorName String?
+  anonId     String?
   // "achievement"(実績報告) | "tip"(学び・気づき) | "tool"(ツール活用のコツ)
   category String
   title    String
@@ -308,9 +313,24 @@ model Post {
   revenueAmount Int?
   createdAt DateTime @default(now())
 
-  author  User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  likes   PostLike[]
-  reports PostReport[]
+  author   User?         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes    PostLike[]
+  reports  PostReport[]
+  comments PostComment[]
+}
+
+// 談話室の投稿へのコメント。未ログインでも投稿できる(表示名は任意入力、モデレーション対象)
+model PostComment {
+  id         String   @id @default(cuid())
+  postId     String
+  userId     String?
+  anonId     String?
+  authorName String
+  content    String
+  createdAt  DateTime @default(now())
+
+  post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // 談話室の投稿への通報。同一投稿への重複通報は1人1回まで。
