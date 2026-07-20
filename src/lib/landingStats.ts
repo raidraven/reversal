@@ -6,8 +6,6 @@ export type LandingStats = {
   guestCount: number;
   /** 会員登録者数 */
   registeredCount: number;
-  missionCompletionCount: number;
-  answerCount: number;
 };
 
 /**
@@ -26,11 +24,9 @@ async function recordLandingVisit(visitorKey: string | null): Promise<void> {
 export async function getLandingStats(visitorKey: string | null): Promise<LandingStats> {
   await recordLandingVisit(visitorKey);
 
-  const [guestCount, registeredCount, missionCompletionCount, answerCount] = await Promise.all([
+  const [guestCount, registeredCount] = await Promise.all([
     prisma.landingVisit.count(),
     prisma.user.count(),
-    prisma.missionCompletion.count(),
-    prisma.answer.count(),
   ]);
-  return { guestCount, registeredCount, missionCompletionCount, answerCount };
+  return { guestCount, registeredCount };
 }

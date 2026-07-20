@@ -39,15 +39,15 @@ function ArticleList({
     );
   }
   return (
-    <ul className="space-y-3">
+    <ul className="grid gap-3 sm:grid-cols-2">
       {articles.map((a) => (
         <li key={a.slug}>
           <Link
             href={`/articles/${a.slug}`}
-            className="game-card block space-y-1 transition-colors hover:border-gold/40"
+            className="game-card flex h-full flex-col gap-1 transition-colors hover:border-gold/40"
           >
             <p className="text-base font-semibold text-stone-100">{a.title}</p>
-            <p className="text-xs leading-relaxed text-stone-400">{a.description}</p>
+            <p className="line-clamp-2 flex-1 text-xs leading-relaxed text-stone-400">{a.description}</p>
             {a.publishedAt && <p className="text-[10px] text-stone-600">{formatDate(a.publishedAt)}</p>}
           </Link>
         </li>
@@ -64,7 +64,7 @@ export default async function ArticlesPage() {
   ]);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-12">
+    <main className="mx-auto max-w-4xl px-4 py-12">
       <header className="mb-6 text-center">
         <p className="flex justify-center">
           <Icon name="scroll" size={32} />
@@ -78,15 +78,17 @@ export default async function ArticlesPage() {
       </header>
 
       <section>
-        <h2 className="mansion-title mb-3 text-base">
+        <h2 className="mansion-title mb-3 flex items-center gap-2 text-base">
           <EditableText siteTextKey="articles.guideSectionTitle" value={texts["articles.guideSectionTitle"]} />
+          <span className="text-xs font-normal text-stone-600">全{guides.length}件</span>
         </h2>
         <ArticleList articles={guides} emptyMessage={texts["articles.emptyMessage"]} />
       </section>
 
       <section className="mt-8">
-        <h2 className="mansion-title mb-3 text-base">
+        <h2 className="mansion-title mb-3 flex items-center gap-2 text-base">
           <EditableText siteTextKey="articles.novelSectionTitle" value={texts["articles.novelSectionTitle"]} />
+          <span className="text-xs font-normal text-stone-600">全{novels.length}件</span>
         </h2>
         <p className="mb-3 text-xs text-stone-500">
           <EditableText siteTextKey="articles.novelDescription" value={texts["articles.novelDescription"]} />

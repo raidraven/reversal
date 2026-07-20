@@ -6,13 +6,11 @@ export const DEFAULT_SITE_TEXT: Record<string, string> = {
   "site.tagline": "AI副業で人生を反転させたいと誓う者たちが集う、秘密の仮面舞踏会",
   "landing.intro":
     "とある場所に佇む、古びた洋館。\nそこは、AI副業で人生を反転させたいと誓う者たちが、仮面をつけて集う秘密の夜会場——",
-  "landing.benefit":
-    "収益0円から始めて、AI副業を挫折せず続けるための実践コミュニティ。日々の小さな前進を、位階・使命システムで可視化します。",
-  "landing.cta": "無料で招待状を受け取る",
   "landing.loggedInMessage": "ログイン中でございます",
   "landing.hostRequestTitle": "主催者への要望",
   "landing.hostRequestDescription": "館の運営についてのご意見・ご要望はこちらから。匿名でも構いません。",
-  "landing.missionPreviewNote": "詳細と経験値は、扉の先で確認できます。",
+  "landing.latestArticleTitle": "最新の記事",
+  "landing.latestPostTitle": "最新の談話室投稿",
   "login.title": "扉の前で",
   "login.subtitle": "すでに招待状をお持ちの方はこちらから",
   "board.description": "副業初心者の来賓たちが、実績・学び・ツール活用のコツを持ち寄る場所です。",
@@ -52,8 +50,6 @@ export const DEFAULT_SITE_TEXT: Record<string, string> = {
   "hostRequest.completedMessage": "要望をお預かりいたしました。主催者に必ずお届けいたします。",
   "landing.stats.guestLabel": "名の来賓",
   "landing.stats.registeredLabel": "名の登録者",
-  "landing.stats.missionLabel": "達成された使命",
-  "landing.stats.answerLabel": "問いへの回答",
   "privacy.content": `「リバーサル」(以下「本サイト」)は、来賓の皆様に安心してご利用いただくため、取得する情報の範囲と利用目的を以下の通り定めます。
 
 1. 取得する情報
@@ -133,12 +129,11 @@ export const SITE_TEXT_LABELS: Record<string, string> = {
   "site.name": "サイト名",
   "site.tagline": "サイトの説明文(メタ情報)",
   "landing.intro": "ランディングページの紹介文",
-  "landing.benefit": "ランディングページのベネフィット文(見出し直下・登録CTAの上)",
-  "landing.cta": "ランディングページのボタン文言",
   "landing.loggedInMessage": "ランディングページ「ログイン中」表示の文言",
   "landing.hostRequestTitle": "ランディングページ「主催者への要望」の見出し",
   "landing.hostRequestDescription": "ランディングページ「主催者への要望」の説明文",
-  "landing.missionPreviewNote": "ランディングページの使命プレビュー下の注記",
+  "landing.latestArticleTitle": "ランディングページ「最新の記事」の見出し",
+  "landing.latestPostTitle": "ランディングページ「最新の談話室投稿」の見出し",
   "login.title": "ログインパネルの見出し",
   "login.subtitle": "ログインパネルの副題",
   "board.description": "談話室ページの説明文",
@@ -177,8 +172,6 @@ export const SITE_TEXT_LABELS: Record<string, string> = {
   "hostRequest.completedMessage": "主催者への要望フォームの送信完了メッセージ",
   "landing.stats.guestLabel": "ランディングページの統計「来賓数」のラベル",
   "landing.stats.registeredLabel": "ランディングページの統計「登録者数」のラベル",
-  "landing.stats.missionLabel": "ランディングページの統計「達成された使命」のラベル",
-  "landing.stats.answerLabel": "ランディングページの統計「問いへの回答」のラベル",
   "privacy.content": "プライバシーポリシーの本文全体",
   "about.content": "運営者情報ページの本文全体",
   "terms.content": "利用規約ページの本文全体",

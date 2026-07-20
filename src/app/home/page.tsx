@@ -92,7 +92,8 @@ export default async function HomePage() {
   ];
 
   return (
-    <main className="mx-auto max-w-md px-4 pb-24 lg:max-w-5xl">
+    <main className="mx-auto max-w-md px-4 pb-24 lg:max-w-5xl lg:pl-56">
+      <HeaderNav links={navLinks} />
       <header className="flex items-center justify-between py-4">
         <h1 className="mansion-title flex items-center gap-2 text-lg">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80">
@@ -100,7 +101,6 @@ export default async function HomePage() {
             <EditableText siteTextKey="site.name" value={texts["site.name"]} />
           </Link>
         </h1>
-        <HeaderNav links={navLinks} />
       </header>
 
       <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">

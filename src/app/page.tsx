@@ -3,18 +3,27 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getSiteTexts } from "@/lib/siteText";
 import { getLandingStats } from "@/lib/landingStats";
-import { getTodaysMissions } from "@/lib/dailyMissions";
+import { getPublishedArticles } from "@/lib/articles";
+import { getPosts } from "@/lib/board";
+import { POST_CATEGORY_LABELS } from "@/lib/boardCategories";
 import { readAnonId } from "@/lib/anonId";
 import { HostRequestForm } from "@/components/landing/HostRequestForm";
 import { LoginPanel } from "@/components/landing/LoginPanel";
-import { CompanionTrial } from "@/components/landing/CompanionTrial";
 import { LogoutButton } from "@/components/LogoutButton";
-import { QnaBoard } from "@/components/qna/QnaBoard";
-import { BoardFeed } from "@/components/board/BoardFeed";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
 import { AffiliateBanner } from "@/components/AffiliateBanner";
 import { AdMaxSP, AdMaxPC } from "@/components/AdMax";
+
+function formatDate(d: Date): string {
+  return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium" }).format(d);
+}
+
+function formatDateTime(d: Date): string {
+  return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium", timeStyle: "short" }).format(
+    d
+  );
+}
 
 export default async function LandingPage() {
   const session = await getServerSession(authOptions);
@@ -25,15 +34,18 @@ export default async function LandingPage() {
   const anonId = readAnonId();
   const visitorKey = session?.user?.id ? `user:${session.user.id}` : anonId ? `anon:${anonId}` : null;
 
-  const [texts, stats, missions] = await Promise.all([
+  const [texts, stats, latestArticles, latestPosts] = await Promise.all([
     getSiteTexts(),
     getLandingStats(visitorKey),
-    getTodaysMissions(),
+    getPublishedArticles(),
+    getPosts(session?.user?.id ? { userId: session.user.id } : { anonId }),
   ]);
+  const latestArticle = latestArticles[0] ?? null;
+  const latestPost = latestPosts[0] ?? null;
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col px-6 py-12 lg:grid lg:grid-cols-[320px_1fr] lg:items-start lg:gap-10">
-      {/* 左側:ログイン状態・主催者への要望(縦長サイドバー) */}
+      {/* 左側:ログイン状態・活気統計・主催者への要望(縦長サイドバー) */}
       <aside className="order-2 mt-10 space-y-6 lg:order-1 lg:mt-0">
         {isLoggedIn ? (
           <div className="game-card space-y-3 text-center">
@@ -51,6 +63,25 @@ export default async function LandingPage() {
         ) : (
           <LoginPanel title={texts["login.title"]} subtitle={texts["login.subtitle"]} />
         )}
+
+        {/* 館の活気(実データのみ) */}
+        <div className="game-card grid grid-cols-2 gap-3 text-center">
+          <div>
+            <p className="text-2xl font-black text-gold-light">{stats.guestCount}</p>
+            <p className="mt-1 text-[10px] leading-tight text-stone-500">
+              <EditableText siteTextKey="landing.stats.guestLabel" value={texts["landing.stats.guestLabel"]} />
+            </p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-gold-light">{stats.registeredCount}</p>
+            <p className="mt-1 text-[10px] leading-tight text-stone-500">
+              <EditableText
+                siteTextKey="landing.stats.registeredLabel"
+                value={texts["landing.stats.registeredLabel"]}
+              />
+            </p>
+          </div>
+        </div>
 
         <div className="game-card">
           <h2 className="mansion-title text-base">
@@ -87,23 +118,6 @@ export default async function LandingPage() {
           <EditableText siteTextKey="site.name" value={texts["site.name"]} />
         </h1>
 
-        {!isLoggedIn && (
-          <div className="mt-3 space-y-3">
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-stone-200">
-              <EditableText siteTextKey="landing.benefit" value={texts["landing.benefit"]} multiline />
-            </p>
-            <Link href="/signup" className="neon-button block text-center">
-              <EditableText siteTextKey="landing.cta" value={texts["landing.cta"]} />
-            </Link>
-          </div>
-        )}
-
-        {!isLoggedIn && (
-          <div className="mt-4">
-            <CompanionTrial />
-          </div>
-        )}
-
         <div className="game-card mt-8 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
           <EditableText siteTextKey="landing.intro" value={texts["landing.intro"]} multiline />
         </div>
@@ -118,75 +132,69 @@ export default async function LandingPage() {
           </p>
         </div>
 
-        {/* 館の活気(実データのみ) */}
-        <div className="game-card mt-6 grid grid-cols-2 gap-3 text-center">
-          <div>
-            <p className="text-2xl font-black text-gold-light">{stats.guestCount}</p>
-            <p className="mt-1 text-[10px] leading-tight text-stone-500">
-              <EditableText siteTextKey="landing.stats.guestLabel" value={texts["landing.stats.guestLabel"]} />
+        {/* 最新の記事 */}
+        <div className="game-card mt-4">
+          <h2 className="mansion-title flex items-center gap-1.5 text-base">
+            <Icon name="scroll" size={18} />
+            <EditableText siteTextKey="landing.latestArticleTitle" value={texts["landing.latestArticleTitle"]} />
+          </h2>
+          {latestArticle ? (
+            <Link
+              href={`/articles/${latestArticle.slug}`}
+              className="mt-2 block space-y-1 rounded-md border border-surface-border bg-surface-raised p-3 transition-colors hover:border-gold/40"
+            >
+              <p className="text-sm font-semibold text-stone-100">{latestArticle.title}</p>
+              <p className="line-clamp-2 text-xs leading-relaxed text-stone-400">{latestArticle.description}</p>
+              {latestArticle.publishedAt && (
+                <p className="text-[10px] text-stone-600">{formatDate(latestArticle.publishedAt)}</p>
+              )}
+            </Link>
+          ) : (
+            <p className="mt-2 text-xs text-stone-500">
+              <EditableText siteTextKey="articles.emptyMessage" value={texts["articles.emptyMessage"]} />
             </p>
-          </div>
-          <div>
-            <p className="text-2xl font-black text-gold-light">{stats.registeredCount}</p>
-            <p className="mt-1 text-[10px] leading-tight text-stone-500">
-              <EditableText
-                siteTextKey="landing.stats.registeredLabel"
-                value={texts["landing.stats.registeredLabel"]}
-              />
-            </p>
-          </div>
-          <div>
-            <p className="text-2xl font-black text-gold-light">{stats.missionCompletionCount}</p>
-            <p className="mt-1 text-[10px] leading-tight text-stone-500">
-              <EditableText siteTextKey="landing.stats.missionLabel" value={texts["landing.stats.missionLabel"]} />
-            </p>
-          </div>
-          <div>
-            <p className="text-2xl font-black text-gold-light">{stats.answerCount}</p>
-            <p className="mt-1 text-[10px] leading-tight text-stone-500">
-              <EditableText siteTextKey="landing.stats.answerLabel" value={texts["landing.stats.answerLabel"]} />
-            </p>
-          </div>
+          )}
+          <p className="mt-2 text-right text-xs">
+            <Link href="/articles" className="text-gold-light hover:underline">
+              書庫をもっと見る
+            </Link>
+          </p>
         </div>
 
-        {/* 今宵の使命プレビュー(鍵付き) */}
-        {missions.length > 0 && (
-          <div className="game-card mt-4">
-            <h2 className="mansion-title flex items-center gap-1.5 text-base">
-              <Icon name="key-ornate" size={18} />
-              <EditableText siteTextKey="mission.board.title" value={texts["mission.board.title"]} />
-            </h2>
-            <ul className="mt-2 space-y-1.5">
-              {missions.map((m) => (
-                <li key={m.id} className="flex items-center justify-between text-sm text-stone-300">
-                  <span>{m.title}</span>
-                  <Icon name="lock" size={14} className="opacity-60" />
-                </li>
-              ))}
-            </ul>
-            <p className="mt-2 text-xs text-stone-600">
-              <EditableText siteTextKey="landing.missionPreviewNote" value={texts["landing.missionPreviewNote"]} />
-            </p>
-          </div>
-        )}
-
-        {/* 今宵の問い(未ログインでも閲覧・いいね可) */}
-        <div className="mt-4">
-          <QnaBoard isLoggedIn={isLoggedIn} />
-        </div>
-
-        {/* 談話室の投稿(未ログインでも閲覧・いいね可) */}
+        {/* 最新の談話室投稿 */}
         <div className="mt-4">
           <h2 className="mansion-title flex items-center gap-1.5 text-base">
             <Icon name="talk" size={18} />
-            <EditableText siteTextKey="board.name" value={texts["board.name"]} />
+            <EditableText siteTextKey="landing.latestPostTitle" value={texts["landing.latestPostTitle"]} />
           </h2>
           <p className="mt-1 text-xs text-stone-500">
             <EditableText siteTextKey="board.postNote" value={texts["board.postNote"]} />
           </p>
           <div className="mt-2">
-            <BoardFeed isLoggedIn={isLoggedIn} emptyMessage={texts["board.emptyMessage"]} />
+            {latestPost ? (
+              <div className="game-card space-y-2">
+                <div className="flex items-center justify-between text-xs text-stone-500">
+                  <span>
+                    {POST_CATEGORY_LABELS[latestPost.category]} · {latestPost.authorName}
+                  </span>
+                  <span className="shrink-0 text-[10px] text-stone-600">
+                    {formatDateTime(latestPost.createdAt)}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-stone-100">{latestPost.title}</p>
+                <p className="line-clamp-3 whitespace-pre-wrap text-sm text-stone-300">{latestPost.content}</p>
+              </div>
+            ) : (
+              <p className="game-card text-sm text-stone-500">
+                <EditableText siteTextKey="board.emptyMessage" value={texts["board.emptyMessage"]} />
+              </p>
+            )}
           </div>
+          <p className="mt-2 text-right text-xs">
+            <Link href="/board" className="text-gold-light hover:underline">
+              {texts["board.name"]}をもっと見る
+            </Link>
+          </p>
         </div>
 
         <footer className="mt-8 flex flex-wrap justify-center gap-4 text-center text-xs text-stone-600">
