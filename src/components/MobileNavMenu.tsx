@@ -9,6 +9,8 @@ export type NavLink = {
   label: string;
   /** 強調表示(主人の部屋等) */
   gold?: boolean;
+  /** 未読件数バッジ(0または未指定なら非表示) */
+  badge?: number;
 };
 
 type Props = {
@@ -23,6 +25,7 @@ const DRAWER_LINK_GOLD_CLASS =
 /** 全ページ共通のモバイル用サイドメニュー(ハンバーガー→右スライド)。スクロールしても常に表示される */
 export function MobileNavMenu({ links }: Props) {
   const [open, setOpen] = useState(false);
+  const totalBadge = links.reduce((sum, l) => sum + (l.badge ?? 0), 0);
 
   return (
     <>
@@ -35,6 +38,11 @@ export function MobileNavMenu({ links }: Props) {
         <span className="h-0.5 w-5 rounded-full bg-gold-light" />
         <span className="h-0.5 w-5 rounded-full bg-gold-light" />
         <span className="h-0.5 w-5 rounded-full bg-gold-light" />
+        {totalBadge > 0 && (
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-wine-light text-[9px] font-bold text-stone-100">
+            {totalBadge > 9 ? "9+" : totalBadge}
+          </span>
+        )}
       </button>
 
       {/* 右スライドメニュー */}
@@ -54,9 +62,14 @@ export function MobileNavMenu({ links }: Props) {
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className={l.gold ? DRAWER_LINK_GOLD_CLASS : DRAWER_LINK_CLASS}
+                className={`flex items-center justify-between ${l.gold ? DRAWER_LINK_GOLD_CLASS : DRAWER_LINK_CLASS}`}
               >
                 {l.label}
+                {!!l.badge && (
+                  <span className="ml-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-wine-light px-1 text-[10px] font-bold text-stone-100">
+                    {l.badge > 9 ? "9+" : l.badge}
+                  </span>
+                )}
               </Link>
             ))}
             <div className="mt-1 flex flex-col gap-2">

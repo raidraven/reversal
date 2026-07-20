@@ -33,11 +33,41 @@ export type PostItem = {
   reportedByMe: boolean;
 };
 
-/** 談話室の投稿一覧を取得する(未ログイン可)。categoryを指定するとそのカテゴリのみ */
-export async function getPosts(viewer: Viewer, category?: PostCategory): Promise<PostItem[]> {
+export type GetPostsOptions = {
+  category?: PostCategory;
+  /** タイトル・本文の部分一致検索(大文字小文字を区別しない) */
+  search?: string;
+  /** "new"=新着順(既定) "top"=人気順(いいね+コメント数の合計が多い順) */
+  sort?: "new" | "top";
+  page?: number;
+  pageSize?: number;
+};
+
+/** 談話室の投稿一覧を取得する(未ログイン可)。ページ分割・検索・並び替えに対応 */
+export async function getPosts(
+  viewer: Viewer,
+  opts: GetPostsOptions = {}
+): Promise<{ posts: PostItem[]; hasMore: boolean }> {
+  const { category, search, sort = "new", page = 1, pageSize = 20 } = opts;
+
+  const where = {
+    ...(category ? { category } : {}),
+    ...(search?.trim()
+      ? {
+          OR: [
+            { title: { contains: search.trim(), mode: "insensitive" as const } },
+            { content: { contains: search.trim(), mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+
   const posts = await prisma.post.findMany({
-    where: category ? { category } : undefined,
+    where,
     orderBy: { createdAt: "desc" },
+    // 人気順はJOIN結果の件数でDB側ソートできないため、いったん新着順で多めに取得してからJS側で並び替える
+    take: sort === "top" ? undefined : pageSize + 1,
+    skip: sort === "top" ? undefined : (page - 1) * pageSize,
     include: {
       author: { select: { name: true, isAdmin: true } },
       likes: { select: { userId: true, anonId: true } },
@@ -46,7 +76,7 @@ export async function getPosts(viewer: Viewer, category?: PostCategory): Promise
     },
   });
 
-  return posts.map((p) => ({
+  let items: PostItem[] = posts.map((p) => ({
     id: p.id,
     category: isPostCategory(p.category) ? p.category : "tip",
     title: p.title,
@@ -67,6 +97,16 @@ export async function getPosts(viewer: Viewer, category?: PostCategory): Promise
       (!!viewer.anonId && p.anonId === viewer.anonId),
     reportedByMe: Array.isArray(p.reports) && p.reports.length > 0,
   }));
+
+  if (sort === "top") {
+    items = items.sort((a, b) => b.likeCount + b.commentCount - (a.likeCount + a.commentCount));
+    const start = (page - 1) * pageSize;
+    const hasMore = items.length > start + pageSize;
+    return { posts: items.slice(start, start + pageSize), hasMore };
+  }
+
+  const hasMore = items.length > pageSize;
+  return { posts: items.slice(0, pageSize), hasMore };
 }
 
 export type CreatePostResult =
@@ -131,6 +171,53 @@ export async function createPost(
   }
 
   return { ok: true, id: post.id, expGained, leveledUp, newLevel };
+}
+
+export type UpdatePostResult =
+  | { ok: true }
+  | { ok: false; reason: "not_found" | "forbidden" }
+  | { ok: false; reason: "rejected"; message: string };
+
+/** 投稿者本人が自分の投稿を編集する(タイトル・本文・報告収益のみ) */
+export async function updateOwnPost(
+  viewer: Viewer,
+  postId: string,
+  input: { title: string; content: string; revenueAmount?: number }
+): Promise<UpdatePostResult> {
+  const post = await prisma.post.findUnique({ where: { id: postId }, select: { authorId: true, anonId: true } });
+  if (!post) return { ok: false, reason: "not_found" };
+
+  const isOwner =
+    (!!viewer.userId && post.authorId === viewer.userId) ||
+    (!!viewer.anonId && post.anonId === viewer.anonId);
+  if (!isOwner) return { ok: false, reason: "forbidden" };
+
+  const moderation = await moderateText(`${input.title}\n${input.content}`);
+  if (!moderation.allowed) {
+    return { ok: false, reason: "rejected", message: moderation.reason! };
+  }
+
+  await prisma.post.update({
+    where: { id: postId },
+    data: { title: input.title, content: input.content, revenueAmount: input.revenueAmount ?? null },
+  });
+  return { ok: true };
+}
+
+export type DeleteOwnPostResult = { ok: true } | { ok: false; reason: "not_found" | "forbidden" };
+
+/** 投稿者本人が自分の投稿を削除する */
+export async function deleteOwnPost(viewer: Viewer, postId: string): Promise<DeleteOwnPostResult> {
+  const post = await prisma.post.findUnique({ where: { id: postId }, select: { authorId: true, anonId: true } });
+  if (!post) return { ok: false, reason: "not_found" };
+
+  const isOwner =
+    (!!viewer.userId && post.authorId === viewer.userId) ||
+    (!!viewer.anonId && post.anonId === viewer.anonId);
+  if (!isOwner) return { ok: false, reason: "forbidden" };
+
+  await prisma.post.delete({ where: { id: postId } });
+  return { ok: true };
 }
 
 /** 投稿への「いいね」をトグルする(送信済みなら取り消す)。未ログインならanonIdで判定する */
@@ -229,7 +316,28 @@ export async function createPostComment(
     select: { id: true, authorName: true, content: true, createdAt: true },
   });
 
+  // 本人以外からのコメントの場合のみ、投稿者への返信通知を発生させる(自分の投稿への自分のコメントでは通知しない)
+  const post = await prisma.post.findUnique({ where: { id: postId }, select: { authorId: true } });
+  if (post?.authorId && post.authorId !== viewer.userId) {
+    await prisma.post.update({ where: { id: postId }, data: { lastCommentAt: new Date() } });
+  }
+
   return { ok: true, comment };
+}
+
+/** ログインユーザーの未読返信件数(自分のスレッドに、最後の確認以降に他者からコメントが付いた件数) */
+export async function getUnreadReplyCount(userId: string): Promise<number> {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { notificationsCheckedAt: true, createdAt: true } });
+  if (!user) return 0;
+  const since = user.notificationsCheckedAt ?? user.createdAt;
+  return prisma.post.count({
+    where: { authorId: userId, lastCommentAt: { gt: since } },
+  });
+}
+
+/** 返信通知を既読にする(掲示板ページを訪れた時点で呼ぶ) */
+export async function markNotificationsRead(userId: string): Promise<void> {
+  await prisma.user.update({ where: { id: userId }, data: { notificationsCheckedAt: new Date() } });
 }
 
 export type ReportPostResult =

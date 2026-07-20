@@ -4,20 +4,26 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { createPost, getPosts } from "@/lib/board";
 import { ANON_ID_COOKIE, ANON_ID_COOKIE_OPTIONS, getOrCreateAnonId, readAnonId } from "@/lib/anonId";
-import { isPostCategory, POST_CATEGORIES } from "@/lib/boardCategories";
+import { POST_CATEGORIES } from "@/lib/boardCategories";
 
 export const dynamic = "force-dynamic";
 
-// 談話室の投稿一覧(未ログインでも閲覧可)
+// 談話室の投稿一覧(未ログインでも閲覧可)。ページ分割・検索・並び替えに対応
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
-  const categoryParam = new URL(req.url).searchParams.get("category");
-  const category = categoryParam && isPostCategory(categoryParam) ? categoryParam : undefined;
+  const params = new URL(req.url).searchParams;
+  const search = params.get("q") ?? undefined;
+  const sort = params.get("sort") === "top" ? "top" : "new";
+  const page = Math.max(1, Number(params.get("page")) || 1);
 
-  const posts = await getPosts(userId ? { userId } : { anonId: readAnonId() }, category);
-  return NextResponse.json({ posts });
+  const { posts, hasMore } = await getPosts(userId ? { userId } : { anonId: readAnonId() }, {
+    search,
+    sort,
+    page,
+  });
+  return NextResponse.json({ posts, hasMore });
 }
 
 const bodySchema = z.object({

@@ -36,6 +36,9 @@ model User {
   // 会員証(自室ページ)を /card/[id] で第三者に公開するかどうか
   cardPublic   Boolean @default(false)
 
+  // 掲示板の返信通知を最後に確認した日時(自分のスレッドへの新規コメントの未読判定に使う)
+  notificationsCheckedAt DateTime?
+
   loginLogs          LoginLog[]
   streak             Streak?
   missionCompletions MissionCompletion[]
@@ -312,6 +315,8 @@ model Post {
   // 実績報告で「いくら稼いだか」を任意入力(円)。技量(収益化)の算出にも使う
   revenueAmount Int?
   createdAt DateTime @default(now())
+  // 本人以外から最新コメントが付いた日時(返信通知の未読判定に使う)。自分のコメントでは更新しない
+  lastCommentAt DateTime?
 
   author   User?         @relation(fields: [authorId], references: [id], onDelete: Cascade)
   likes    PostLike[]

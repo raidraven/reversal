@@ -34,14 +34,14 @@ export default async function LandingPage() {
   const anonId = readAnonId();
   const visitorKey = session?.user?.id ? `user:${session.user.id}` : anonId ? `anon:${anonId}` : null;
 
-  const [texts, stats, latestArticles, latestPosts] = await Promise.all([
+  const [texts, stats, latestArticles, latestPostsResult] = await Promise.all([
     getSiteTexts(),
     getLandingStats(visitorKey),
     getPublishedArticles(),
-    getPosts(session?.user?.id ? { userId: session.user.id } : { anonId }),
+    getPosts(session?.user?.id ? { userId: session.user.id } : { anonId }, { pageSize: 1 }),
   ]);
   const latestArticle = latestArticles[0] ?? null;
-  const latestPost = latestPosts[0] ?? null;
+  const latestPost = latestPostsResult.posts[0] ?? null;
 
   return (
     <>

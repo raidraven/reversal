@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { getSiteTexts } from "@/lib/siteText";
+import { markNotificationsRead } from "@/lib/board";
 import { BoardFeed } from "@/components/board/BoardFeed";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function BoardPage() {
   const session = await getServerSession(authOptions);
   const isLoggedIn = !!session?.user?.id;
+  if (session?.user?.id) await markNotificationsRead(session.user.id);
   const texts = await getSiteTexts();
 
   return (

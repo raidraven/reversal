@@ -22,8 +22,17 @@ export function DesktopNav({ links, isLoggedIn }: Props) {
         <span className="mansion-title text-sm">リバーサル</span>
       </Link>
       {links.map((l) => (
-        <Link key={l.href} href={l.href} className={l.gold ? LINK_GOLD_CLASS : LINK_CLASS}>
+        <Link
+          key={l.href}
+          href={l.href}
+          className={`flex items-center justify-between ${l.gold ? LINK_GOLD_CLASS : LINK_CLASS}`}
+        >
           {l.label}
+          {!!l.badge && (
+            <span className="ml-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-wine-light px-1 text-[9px] font-bold text-stone-100">
+              {l.badge > 9 ? "9+" : l.badge}
+            </span>
+          )}
         </Link>
       ))}
       {isLoggedIn && (

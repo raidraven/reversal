@@ -6,6 +6,7 @@ import { MobileNavMenu, type NavLink } from "@/components/MobileNavMenu";
 import { DesktopNav } from "@/components/DesktopNav";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { getSiteText } from "@/lib/siteText";
+import { getUnreadReplyCount } from "@/lib/board";
 import { SITE_URL } from "@/lib/siteUrl";
 import "./globals.css";
 
@@ -39,6 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isLoggedIn = !!session?.user?.id;
   const boardName = await getSiteText("board.name");
   const roomBackLabel = await getSiteText("room.backLabel");
+  const unreadReplyCount = isLoggedIn ? await getUnreadReplyCount(session!.user.id) : 0;
 
   const navLinks: NavLink[] = isLoggedIn
     ? [
@@ -46,7 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         { href: "/home", label: roomBackLabel },
         { href: "/questions", label: "質問に答える" },
         { href: "/questions/new", label: "質問する" },
-        { href: "/board", label: boardName },
+        { href: "/board", label: boardName, badge: unreadReplyCount },
         { href: "/articles", label: "書庫" },
         ...(session!.user.isAdmin ? [{ href: "/admin", label: "主人の部屋", gold: true }] : []),
       ]
