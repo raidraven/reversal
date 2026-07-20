@@ -249,16 +249,19 @@ export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありま
       )}
 
       {!loading && posts && posts.length > 0 && (
-        <ul className="space-y-2">
+        <ul className="relative ml-3 space-y-5 border-l border-surface-border pl-6">
           {posts.map((p) => (
-            <li
-              key={p.id}
-              className={`game-card space-y-2 ${
-                p.authorIsAdmin ? "border-gold/60 bg-gold/5" : ""
-              }`}
-            >
-              <div className="flex items-center justify-between text-xs text-stone-500">
-                <span className="inline-flex items-center gap-1">
+            <li key={p.id} className="relative">
+              {/* タイムラインの目印(実況ログの記録点) */}
+              <span className="absolute -left-[29px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-surface bg-gold" />
+              <p className="mb-1.5 text-xs font-semibold text-gold-light">{formatDateTime(p.createdAt)}</p>
+
+              <div
+                className={`game-card space-y-2 ${
+                  p.authorIsAdmin ? "border-gold/60 bg-gold/5" : ""
+                }`}
+              >
+                <div className="flex items-center gap-1 text-xs text-stone-500">
                   <Icon name={POST_CATEGORY_ICONS[p.category]} size={14} />
                   {POST_CATEGORY_LABELS[p.category]} · {p.authorName}
                   {p.authorIsAdmin && (
@@ -267,63 +270,62 @@ export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありま
                     </span>
                   )}
                   {p.isMine && <span className="ml-1 text-gold-light">(あなた)</span>}
-                </span>
-                <span className="shrink-0 text-[10px] text-stone-600">{formatDateTime(p.createdAt)}</span>
-              </div>
-              <p className="text-sm font-semibold text-stone-100">{p.title}</p>
-              <p className="whitespace-pre-wrap text-sm text-stone-300">{p.content}</p>
-              {p.revenueAmount != null && (
-                <p className="flex items-center gap-1 text-xs font-bold text-gold-light">
-                  <Icon name="coin" size={14} /> 報告収益: {p.revenueAmount.toLocaleString()}円
-                </p>
-              )}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => like(p.id)}
-                    className={`flex items-center gap-1 text-xs transition-colors ${
-                      p.likedByMe ? "text-gold-light" : "text-stone-500 hover:text-gold-light"
-                    }`}
-                  >
-                    <Icon name={p.likedByMe ? "heart-filled" : "heart-outline"} size={14} /> {p.likeCount}
-                  </button>
-                  <button
-                    onClick={() => setOpenCommentsId(openCommentsId === p.id ? null : p.id)}
-                    className="flex items-center gap-1 text-xs text-stone-500 transition-colors hover:text-gold-light"
-                  >
-                    <Icon name="talk" size={14} /> {p.commentCount}
-                  </button>
                 </div>
-                {isLoggedIn && !p.isMine && (
-                  <button
-                    onClick={() => report(p.id)}
-                    disabled={p.reportedByMe}
-                    className="flex items-center gap-1 text-[10px] text-stone-600 transition-colors hover:text-wine-light disabled:cursor-default disabled:hover:text-stone-600"
-                  >
-                    {p.reportedByMe ? (
-                      "通報済み"
-                    ) : (
-                      <>
-                        <Icon name="flag" size={12} /> 通報する
-                      </>
-                    )}
-                  </button>
+                <p className="text-sm font-semibold text-stone-100">{p.title}</p>
+                <p className="whitespace-pre-wrap text-sm text-stone-300">{p.content}</p>
+                {p.revenueAmount != null && (
+                  <p className="flex items-center gap-1 text-xs font-bold text-gold-light">
+                    <Icon name="coin" size={14} /> 報告収益: {p.revenueAmount.toLocaleString()}円
+                  </p>
+                )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => like(p.id)}
+                      className={`flex items-center gap-1 text-xs transition-colors ${
+                        p.likedByMe ? "text-gold-light" : "text-stone-500 hover:text-gold-light"
+                      }`}
+                    >
+                      <Icon name={p.likedByMe ? "heart-filled" : "heart-outline"} size={14} /> {p.likeCount}
+                    </button>
+                    <button
+                      onClick={() => setOpenCommentsId(openCommentsId === p.id ? null : p.id)}
+                      className="flex items-center gap-1 text-xs text-stone-500 transition-colors hover:text-gold-light"
+                    >
+                      <Icon name="talk" size={14} /> {p.commentCount}
+                    </button>
+                  </div>
+                  {isLoggedIn && !p.isMine && (
+                    <button
+                      onClick={() => report(p.id)}
+                      disabled={p.reportedByMe}
+                      className="flex items-center gap-1 text-[10px] text-stone-600 transition-colors hover:text-wine-light disabled:cursor-default disabled:hover:text-stone-600"
+                    >
+                      {p.reportedByMe ? (
+                        "通報済み"
+                      ) : (
+                        <>
+                          <Icon name="flag" size={12} /> 通報する
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {openCommentsId === p.id && (
+                  <PostComments
+                    postId={p.id}
+                    isLoggedIn={isLoggedIn}
+                    onPosted={() =>
+                      setPosts((prev) =>
+                        prev
+                          ? prev.map((x) => (x.id === p.id ? { ...x, commentCount: x.commentCount + 1 } : x))
+                          : prev
+                      )
+                    }
+                  />
                 )}
               </div>
-
-              {openCommentsId === p.id && (
-                <PostComments
-                  postId={p.id}
-                  isLoggedIn={isLoggedIn}
-                  onPosted={() =>
-                    setPosts((prev) =>
-                      prev
-                        ? prev.map((x) => (x.id === p.id ? { ...x, commentCount: x.commentCount + 1 } : x))
-                        : prev
-                    )
-                  }
-                />
-              )}
             </li>
           ))}
         </ul>
