@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { POST_CATEGORIES, POST_CATEGORY_LABELS, type PostCategory } from "@/lib/boardCategories";
 import { Icon } from "@/components/Icon";
 
 type Props = {
@@ -13,7 +12,6 @@ type Props = {
 
 export function NewPostForm({ boardName, isLoggedIn }: Props) {
   const router = useRouter();
-  const [category, setCategory] = useState<PostCategory>("achievement");
   const [authorName, setAuthorName] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -31,13 +29,11 @@ export function NewPostForm({ boardName, isLoggedIn }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          category,
+          category: "free",
           title,
           content,
           ...(!isLoggedIn && authorName.trim() ? { authorName: authorName.trim() } : {}),
-          ...(category === "achievement" && revenueAmount.trim()
-            ? { revenueAmount: Number(revenueAmount) }
-            : {}),
+          ...(revenueAmount.trim() ? { revenueAmount: Number(revenueAmount) } : {}),
         }),
       });
       if (!res.ok) {
@@ -61,7 +57,7 @@ export function NewPostForm({ boardName, isLoggedIn }: Props) {
           <p className="flex justify-center">
             <Icon name="talk" size={32} />
           </p>
-          <h1 className="mansion-title mt-2 text-2xl">{boardName}へ投稿</h1>
+          <h1 className="mansion-title mt-2 text-2xl">{boardName}にスレッドを立てる</h1>
           <p className="mt-1 text-sm text-stone-400">仲間の来賓に、実績や学びを届けましょう</p>
         </div>
 
@@ -70,23 +66,6 @@ export function NewPostForm({ boardName, isLoggedIn }: Props) {
             {error}
           </p>
         )}
-
-        <div className="grid grid-cols-2 gap-2">
-          {POST_CATEGORIES.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setCategory(c)}
-              className={`rounded-md border py-2 text-xs transition-colors ${
-                category === c
-                  ? "border-gold bg-gold/15 text-gold-light"
-                  : "border-surface-border bg-surface-raised text-stone-300 hover:border-gold/40"
-              }`}
-            >
-              {POST_CATEGORY_LABELS[c]}
-            </button>
-          ))}
-        </div>
 
         {!isLoggedIn && (
           <input
@@ -119,26 +98,24 @@ export function NewPostForm({ boardName, isLoggedIn }: Props) {
           className="form-input resize-none"
         />
 
-        {category === "achievement" && (
-          <div className="space-y-1">
-            <label htmlFor="revenue" className="text-xs text-stone-400">
-              報告収益(円・任意)
-            </label>
-            <input
-              id="revenue"
-              type="number"
-              min={0}
-              step={1}
-              value={revenueAmount}
-              onChange={(e) => setRevenueAmount(e.target.value)}
-              placeholder="例: 1000"
-              className="form-input text-sm"
-            />
-          </div>
-        )}
+        <div className="space-y-1">
+          <label htmlFor="revenue" className="text-xs text-stone-400">
+            報告収益(円・任意)
+          </label>
+          <input
+            id="revenue"
+            type="number"
+            min={0}
+            step={1}
+            value={revenueAmount}
+            onChange={(e) => setRevenueAmount(e.target.value)}
+            placeholder="例: 1000"
+            className="form-input text-sm"
+          />
+        </div>
 
         <button type="submit" disabled={loading || !title.trim() || !content.trim()} className="neon-button w-full">
-          {loading ? "送信中…" : "投稿する"}
+          {loading ? "送信中…" : "スレッドを立てる"}
         </button>
         <p className="text-center text-[10px] text-stone-600">
           経験値の付与は1日1回までです。2件目以降も投稿自体は可能です。

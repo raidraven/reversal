@@ -1,13 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  POST_CATEGORIES,
-  POST_CATEGORY_ICONS,
-  POST_CATEGORY_LABELS,
-  type PostCategory,
-} from "@/lib/boardCategories";
+import type { PostCategory } from "@/lib/boardCategories";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
 
@@ -41,11 +36,6 @@ function formatDateTime(iso: string): string {
     timeStyle: "short",
   }).format(new Date(iso));
 }
-
-const TABS: Array<{ key: PostCategory | "all"; label: string }> = [
-  { key: "all", label: "すべて" },
-  ...POST_CATEGORIES.map((c) => ({ key: c, label: POST_CATEGORY_LABELS[c] })),
-];
 
 function PostComments({
   postId,
@@ -151,29 +141,35 @@ function PostComments({
 }
 
 export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありません。最初の一件を届けてみましょう。" }: Props) {
-  const [tab, setTab] = useState<PostCategory | "all">("all");
   const [posts, setPosts] = useState<PostItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [openCommentsId, setOpenCommentsId] = useState<string | null>(null);
-
-  async function load(category: PostCategory | "all") {
-    setLoading(true);
-    try {
-      const query = category === "all" ? "" : `?category=${category}`;
-      const res = await fetch(`/api/posts${query}`);
-      if (res.ok) {
-        const data = await res.json();
-        setPosts(data.posts);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    load(tab);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab]);
+    async function load() {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/posts");
+        if (res.ok) {
+          const data = await res.json();
+          setPosts(data.posts);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const filteredPosts = useMemo(() => {
+    if (!posts) return posts;
+    const q = query.trim().toLowerCase();
+    if (!q) return posts;
+    return posts.filter(
+      (p) => p.title.toLowerCase().includes(q) || p.content.toLowerCase().includes(q)
+    );
+  }, [posts, query]);
 
   async function like(postId: string) {
     setPosts((prev) =>
@@ -219,38 +215,34 @@ export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありま
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-1.5">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`rounded-full border px-3 py-1 text-xs transition-colors ${
-                tab === t.key
-                  ? "border-gold bg-gold/15 text-gold-light"
-                  : "border-surface-border text-stone-400 hover:border-gold/40"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="スレッドを検索"
+          className="form-input !py-1.5 max-w-[220px] flex-1 text-xs"
+        />
 
         <Link href="/board/new" className="ghost-button !px-3 !py-2 text-xs">
-          投稿する
+          スレッドを立てる
         </Link>
       </div>
 
       {loading && <div className="game-card h-24 animate-pulse" />}
 
-      {!loading && posts && posts.length === 0 && (
+      {!loading && filteredPosts && filteredPosts.length === 0 && (
         <p className="game-card text-sm text-stone-500">
-          <EditableText siteTextKey="board.emptyMessage" value={emptyMessage} />
+          {posts && posts.length > 0 ? (
+            "一致するスレッドが見つかりませんでした。"
+          ) : (
+            <EditableText siteTextKey="board.emptyMessage" value={emptyMessage} />
+          )}
         </p>
       )}
 
-      {!loading && posts && posts.length > 0 && (
+      {!loading && filteredPosts && filteredPosts.length > 0 && (
         <ul className="relative ml-3 space-y-5 border-l border-surface-border pl-6">
-          {posts.map((p) => (
+          {filteredPosts.map((p) => (
             <li key={p.id} className="relative">
               {/* タイムラインの目印(実況ログの記録点) */}
               <span className="absolute -left-[29px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-surface bg-gold" />
@@ -262,8 +254,7 @@ export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありま
                 }`}
               >
                 <div className="flex items-center gap-1 text-xs text-stone-500">
-                  <Icon name={POST_CATEGORY_ICONS[p.category]} size={14} />
-                  {POST_CATEGORY_LABELS[p.category]} · {p.authorName}
+                  {p.authorName}
                   {p.authorIsAdmin && (
                     <span className="ml-1 inline-flex items-center gap-0.5 rounded-full border border-gold/50 bg-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-gold-light">
                       <Icon name="candle" size={10} /> 運営

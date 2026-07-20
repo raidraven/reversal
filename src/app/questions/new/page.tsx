@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { DEFAULT_SITE_TEXT } from "@/lib/siteTextDefaults";
 import { Icon } from "@/components/Icon";
 
 export default function NewQuestionPage() {
@@ -11,18 +9,6 @@ export default function NewQuestionPage() {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [backLabel, setBackLabel] = useState(DEFAULT_SITE_TEXT["room.backLabel"]);
-
-  useEffect(() => {
-    fetch("/api/site-texts")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.texts?.["room.backLabel"]) setBackLabel(data.texts["room.backLabel"]);
-      })
-      .catch(() => {
-        /* デフォルト値のまま */
-      });
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -79,12 +65,6 @@ export default function NewQuestionPage() {
         <button type="submit" disabled={loading || !content.trim()} className="neon-button w-full">
           {loading ? "送信中…" : "問いを立てる"}
         </button>
-
-        <p className="text-center text-sm">
-          <Link href="/home" className="text-stone-400 hover:text-gold-light hover:underline">
-            {backLabel}
-          </Link>
-        </p>
       </form>
     </main>
   );

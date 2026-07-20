@@ -5,6 +5,7 @@ import type { NavLink } from "@/components/MobileNavMenu";
 
 type Props = {
   links: NavLink[];
+  isLoggedIn: boolean;
 };
 
 const LINK_CLASS =
@@ -12,8 +13,8 @@ const LINK_CLASS =
 const LINK_GOLD_CLASS =
   "rounded-md border border-gold/40 px-3 py-2 text-xs text-gold-light transition-colors hover:bg-gold/10";
 
-/** PCデスクトップ用の左端固定ナビ(縦並び)。モバイルの右スライドメニューは MobileNavMenu(全ページ共通・layout.tsx) が担当 */
-export function HeaderNav({ links }: Props) {
+/** PCデスクトップ用の左端固定ナビ(縦並び・全ページ共通)。モバイルの右スライドメニューは MobileNavMenu が担当 */
+export function DesktopNav({ links, isLoggedIn }: Props) {
   return (
     <nav className="fixed left-0 top-0 z-30 hidden h-full w-48 flex-col gap-2 overflow-y-auto border-r border-surface-border bg-surface-card/90 p-4 backdrop-blur lg:flex">
       <Link href="/" className="mb-2 flex items-center gap-2 text-sm text-stone-300 hover:text-gold-light">
@@ -25,9 +26,11 @@ export function HeaderNav({ links }: Props) {
           {l.label}
         </Link>
       ))}
-      <div className="mt-auto">
-        <LogoutButton className={LINK_CLASS + " w-full text-left"} />
-      </div>
+      {isLoggedIn && (
+        <div className="mt-auto">
+          <LogoutButton className={LINK_CLASS + " w-full text-left"} />
+        </div>
+      )}
     </nav>
   );
 }

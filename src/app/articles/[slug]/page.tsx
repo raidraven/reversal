@@ -13,6 +13,7 @@ import {
 import { getSiteTexts } from "@/lib/siteText";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
+import { EditableArticle } from "@/components/articles/EditableArticle";
 import { ArticleEngagement } from "@/components/articles/ArticleEngagement";
 import { AdMaxSP, AdMaxPC } from "@/components/AdMax";
 
@@ -59,15 +60,16 @@ export default async function ArticlePage({ params }: Props) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
       <article className="game-card">
-        <header className="border-b border-surface-border pb-4">
-          <h1 className="mansion-title text-2xl">{article.title}</h1>
-          {article.publishedAt && (
-            <p className="mt-2 text-xs text-stone-500">{formatDate(article.publishedAt)}</p>
-          )}
-        </header>
-
-        {/* 記事は管理者のみが執筆するため、生成HTMLをそのまま描画する */}
-        <div className="article-body mt-6" dangerouslySetInnerHTML={{ __html: html }} />
+        <EditableArticle
+          articleId={article.id}
+          title={article.title}
+          description={article.description}
+          content={article.content}
+          category={article.category as "guide" | "novel"}
+          published={article.published}
+          html={html}
+          publishedLabel={article.publishedAt ? formatDate(article.publishedAt) : null}
+        />
 
         <ArticleEngagement
           slug={article.slug}

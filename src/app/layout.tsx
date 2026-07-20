@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { EditModeProvider } from "@/components/admin/EditModeProvider";
 import { MobileNavMenu, type NavLink } from "@/components/MobileNavMenu";
+import { DesktopNav } from "@/components/DesktopNav";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { getSiteText } from "@/lib/siteText";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -35,28 +36,35 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
+  const isLoggedIn = !!session?.user?.id;
+  const boardName = await getSiteText("board.name");
+  const roomBackLabel = await getSiteText("room.backLabel");
 
-  let navLinks: NavLink[] = [];
-  if (session?.user?.id) {
-    const boardName = await getSiteText("board.name");
-    navLinks = [
-      { href: "/", label: "ホームに戻る" },
-      { href: "/home", label: "自室に戻る" },
-      { href: "/questions", label: "質問に答える" },
-      { href: "/questions/new", label: "質問する" },
-      { href: "/board", label: boardName },
-      { href: "/articles", label: "書庫" },
-      ...(session.user.isAdmin ? [{ href: "/admin", label: "主人の部屋", gold: true }] : []),
-    ];
-  }
+  const navLinks: NavLink[] = isLoggedIn
+    ? [
+        { href: "/", label: "ホームに戻る" },
+        { href: "/home", label: roomBackLabel },
+        { href: "/questions", label: "質問に答える" },
+        { href: "/questions/new", label: "質問する" },
+        { href: "/board", label: boardName },
+        { href: "/articles", label: "書庫" },
+        ...(session!.user.isAdmin ? [{ href: "/admin", label: "主人の部屋", gold: true }] : []),
+      ]
+    : [
+        { href: "/", label: "館の入口" },
+        { href: "/board", label: boardName },
+        { href: "/articles", label: "書庫" },
+        { href: "/signup", label: "招待状を受け取る", gold: true },
+      ];
 
   return (
     <html lang="ja">
       <body>
         <GoogleAnalytics />
         <EditModeProvider isAdmin={!!session?.user?.isAdmin}>
-          {children}
-          {session?.user?.id && <MobileNavMenu links={navLinks} />}
+          <DesktopNav links={navLinks} isLoggedIn={isLoggedIn} />
+          <div className="lg:pl-48">{children}</div>
+          {isLoggedIn && <MobileNavMenu links={navLinks} />}
         </EditModeProvider>
       </body>
     </html>

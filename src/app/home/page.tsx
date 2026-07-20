@@ -13,8 +13,6 @@ import { recordDailyActivity } from "@/lib/game";
 import { getTodaysMissions } from "@/lib/dailyMissions";
 import { computeSkillTotals } from "@/lib/skills";
 import { Icon } from "@/components/Icon";
-import { HeaderNav } from "@/components/home/HeaderNav";
-import type { NavLink } from "@/components/MobileNavMenu";
 import { PlayerStatusCard } from "@/components/home/PlayerStatusCard";
 import { MemberCard } from "@/components/home/MemberCard";
 import { CardSettingsPanel } from "@/components/home/CardSettingsPanel";
@@ -82,18 +80,8 @@ export default async function HomePage() {
   const streak = user.streak;
   const atRisk = completedIds.size === 0;
 
-  const navLinks: NavLink[] = [
-    { href: "/", label: "ホームに戻る" },
-    { href: "/questions", label: "質問に答える" },
-    { href: "/questions/new", label: "質問する" },
-    { href: "/board", label: texts["board.name"] },
-    { href: "/articles", label: "書庫" },
-    ...(session.user.isAdmin ? [{ href: "/admin", label: "主人の部屋", gold: true }] : []),
-  ];
-
   return (
-    <main className="mx-auto max-w-md px-4 pb-24 lg:max-w-5xl lg:pl-56">
-      <HeaderNav links={navLinks} />
+    <main className="mx-auto max-w-md px-4 pb-24 lg:max-w-5xl">
       <header className="flex items-center justify-between py-4">
         <h1 className="mansion-title flex items-center gap-2 text-lg">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80">

@@ -16,6 +16,8 @@ export const DEFAULT_SITE_TEXT: Record<string, string> = {
   "board.description": "副業初心者の来賓たちが、実績・学び・ツール活用のコツを持ち寄る場所です。",
   "board.emptyMessage": "まだ投稿がありません。最初の一件を届けてみましょう。",
   "board.postNote": "どなたでも(未登録でも)投稿・コメントできます。",
+  "board.guidelines":
+    "・誇張や虚偽の収益報告はご遠慮ください\n・他の来賓への誹謗中傷はご遠慮ください\n・宣伝・勧誘目的の投稿はご遠慮ください",
   "articles.title": "書庫",
   "articles.description": "AI副業の始め方・続け方の攻略記事。運営者自身の実践記録とともに",
   "articles.guideSectionTitle": "攻略記事",
@@ -139,6 +141,7 @@ export const SITE_TEXT_LABELS: Record<string, string> = {
   "board.description": "談話室ページの説明文",
   "board.emptyMessage": "談話室に投稿が無い時のメッセージ",
   "board.postNote": "談話室見出し下の「誰でも投稿できます」注記",
+  "board.guidelines": "談話室のガイドライン(投稿ルール)",
   "articles.title": "書庫ページの見出し",
   "articles.description": "書庫ページの説明文",
   "articles.guideSectionTitle": "書庫「攻略記事」セクションの見出し",

@@ -75,9 +75,6 @@ export default async function LandingPage() {
             <p className="text-sm text-stone-300">
               <EditableText siteTextKey="landing.loggedInMessage" value={texts["landing.loggedInMessage"]} />
             </p>
-            <Link href="/home" className="neon-button block text-center">
-              {texts["room.backLabel"]}
-            </Link>
             <LogoutButton />
           </div>
         ) : (
