@@ -44,7 +44,27 @@ export default async function LandingPage() {
   const latestPost = latestPosts[0] ?? null;
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col px-6 py-12 lg:grid lg:grid-cols-[320px_1fr] lg:items-start lg:gap-10">
+    <>
+      {/* 冒頭ヒーロー:洋館の一枚絵で世界観を掴む */}
+      <section className="relative flex min-h-[46vh] items-end justify-center overflow-hidden px-6 pb-10 pt-24 sm:min-h-[56vh]">
+        <div
+          className="absolute inset-0 bg-cover bg-top"
+          style={{ backgroundImage: "url(/images/mansion-bg.jpg)" }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/55 to-surface" aria-hidden />
+        <div className="relative z-10 mx-auto max-w-2xl text-center">
+          <h1 className="mansion-title flex items-center justify-center gap-2 text-4xl sm:text-5xl">
+            <Icon name="candle" size={36} />
+            <EditableText siteTextKey="site.name" value={texts["site.name"]} />
+          </h1>
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-stone-200 sm:text-base">
+            <EditableText siteTextKey="landing.intro" value={texts["landing.intro"]} multiline />
+          </p>
+        </div>
+      </section>
+
+      <main className="mx-auto flex max-w-5xl flex-col px-6 pb-12 lg:grid lg:grid-cols-[320px_1fr] lg:items-start lg:gap-10">
       {/* 左側:ログイン状態・活気統計・主催者への要望(縦長サイドバー) */}
       <aside className="order-2 mt-10 space-y-6 lg:order-1 lg:mt-0">
         {isLoggedIn ? (
@@ -113,17 +133,8 @@ export default async function LandingPage() {
 
       {/* 中央:コンテンツ(横長) */}
       <div className="order-1 mx-auto w-full max-w-2xl lg:order-2">
-        <h1 className="mansion-title flex items-center gap-2 text-4xl">
-          <Icon name="candle" size={36} />
-          <EditableText siteTextKey="site.name" value={texts["site.name"]} />
-        </h1>
-
-        <div className="game-card mt-8 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
-          <EditableText siteTextKey="landing.intro" value={texts["landing.intro"]} multiline />
-        </div>
-
         {/* 主催者から一言 */}
-        <div className="game-card mt-4">
+        <div className="game-card">
           <h2 className="mansion-title text-base">
             <EditableText siteTextKey="landing.hostMessageTitle" value={texts["landing.hostMessageTitle"]} />
           </h2>
@@ -212,6 +223,7 @@ export default async function LandingPage() {
           </Link>
         </footer>
       </div>
-    </main>
+      </main>
+    </>
   );
 }

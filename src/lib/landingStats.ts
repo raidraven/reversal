@@ -14,11 +14,19 @@ export type LandingStats = {
  */
 async function recordLandingVisit(visitorKey: string | null): Promise<void> {
   if (!visitorKey) return;
-  await prisma.landingVisit.upsert({
-    where: { visitorKey },
-    create: { visitorKey },
-    update: {},
-  });
+  try {
+    await prisma.landingVisit.upsert({
+      where: { visitorKey },
+      create: { visitorKey },
+      update: {},
+    });
+  } catch (e) {
+    // 同一visitorKeyへの同時アクセスでupsert同士が競合し、一意制約違反(P2002)になることがある。
+    // 記録自体はどちらかのリクエストで成功しているはずなので無視してよい。
+    // (バンドル境界をまたぐとPrismaClientKnownRequestErrorのinstanceofが効かないことがあるため、codeプロパティで判定する)
+    const code = (e as { code?: string } | null)?.code;
+    if (code !== "P2002") throw e;
+  }
 }
 
 export async function getLandingStats(visitorKey: string | null): Promise<LandingStats> {
