@@ -136,16 +136,6 @@ export default async function LandingPage() {
           latestArticle={latestArticle ? { slug: latestArticle.slug, title: latestArticle.title } : null}
         />
 
-        {/* 主催者から一言 */}
-        <div className="game-card mt-4">
-          <h2 className="mansion-title text-base">
-            <EditableText siteTextKey="landing.hostMessageTitle" value={texts["landing.hostMessageTitle"]} />
-          </h2>
-          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
-            <EditableText siteTextKey="landing.hostMessage" value={texts["landing.hostMessage"]} multiline />
-          </p>
-        </div>
-
         {/* 最新の記事 */}
         <div className="game-card mt-4">
           <h2 className="mansion-title flex items-center gap-1.5 text-base">
