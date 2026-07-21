@@ -8,6 +8,7 @@ import { getPosts } from "@/lib/board";
 import { readAnonId } from "@/lib/anonId";
 import { HostRequestForm } from "@/components/landing/HostRequestForm";
 import { LoginPanel } from "@/components/landing/LoginPanel";
+import { CompanionUpdateNote } from "@/components/landing/CompanionUpdateNote";
 import { LogoutButton } from "@/components/LogoutButton";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
@@ -129,8 +130,14 @@ export default async function LandingPage() {
 
       {/* 中央:コンテンツ(横長) */}
       <div className="order-1 mx-auto w-full max-w-2xl lg:order-2">
+        {/* クロエからのお知らせ(おすすめコンテンツ・更新情報) */}
+        <CompanionUpdateNote
+          updateNote={texts["landing.companionUpdateNote"]}
+          latestArticle={latestArticle ? { slug: latestArticle.slug, title: latestArticle.title } : null}
+        />
+
         {/* 主催者から一言 */}
-        <div className="game-card">
+        <div className="game-card mt-4">
           <h2 className="mansion-title text-base">
             <EditableText siteTextKey="landing.hostMessageTitle" value={texts["landing.hostMessageTitle"]} />
           </h2>
