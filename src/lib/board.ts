@@ -109,6 +109,42 @@ export async function getPosts(
   return { posts: items.slice(0, pageSize), hasMore };
 }
 
+/** スレッド個別ページ向けに1件だけ取得する(未ログイン可) */
+export async function getPost(viewer: Viewer, postId: string): Promise<PostItem | null> {
+  const p = await prisma.post.findUnique({
+    where: { id: postId },
+    include: {
+      author: { select: { name: true, isAdmin: true } },
+      likes: { select: { userId: true, anonId: true } },
+      comments: { select: { id: true } },
+      reports: viewer.userId ? { where: { reporterId: viewer.userId }, select: { id: true } } : false,
+    },
+  });
+  if (!p) return null;
+
+  return {
+    id: p.id,
+    category: isPostCategory(p.category) ? p.category : "tip",
+    title: p.title,
+    content: p.content,
+    revenueAmount: p.revenueAmount,
+    authorName: p.author?.name ?? p.authorName ?? ANONYMOUS_LABEL,
+    authorIsAdmin: p.author?.isAdmin ?? false,
+    createdAt: p.createdAt,
+    likeCount: p.likes.length,
+    likedByMe: p.likes.some(
+      (l) =>
+        (!!viewer.userId && l.userId === viewer.userId) ||
+        (!!viewer.anonId && l.anonId === viewer.anonId)
+    ),
+    commentCount: p.comments.length,
+    isMine:
+      (!!viewer.userId && p.authorId === viewer.userId) ||
+      (!!viewer.anonId && p.anonId === viewer.anonId),
+    reportedByMe: Array.isArray(p.reports) && p.reports.length > 0,
+  };
+}
+
 export type CreatePostResult =
   | { ok: true; id: string; expGained: number; leveledUp: boolean; newLevel: number }
   | { ok: false; reason: "rejected"; message: string }

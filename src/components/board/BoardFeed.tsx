@@ -5,6 +5,8 @@ import Link from "next/link";
 import type { PostCategory } from "@/lib/boardCategories";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
+import { PostComments } from "@/components/board/PostComments";
+import { EditPostForm } from "@/components/board/EditPostForm";
 
 type PostItem = {
   id: string;
@@ -22,8 +24,6 @@ type PostItem = {
   reportedByMe: boolean;
 };
 
-type Comment = { id: string; authorName: string; content: string; createdAt: string };
-
 type Props = {
   isLoggedIn: boolean;
   emptyMessage?: string;
@@ -37,184 +37,6 @@ function formatDateTime(iso: string): string {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(iso));
-}
-
-function PostComments({
-  postId,
-  isLoggedIn,
-  onPosted,
-}: {
-  postId: string;
-  isLoggedIn: boolean;
-  onPosted: () => void;
-}) {
-  const [comments, setComments] = useState<Comment[] | null>(null);
-  const [name, setName] = useState("");
-  const [content, setContent] = useState("");
-  const [posting, setPosting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch(`/api/posts/${postId}/comments`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setComments(data?.comments ?? []))
-      .catch(() => setComments([]));
-  }, [postId]);
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!content.trim() || posting) return;
-    setPosting(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/posts/${postId}/comments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ authorName: name.trim() || undefined, content }),
-      });
-      const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        setError(data?.error ?? "投稿に失敗しました");
-        return;
-      }
-      setComments((prev) => [...(prev ?? []), data.comment]);
-      setContent("");
-      onPosted();
-    } catch {
-      setError("通信エラーが発生しました");
-    } finally {
-      setPosting(false);
-    }
-  }
-
-  return (
-    <div className="space-y-2 border-t border-surface-border pt-2">
-      {comments === null ? (
-        <p className="text-xs text-stone-600">読み込み中…</p>
-      ) : comments.length === 0 ? (
-        <p className="text-xs text-stone-600">まだコメントはありません。</p>
-      ) : (
-        <ul className="space-y-1.5">
-          {comments.map((c) => (
-            <li key={c.id} className="rounded-md bg-surface-card p-2">
-              <div className="flex items-center justify-between text-[10px] text-stone-500">
-                <span className="font-semibold text-stone-300">{c.authorName}</span>
-                <span>{formatDateTime(c.createdAt)}</span>
-              </div>
-              <p className="mt-0.5 whitespace-pre-wrap text-xs text-stone-200">{c.content}</p>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {error && <p className="text-[10px] text-gold-light">{error}</p>}
-
-      <form onSubmit={submit} className="space-y-1.5">
-        {!isLoggedIn && (
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="お名前(任意・空欄なら「匿名の来賓」)"
-            maxLength={50}
-            className="form-input !py-1 text-xs"
-          />
-        )}
-        <div className="flex gap-1.5">
-          <input
-            type="text"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="コメントする"
-            maxLength={1000}
-            className="form-input !py-1 flex-1 text-xs"
-          />
-          <button
-            type="submit"
-            disabled={posting || !content.trim()}
-            className="ghost-button shrink-0 !px-3 !py-1 text-xs"
-          >
-            送信
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function EditPostForm({
-  post,
-  onSaved,
-  onCancel,
-}: {
-  post: PostItem;
-  onSaved: (updated: { title: string; content: string; revenueAmount: number | null }) => void;
-  onCancel: () => void;
-}) {
-  const [title, setTitle] = useState(post.title);
-  const [content, setContent] = useState(post.content);
-  const [revenueAmount, setRevenueAmount] = useState(post.revenueAmount?.toString() ?? "");
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function save() {
-    if (!title.trim() || !content.trim() || saving) return;
-    setSaving(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/posts/${post.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          content,
-          ...(revenueAmount.trim() ? { revenueAmount: Number(revenueAmount) } : {}),
-        }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        setError(data?.error ?? "保存に失敗しました");
-        return;
-      }
-      onSaved({ title, content, revenueAmount: revenueAmount.trim() ? Number(revenueAmount) : null });
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <div className="space-y-2">
-      <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={60} className="form-input text-sm" />
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        rows={4}
-        maxLength={2000}
-        className="form-input resize-none text-sm"
-      />
-      <input
-        type="number"
-        min={0}
-        value={revenueAmount}
-        onChange={(e) => setRevenueAmount(e.target.value)}
-        placeholder="報告収益(円・任意)"
-        className="form-input text-sm"
-      />
-      {error && <p className="text-xs text-gold-light">{error}</p>}
-      <div className="flex gap-2">
-        <button
-          onClick={save}
-          disabled={saving || !title.trim() || !content.trim()}
-          className="ghost-button !px-3 !py-1.5 text-xs"
-        >
-          {saving ? "保存中…" : "保存する"}
-        </button>
-        <button onClick={onCancel} className="text-xs text-stone-500 hover:text-stone-300">
-          キャンセル
-        </button>
-      </div>
-    </div>
-  );
 }
 
 export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありません。最初の一件を届けてみましょう。" }: Props) {
@@ -390,7 +212,9 @@ export function BoardFeed({ isLoggedIn, emptyMessage = "まだ投稿がありま
                   />
                 ) : (
                   <>
-                    <p className="text-sm font-semibold text-stone-100">{p.title}</p>
+                    <Link href={`/board/${p.id}`} className="block text-sm font-semibold text-stone-100 hover:text-gold-light">
+                      {p.title}
+                    </Link>
                     <p className="whitespace-pre-wrap text-sm text-stone-300">{p.content}</p>
                     {p.revenueAmount != null && (
                       <p className="inline-flex items-center gap-1 rounded-full border border-gold/40 bg-gold/10 px-2 py-0.5 text-xs font-bold text-gold-light">

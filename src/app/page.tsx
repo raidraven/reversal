@@ -5,7 +5,6 @@ import { getSiteTexts } from "@/lib/siteText";
 import { getLandingStats } from "@/lib/landingStats";
 import { getPublishedArticles } from "@/lib/articles";
 import { getPosts } from "@/lib/board";
-import { POST_CATEGORY_LABELS } from "@/lib/boardCategories";
 import { readAnonId } from "@/lib/anonId";
 import { HostRequestForm } from "@/components/landing/HostRequestForm";
 import { LoginPanel } from "@/components/landing/LoginPanel";
@@ -180,18 +179,16 @@ export default async function LandingPage() {
           </p>
           <div className="mt-2">
             {latestPost ? (
-              <div className="game-card space-y-2">
+              <Link href={`/board/${latestPost.id}`} className="game-card block space-y-2 transition-colors hover:border-gold/40">
                 <div className="flex items-center justify-between text-xs text-stone-500">
-                  <span>
-                    {POST_CATEGORY_LABELS[latestPost.category]} · {latestPost.authorName}
-                  </span>
+                  <span>{latestPost.authorName}</span>
                   <span className="shrink-0 text-[10px] text-stone-600">
                     {formatDateTime(latestPost.createdAt)}
                   </span>
                 </div>
                 <p className="text-sm font-semibold text-stone-100">{latestPost.title}</p>
                 <p className="line-clamp-3 whitespace-pre-wrap text-sm text-stone-300">{latestPost.content}</p>
-              </div>
+              </Link>
             ) : (
               <p className="game-card text-sm text-stone-500">
                 <EditableText siteTextKey="board.emptyMessage" value={texts["board.emptyMessage"]} />

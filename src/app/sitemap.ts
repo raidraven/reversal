@@ -11,6 +11,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: { slug: true, publishedAt: true },
   });
 
+  const posts = await prisma.post.findMany({
+    orderBy: { createdAt: "desc" },
+    select: { id: true, createdAt: true },
+  });
+
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: SITE_URL, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/articles`, changeFrequency: "daily", priority: 0.9 },
@@ -27,5 +32,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...articleRoutes];
+  const postRoutes: MetadataRoute.Sitemap = posts.map((p) => ({
+    url: `${SITE_URL}/board/${p.id}`,
+    lastModified: p.createdAt,
+    changeFrequency: "weekly",
+    priority: 0.5,
+  }));
+
+  return [...staticRoutes, ...articleRoutes, ...postRoutes];
 }
