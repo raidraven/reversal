@@ -120,15 +120,15 @@ function PostComments({
             className="form-input !py-1 text-xs"
           />
         )}
-        <div className="flex gap-1.5">
-          <input
-            type="text"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="コメントする"
-            maxLength={1000}
-            className="form-input !py-1 flex-1 text-xs"
-          />
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="コメントする"
+          maxLength={1000}
+          rows={3}
+          className="form-input resize-none text-xs"
+        />
+        <div className="flex justify-end">
           <button
             type="submit"
             disabled={posting || !content.trim()}
