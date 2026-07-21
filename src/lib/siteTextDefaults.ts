@@ -45,9 +45,6 @@ export const DEFAULT_SITE_TEXT: Record<string, string> = {
   "qna.board.title": "今宵の問い",
   "streak.label": "本日の来館",
   "room.backLabel": "自室に戻る",
-  "landing.hostMessageTitle": "主催者から一言",
-  "landing.hostMessage":
-    "AI副業という慣れない挑戦に踏み出したあなたを、心から歓迎します。焦らず、しかし着実に。この洋館が、その一歩を支える場所になれば幸いです。",
   "hostRequest.placeholder": "主催者へお伝えしたいことをお書きください",
   "hostRequest.completedMessage": "要望をお預かりいたしました。主催者に必ずお届けいたします。",
   "landing.stats.guestLabel": "名の来賓",
@@ -169,8 +166,6 @@ export const SITE_TEXT_LABELS: Record<string, string> = {
   "qna.board.title": "一問一答の見出し",
   "streak.label": "連続来館カードの見出し",
   "room.backLabel": "自室(ホーム画面)への戻りリンクの文言",
-  "landing.hostMessageTitle": "ランディングページ「主催者から一言」の見出し",
-  "landing.hostMessage": "ランディングページ「主催者から一言」の本文",
   "hostRequest.placeholder": "主催者への要望フォームの入力欄プレースホルダー",
   "hostRequest.completedMessage": "主催者への要望フォームの送信完了メッセージ",
   "landing.stats.guestLabel": "ランディングページの統計「来賓数」のラベル",

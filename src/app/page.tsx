@@ -130,18 +130,8 @@ export default async function LandingPage() {
 
       {/* 中央:コンテンツ(横長) */}
       <div className="order-1 mx-auto w-full max-w-2xl lg:order-2">
-        {/* 主催者から一言 */}
-        <div className="game-card">
-          <h2 className="mansion-title text-base">
-            <EditableText siteTextKey="landing.hostMessageTitle" value={texts["landing.hostMessageTitle"]} />
-          </h2>
-          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-stone-300">
-            <EditableText siteTextKey="landing.hostMessage" value={texts["landing.hostMessage"]} multiline />
-          </p>
-        </div>
-
         {/* 最新の記事 */}
-        <div className="game-card mt-4">
+        <div className="game-card">
           <h2 className="mansion-title flex items-center gap-1.5 text-base">
             <Icon name="scroll" size={18} />
             <EditableText siteTextKey="landing.latestArticleTitle" value={texts["landing.latestArticleTitle"]} />
