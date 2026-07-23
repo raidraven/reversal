@@ -100,6 +100,9 @@ body {
 .article-body pre code {
   @apply bg-transparent p-0 text-stone-300;
 }
+.article-body img {
+  @apply mt-4 w-full rounded-md border border-surface-border;
+}
 .article-body hr {
   @apply my-6 border-surface-border;
 }

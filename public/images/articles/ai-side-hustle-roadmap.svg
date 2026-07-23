@@ -1,0 +1,86 @@
+<svg viewBox="0 0 800 980" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif">
+  <defs>
+    <linearGradient id="cardBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e6c878" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#8a6f2f" stop-opacity="0.35" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="980" fill="#0a0708" />
+
+  <!-- タイトル -->
+  <text x="400" y="52" text-anchor="middle" fill="#e6c878" font-size="28" letter-spacing="1">
+    位階ロードマップ
+  </text>
+  <text x="400" y="80" text-anchor="middle" fill="#8a7a6a" font-size="14" letter-spacing="2">
+    Lv.1 扉を開いた者 → Lv.3 見習いの仮面 → Lv.5 夜会の常連
+  </text>
+
+  <!-- 縦の接続線 -->
+  <line x1="400" y1="140" x2="400" y2="920" stroke="#8a6f2f" stroke-width="2" stroke-dasharray="2 6" opacity="0.5" />
+
+  <!-- ===== Lv.1 カード ===== -->
+  <g transform="translate(60,120)">
+    <rect width="680" height="230" rx="14" fill="#160f11" stroke="url(#cardBorder)" stroke-width="2" />
+    <circle cx="60" cy="55" r="30" fill="#1f1418" stroke="#c9a24d" stroke-width="2" />
+    <text x="60" y="63" text-anchor="middle" fill="#e6c878" font-size="24" font-weight="bold">1</text>
+    <text x="105" y="48" fill="#8a7a6a" font-size="13">位階 Lv.1</text>
+    <text x="105" y="72" fill="#f5ede0" font-size="22" font-weight="bold">扉を開いた者 ― 土台を作る期間</text>
+
+    <text x="40" y="115" fill="#e6c878" font-size="15" font-weight="bold">やること</text>
+    <text x="40" y="140" fill="#d8cfc2" font-size="14">・AIツールを1つだけ選んで、1週間触ってみる</text>
+    <text x="40" y="163" fill="#d8cfc2" font-size="14">・発信する場所を1つ決める(X / 掲示板など)</text>
+    <text x="40" y="186" fill="#d8cfc2" font-size="14">・今日AIで何をしたかを1行でいいので記録する</text>
+
+    <text x="400" y="115" fill="#7d2438" font-size="15" font-weight="bold">やらなくていい</text>
+    <text x="400" y="140" fill="#a08e93" font-size="14">・収益化の方法を細かく調べる</text>
+    <text x="400" y="163" fill="#a08e93" font-size="14">・高額講座や情報商材を探す</text>
+    <text x="400" y="186" fill="#a08e93" font-size="14">・フォロワー数を気にする</text>
+  </g>
+
+  <!-- 矢印 1→3 -->
+  <polygon points="400,360 388,338 412,338" fill="#c9a24d" />
+
+  <!-- ===== Lv.3 カード ===== -->
+  <g transform="translate(60,370)">
+    <rect width="680" height="230" rx="14" fill="#160f11" stroke="url(#cardBorder)" stroke-width="2" />
+    <circle cx="60" cy="55" r="30" fill="#1f1418" stroke="#c9a24d" stroke-width="2" />
+    <text x="60" y="63" text-anchor="middle" fill="#e6c878" font-size="24" font-weight="bold">3</text>
+    <text x="105" y="48" fill="#8a7a6a" font-size="13">位階 Lv.3</text>
+    <text x="105" y="72" fill="#f5ede0" font-size="22" font-weight="bold">見習いの仮面 ― 発信を型にする期間</text>
+
+    <text x="40" y="115" fill="#e6c878" font-size="15" font-weight="bold">やること</text>
+    <text x="40" y="140" fill="#d8cfc2" font-size="14">・発信のローテーションを曜日ごとに決める</text>
+    <text x="40" y="163" fill="#d8cfc2" font-size="14">・他の来賓の実践記録を掲示板で見る</text>
+    <text x="40" y="186" fill="#d8cfc2" font-size="14">・小さな成果も言語化して積み上げる</text>
+
+    <text x="400" y="115" fill="#7d2438" font-size="15" font-weight="bold">つまずきやすい</text>
+    <text x="400" y="140" fill="#a08e93" font-size="14">・反応がない時期に発信をやめてしまう</text>
+    <text x="400" y="163" fill="#a08e93" font-size="14">・反応は「続けた人」に後から追いつく</text>
+  </g>
+
+  <!-- 矢印 3→5 -->
+  <polygon points="400,610 388,588 412,588" fill="#c9a24d" />
+
+  <!-- ===== Lv.5 カード ===== -->
+  <g transform="translate(60,620)">
+    <rect width="680" height="230" rx="14" fill="#160f11" stroke="url(#cardBorder)" stroke-width="2" />
+    <circle cx="60" cy="55" r="30" fill="#1f1418" stroke="#c9a24d" stroke-width="2" />
+    <text x="60" y="63" text-anchor="middle" fill="#e6c878" font-size="24" font-weight="bold">5</text>
+    <text x="105" y="48" fill="#8a7a6a" font-size="13">位階 Lv.5</text>
+    <text x="105" y="72" fill="#f5ede0" font-size="22" font-weight="bold">夜会の常連 ― 収益化の種をまく期間</text>
+
+    <text x="40" y="115" fill="#e6c878" font-size="15" font-weight="bold">やること</text>
+    <text x="40" y="140" fill="#d8cfc2" font-size="14">・自分の実践記録そのものを資産にする</text>
+    <text x="40" y="163" fill="#d8cfc2" font-size="14">・高単価な案件を1つ選んで深く扱う</text>
+    <text x="40" y="186" fill="#d8cfc2" font-size="14">・誠実さを手放さない(誇張しない)</text>
+
+    <text x="400" y="115" fill="#7d2438" font-size="15" font-weight="bold">注意</text>
+    <text x="400" y="140" fill="#a08e93" font-size="14">・土台がないまま焦って収益化しない</text>
+  </g>
+
+  <!-- フッター -->
+  <text x="400" y="945" text-anchor="middle" fill="#8a7a6a" font-size="13">
+    「稼げます」ではなく「続けられます」を目的にした3段階
+  </text>
+</svg>
