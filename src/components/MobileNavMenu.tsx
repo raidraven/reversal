@@ -15,6 +15,7 @@ export type NavLink = {
 
 type Props = {
   links: NavLink[];
+  isLoggedIn: boolean;
 };
 
 const DRAWER_LINK_CLASS =
@@ -23,7 +24,7 @@ const DRAWER_LINK_GOLD_CLASS =
   "rounded-md border border-gold/40 px-3 py-2.5 text-sm text-gold-light transition-colors hover:bg-gold/10";
 
 /** 全ページ共通のモバイル用サイドメニュー(ハンバーガー→右スライド)。スクロールしても常に表示される */
-export function MobileNavMenu({ links }: Props) {
+export function MobileNavMenu({ links, isLoggedIn }: Props) {
   const [open, setOpen] = useState(false);
   const totalBadge = links.reduce((sum, l) => sum + (l.badge ?? 0), 0);
 
@@ -72,16 +73,18 @@ export function MobileNavMenu({ links }: Props) {
                 )}
               </Link>
             ))}
-            <div className="mt-1 flex flex-col gap-2">
-              <LogoutButton className={DRAWER_LINK_CLASS + " w-full text-left"} />
-              <Link
-                href="/withdraw"
-                onClick={() => setOpen(false)}
-                className={DRAWER_LINK_CLASS + " text-center text-stone-500"}
-              >
-                退会する
-              </Link>
-            </div>
+            {isLoggedIn && (
+              <div className="mt-1 flex flex-col gap-2">
+                <LogoutButton className={DRAWER_LINK_CLASS + " w-full text-left"} />
+                <Link
+                  href="/withdraw"
+                  onClick={() => setOpen(false)}
+                  className={DRAWER_LINK_CLASS + " text-center text-stone-500"}
+                >
+                  退会する
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

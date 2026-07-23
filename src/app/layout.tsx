@@ -54,6 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       ]
     : [
         { href: "/", label: "館の入口" },
+        { href: "/experience", label: "体験する" },
         { href: "/board", label: boardName },
         { href: "/articles", label: "書庫" },
         { href: "/signup", label: "招待状を受け取る", gold: true },
@@ -66,7 +67,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <EditModeProvider isAdmin={!!session?.user?.isAdmin}>
           <DesktopNav links={navLinks} isLoggedIn={isLoggedIn} />
           <div className="lg:pl-48">{children}</div>
-          {isLoggedIn && <MobileNavMenu links={navLinks} />}
+          <MobileNavMenu links={navLinks} isLoggedIn={isLoggedIn} />
         </EditModeProvider>
       </body>
     </html>
