@@ -46,6 +46,11 @@ export default async function PublicCardPage({ params }: Props) {
           level={user.level}
           title={titleForRank(user.level, ranks)}
           memberSince={user.createdAt}
+          bio={user.bio}
+          links={[
+            user.link1Label && user.link1Url ? { label: user.link1Label, url: user.link1Url } : null,
+            user.link2Label && user.link2Url ? { label: user.link2Label, url: user.link2Url } : null,
+          ].filter((l): l is { label: string; url: string } => l !== null)}
         />
       )}
 

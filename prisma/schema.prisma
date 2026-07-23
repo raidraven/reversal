@@ -36,6 +36,13 @@ model User {
   // 会員証(自室ページ)を /card/[id] で第三者に公開するかどうか
   cardPublic   Boolean @default(false)
 
+  // 会員証に載せるプロフィール情報(全て任意)。link1/2は「表示名+URL」の組
+  bio       String?
+  link1Label String?
+  link1Url   String?
+  link2Label String?
+  link2Url   String?
+
   // 掲示板の返信通知を最後に確認した日時(自分のスレッドへの新規コメントの未読判定に使う)
   notificationsCheckedAt DateTime?
 

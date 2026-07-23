@@ -1,19 +1,37 @@
 import { Icon, type IconName } from "@/components/Icon";
 
+export type CardLink = { label: string; url: string };
+
 type Props = {
   name: string;
   avatarIcon: IconName;
   level: number;
   title: string;
-  memberSince: Date;
+  /** 入館日。省略時は memberSinceLabel を使う(体験版プレビュー等、実在の日付がない場合) */
+  memberSince?: Date;
+  memberSinceLabel?: string;
+  bio?: string | null;
+  links?: CardLink[];
 };
 
 function formatDate(d: Date): string {
   return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium" }).format(d);
 }
 
-/** 会員証。/home(本人・非公開含む)と /card/[id](公開時のみ第三者に表示)の両方から使う */
-export function MemberCard({ name, avatarIcon, level, title, memberSince }: Props) {
+/** httpまたはhttps以外のURL(javascript:等)を弾く。安全なリンクのみ描画するため */
+function isSafeUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/** 会員証。/home(本人・非公開含む)・/card/[id](公開時のみ第三者に表示)・/profile-card(未登録の体験版)から使う */
+export function MemberCard({ name, avatarIcon, level, title, memberSince, memberSinceLabel, bio, links }: Props) {
+  const safeLinks = (links ?? []).filter((l) => l.label.trim() && isSafeUrl(l.url));
+
   return (
     <section className="game-card relative overflow-hidden border-gold/40">
       <div className="pointer-events-none absolute -right-6 -top-6 opacity-10">
@@ -39,8 +57,27 @@ export function MemberCard({ name, avatarIcon, level, title, memberSince }: Prop
           </span>
         </span>
       </div>
+
+      {bio && <p className="mt-3 whitespace-pre-wrap text-sm text-stone-300">{bio}</p>}
+
+      {safeLinks.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {safeLinks.map((l) => (
+            <a
+              key={l.url}
+              href={l.url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-gold/40 px-3 py-1 text-xs text-gold-light hover:bg-gold/10"
+            >
+              {l.label}
+            </a>
+          ))}
+        </div>
+      )}
+
       <p className="mt-4 border-t border-surface-border pt-3 text-right text-[10px] text-stone-500">
-        入館日: {formatDate(memberSince)}
+        入館日: {memberSince ? formatDate(memberSince) : memberSinceLabel}
       </p>
     </section>
   );
