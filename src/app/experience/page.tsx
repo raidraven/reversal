@@ -17,9 +17,9 @@ export default function ExperiencePage() {
         </p>
         <h1 className="mansion-title mt-2 text-2xl">体験する</h1>
         <p className="mt-2 text-sm leading-relaxed text-stone-400">
-          この館では、日々の小さな行動を「今宵の使命」として経験値に変え、位階を上げていきます。
+          この館に入館すると「自室」というあなただけの部屋が与えられます。
           <br />
-          実際にどんな感覚か、未登録のままお試しください。
+          日々の小さな行動が「今宵の使命」として経験値に変わり、位階が上がっていく――その一場面を、未登録のままお試しください。
         </p>
       </header>
 
