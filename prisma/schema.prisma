@@ -123,6 +123,9 @@ model MissionCompletion {
   // "YYYY-MM-DD" 形式(デイリーミッションの日次ユニーク判定用)
   completedDate String
   completedAt DateTime @default(now())
+  // 達成時のひとことメモ(任意)。isPublicがtrueの場合、掲示板スレッドとしても公開される
+  note     String?
+  isPublic Boolean @default(true)
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)

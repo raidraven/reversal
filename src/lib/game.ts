@@ -5,6 +5,7 @@ import { levelFromExp } from "@/lib/leveling";
 import { getTodaysMissions } from "@/lib/dailyMissions";
 import { effectivePreviousLoginDay } from "@/lib/incidentDays";
 import { isBanned } from "@/lib/bans";
+import { moderateText } from "@/lib/moderation";
 
 /** 日次初回の来訪(入館)で得られる基礎EXP */
 export const LOGIN_EXP = 15;
@@ -85,12 +86,19 @@ export async function recordDailyActivity(userId: string): Promise<DailyActivity
 
 export type CompleteMissionResult =
   | { ok: true; expGained: number; leveledUp: boolean; newLevel: number }
-  | { ok: false; reason: "not_found" | "not_today" | "already_completed" | "banned" };
+  | { ok: false; reason: "not_found" | "not_today" | "already_completed" | "banned" }
+  | { ok: false; reason: "rejected"; message: string };
 
-/** ミッションを完了扱いにし、EXP・レベル・スキル値を更新する */
+/**
+ * ミッションを完了扱いにし、EXP・レベル・スキル値を更新する。
+ * 任意でひとことメモを添えられ、公開設定がONの場合は掲示板スレッドとしても投稿される
+ * (誠実さの担保と、掲示板コンテンツの自然な蓄積を兼ねる)
+ */
 export async function completeMission(
   userId: string,
-  missionId: string
+  missionId: string,
+  note?: string,
+  isPublic = true
 ): Promise<CompleteMissionResult> {
   if (await isBanned(userId)) {
     return { ok: false, reason: "banned" };
@@ -105,12 +113,20 @@ export async function completeMission(
     return { ok: false, reason: "not_today" };
   }
 
+  const trimmedNote = note?.trim() || undefined;
+  if (trimmedNote) {
+    const moderation = await moderateText(trimmedNote);
+    if (!moderation.allowed) {
+      return { ok: false, reason: "rejected", message: moderation.reason! };
+    }
+  }
+
   const today = todayJst();
 
   // 同日重複完了はユニーク制約で防ぐ
   try {
     await prisma.missionCompletion.create({
-      data: { userId, missionId, completedDate: today },
+      data: { userId, missionId, completedDate: today, note: trimmedNote, isPublic },
     });
   } catch (e: unknown) {
     if (typeof e === "object" && e !== null && "code" in e && e.code === "P2002") {
@@ -129,6 +145,18 @@ export async function completeMission(
     where: { id: userId },
     data: { exp: newExp, level: newLevel },
   });
+
+  // 公開設定ONのメモは、そのまま掲示板スレッドとして投稿し、誠実な実況記録として蓄積する
+  if (trimmedNote && isPublic) {
+    await prisma.post.create({
+      data: {
+        authorId: userId,
+        category: "free",
+        title: `今宵の使命達成: ${mission.title}`,
+        content: trimmedNote,
+      },
+    });
+  }
 
   return { ok: true, expGained: mission.expReward, leveledUp, newLevel };
 }

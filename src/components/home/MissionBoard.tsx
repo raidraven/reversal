@@ -67,6 +67,9 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命" }
   const [bursting, setBursting] = useState<string | null>(null);
   const [levelUp, setLevelUp] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [publicFlags, setPublicFlags] = useState<Record<string, boolean>>({});
 
   const isDone = (m: MissionItem) => m.done || !!localDone[m.id];
   const doneCount = missions.filter(isDone).length;
@@ -79,7 +82,11 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命" }
       const res = await fetch("/api/missions/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ missionId: mission.id }),
+        body: JSON.stringify({
+          missionId: mission.id,
+          note: notes[mission.id]?.trim() || undefined,
+          isPublic: publicFlags[mission.id] ?? true,
+        }),
       });
       const data = await res.json().catch(() => null);
 
@@ -95,6 +102,7 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命" }
       }
 
       setLocalDone((prev) => ({ ...prev, [mission.id]: true }));
+      setExpandedId(null);
       setBursting(mission.id);
       setTimeout(() => setBursting(null), 650);
 
@@ -134,15 +142,22 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命" }
         {missions.map((m) => {
           const done = isDone(m);
           const icon = SKILL_ICONS[m.skillKey] ?? "candle";
+          const expanded = expandedId === m.id;
+          const isPublic = publicFlags[m.id] ?? true;
           return (
             <li key={m.id} className="relative">
               <button
-                onClick={() => complete(m)}
+                onClick={() => {
+                  if (done || pending) return;
+                  setExpandedId(expanded ? null : m.id);
+                }}
                 disabled={done || pending === m.id}
                 className={`w-full rounded-md border p-3 text-left transition-all duration-200 ${
                   done
                     ? "border-gold/50 bg-gold/10"
-                    : "border-surface-border bg-surface-raised hover:border-gold/40"
+                    : expanded
+                      ? "border-gold/60 bg-surface-raised"
+                      : "border-surface-border bg-surface-raised hover:border-gold/40"
                 } ${pending === m.id ? "opacity-60" : ""}`}
               >
                 <span className="flex items-center gap-3">
@@ -172,6 +187,35 @@ export function MissionBoard({ missions, ranks, boardTitle = "今宵の使命" }
                   </span>
                 </span>
               </button>
+
+              {expanded && !done && (
+                <div className="mt-2 space-y-2 rounded-md border border-surface-border bg-surface-card p-3">
+                  <input
+                    type="text"
+                    value={notes[m.id] ?? ""}
+                    onChange={(e) => setNotes((prev) => ({ ...prev, [m.id]: e.target.value }))}
+                    maxLength={140}
+                    placeholder="ひとことメモ(任意)"
+                    className="form-input !py-1.5 text-xs"
+                  />
+                  <label className="flex items-center gap-2 text-[10px] text-stone-400">
+                    <input
+                      type="checkbox"
+                      checked={isPublic}
+                      onChange={(e) => setPublicFlags((prev) => ({ ...prev, [m.id]: e.target.checked }))}
+                    />
+                    掲示板に公開する(メモを書いた場合のみ投稿されます)
+                  </label>
+                  <button
+                    onClick={() => complete(m)}
+                    disabled={pending === m.id}
+                    className="neon-button w-full !py-1.5 text-xs"
+                  >
+                    {pending === m.id ? "処理中…" : "達成する"}
+                  </button>
+                </div>
+              )}
+
               {bursting === m.id && <ParticleBurst />}
             </li>
           );
