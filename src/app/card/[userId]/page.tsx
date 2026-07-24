@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { AVATARS } from "@/lib/onboarding";
 import { titleForRank } from "@/lib/rankTitle";
 import { getRanks } from "@/lib/ranks";
+import { parseCardLinks } from "@/lib/profileCard";
 import { MemberCard } from "@/components/home/MemberCard";
 import { Icon } from "@/components/Icon";
 
@@ -28,9 +29,13 @@ export default async function PublicCardPage({ params }: Props) {
   ]);
 
   const notFoundOrPrivate = !user || !user.cardPublic || user.banned;
+  const wallpaperUrl = user?.cardWallpaperUrl ?? null;
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-12">
+    <main
+      className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-12"
+      style={wallpaperUrl ? { backgroundImage: `url(${wallpaperUrl})`, backgroundSize: "cover" } : undefined}
+    >
       {notFoundOrPrivate ? (
         <div className="game-card space-y-3 text-center">
           <p className="flex justify-center">
@@ -47,10 +52,14 @@ export default async function PublicCardPage({ params }: Props) {
           title={titleForRank(user.level, ranks)}
           memberSince={user.createdAt}
           bio={user.bio}
-          links={[
-            user.link1Label && user.link1Url ? { label: user.link1Label, url: user.link1Url } : null,
-            user.link2Label && user.link2Url ? { label: user.link2Label, url: user.link2Url } : null,
-          ].filter((l): l is { label: string; url: string } => l !== null)}
+          links={parseCardLinks(user.links)}
+          cardIconUrl={user.cardIconUrl}
+          cardBgUrl={user.cardBgUrl}
+          headerText={user.cardHeaderText}
+          nameSuffixText={user.cardNameSuffixText}
+          levelLabelText={user.cardLevelLabelText}
+          memberSinceLabelText={user.cardMemberSinceLabelText}
+          scale={user.cardScale}
         />
       )}
 

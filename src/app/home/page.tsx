@@ -25,6 +25,7 @@ import { LoginBonusToast } from "@/components/home/LoginBonusToast";
 import { QnaBoard } from "@/components/qna/QnaBoard";
 import { EditableText } from "@/components/admin/EditableText";
 import { SITE_URL } from "@/lib/siteUrl";
+import { parseCardLinks } from "@/lib/profileCard";
 
 export const dynamic = "force-dynamic";
 
@@ -116,19 +117,20 @@ export default async function HomePage() {
             title={title}
             memberSince={user.createdAt}
             bio={user.bio}
-            links={[
-              user.link1Label && user.link1Url ? { label: user.link1Label, url: user.link1Url } : null,
-              user.link2Label && user.link2Url ? { label: user.link2Label, url: user.link2Url } : null,
-            ].filter((l): l is { label: string; url: string } => l !== null)}
+            links={parseCardLinks(user.links)}
+            cardIconUrl={user.cardIconUrl}
+            cardBgUrl={user.cardBgUrl}
+            headerText={user.cardHeaderText}
+            nameSuffixText={user.cardNameSuffixText}
+            levelLabelText={user.cardLevelLabelText}
+            memberSinceLabelText={user.cardMemberSinceLabelText}
+            scale={user.cardScale}
           />
           <CardSettingsPanel
             userId={user.id}
             siteUrl={SITE_URL}
             initialCardPublic={user.cardPublic}
             referralCount={referralCount}
-            initialBio={user.bio}
-            initialLink1={{ label: user.link1Label ?? "", url: user.link1Url ?? "" }}
-            initialLink2={{ label: user.link2Label ?? "", url: user.link2Url ?? "" }}
           />
           <QnaBoard isLoggedIn />
         </div>
