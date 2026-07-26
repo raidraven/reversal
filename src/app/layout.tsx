@@ -55,6 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     : [
         { href: "/", label: "館の入口" },
         { href: "/diagnosis", label: "副業タイプ診断" },
+        { href: "/simulator", label: "収益シミュレーター" },
         { href: "/experience", label: "体験する" },
         { href: "/profile-card", label: "プロフカードを作る" },
         { href: "/board", label: boardName },
