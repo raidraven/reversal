@@ -21,6 +21,21 @@ function extFromType(type: string): string {
   return "jpg";
 }
 
+/**
+ * ファイル先頭のマジックバイトが申告されたMIMEタイプと一致するか検証する。
+ * file.typeはクライアントが自由に詐称できるため、拡張子だけでなく実バイト列も見る
+ */
+function matchesDeclaredType(bytes: Uint8Array, type: string): boolean {
+  const sig = (...expected: number[]) => expected.every((b, i) => bytes[i] === b);
+  if (type === "image/png") return sig(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+  if (type === "image/jpeg") return sig(0xff, 0xd8, 0xff);
+  if (type === "image/gif") return sig(0x47, 0x49, 0x46, 0x38);
+  if (type === "image/webp") {
+    return sig(0x52, 0x49, 0x46, 0x46) && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50;
+  }
+  return false;
+}
+
 // プロフカードの画像(壁紙・アイコン・会員証背景)アップロード。1リクエスト1画像
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -42,10 +57,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "画像サイズは5MBまでです" }, { status: 400 });
   }
 
+  const buffer = new Uint8Array(await file.arrayBuffer());
+  if (!matchesDeclaredType(buffer, file.type)) {
+    return NextResponse.json({ error: "画像ファイルとして認識できませんでした" }, { status: 400 });
+  }
+
   const column = FIELD_TO_COLUMN[field as Field];
   const pathname = `profile-card/${session.user.id}/${field}-${Date.now()}.${extFromType(file.type)}`;
 
-  const blob = await put(pathname, file, { access: "public", addRandomSuffix: true });
+  const blob = await put(pathname, Buffer.from(buffer), {
+    access: "public",
+    addRandomSuffix: true,
+    contentType: file.type,
+  });
 
   const previous = await prisma.user.findUnique({
     where: { id: session.user.id },
