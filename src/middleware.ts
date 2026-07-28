@@ -50,5 +50,6 @@ export const config = {
     "/questions/:path*",
     "/board/:path*",
     "/articles/:path*",
+    "/experience/:path*",
   ],
 };

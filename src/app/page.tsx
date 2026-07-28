@@ -9,7 +9,6 @@ import { readAnonId } from "@/lib/anonId";
 import { HostRequestForm } from "@/components/landing/HostRequestForm";
 import { LoginPanel } from "@/components/landing/LoginPanel";
 import { CompanionUpdateNote } from "@/components/landing/CompanionUpdateNote";
-import { LogoutButton } from "@/components/LogoutButton";
 import { Icon } from "@/components/Icon";
 import { EditableText } from "@/components/admin/EditableText";
 import { AffiliateBanner } from "@/components/AffiliateBanner";
@@ -75,7 +74,6 @@ export default async function LandingPage() {
             <p className="text-sm text-stone-300">
               <EditableText siteTextKey="landing.loggedInMessage" value={texts["landing.loggedInMessage"]} />
             </p>
-            <LogoutButton />
           </div>
         ) : (
           <LoginPanel title={texts["login.title"]} subtitle={texts["login.subtitle"]} />
@@ -85,13 +83,13 @@ export default async function LandingPage() {
         <div className="game-card grid grid-cols-2 gap-3 text-center">
           <div>
             <p className="text-2xl font-black text-gold-light">{stats.guestCount}</p>
-            <p className="mt-1 text-[10px] leading-tight text-stone-500">
+            <p className="mt-1 text-2xl font-black leading-tight text-gold-light">
               <EditableText siteTextKey="landing.stats.guestLabel" value={texts["landing.stats.guestLabel"]} />
             </p>
           </div>
           <div>
             <p className="text-2xl font-black text-gold-light">{stats.registeredCount}</p>
-            <p className="mt-1 text-[10px] leading-tight text-stone-500">
+            <p className="mt-1 text-2xl font-black leading-tight text-gold-light">
               <EditableText
                 siteTextKey="landing.stats.registeredLabel"
                 value={texts["landing.stats.registeredLabel"]}
