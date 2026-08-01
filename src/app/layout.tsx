@@ -60,7 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         { href: "/profile-card", label: "プロフカードを作る" },
         { href: "/board", label: boardName },
         { href: "/articles", label: "書庫" },
-        { href: "/signup", label: "招待状を受け取る", gold: true },
+        { href: "/signup", label: "無料登録", gold: true },
       ];
 
   return (

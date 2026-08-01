@@ -36,8 +36,11 @@ export function DesktopNav({ links, isLoggedIn }: Props) {
         </Link>
       ))}
       {isLoggedIn && (
-        <div className="mt-auto">
+        <div className="flex flex-col gap-2">
           <LogoutButton className={LINK_CLASS + " w-full text-left"} />
+          <Link href="/withdraw" className={LINK_CLASS + " text-center text-stone-500"}>
+            退会する
+          </Link>
         </div>
       )}
     </nav>

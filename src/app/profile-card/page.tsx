@@ -31,10 +31,14 @@ export default async function ProfileCardPage() {
   const wallpaperUrl = user?.cardWallpaperUrl ?? null;
 
   return (
-    <main
-      className="mx-auto max-w-md px-4 py-12"
-      style={wallpaperUrl ? { backgroundImage: `url(${wallpaperUrl})`, backgroundSize: "cover" } : undefined}
-    >
+    <>
+      {wallpaperUrl && (
+        <div
+          className="fixed inset-0 -z-10"
+          style={{ backgroundImage: `url(${wallpaperUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}
+        />
+      )}
+      <main className="mx-auto max-w-md px-4 py-12">
       <header className="mb-6 text-center">
         <p className="flex justify-center">
           <Icon name="mask" size={32} />
@@ -63,6 +67,7 @@ export default async function ProfileCardPage() {
           initialCardBgUrl={user.cardBgUrl}
           initialCardHeaderText={user.cardHeaderText}
           initialCardNameSuffixText={user.cardNameSuffixText}
+          initialCardTitleText={user.cardTitleText}
           initialCardLevelLabelText={user.cardLevelLabelText}
           initialCardMemberSinceLabelText={user.cardMemberSinceLabelText}
           initialCardScale={user.cardScale}
@@ -76,6 +81,7 @@ export default async function ProfileCardPage() {
           館の入口へ戻る
         </Link>
       </p>
-    </main>
+      </main>
+    </>
   );
 }

@@ -122,6 +122,7 @@ export default async function HomePage() {
             cardBgUrl={user.cardBgUrl}
             headerText={user.cardHeaderText}
             nameSuffixText={user.cardNameSuffixText}
+            titleText={user.cardTitleText}
             levelLabelText={user.cardLevelLabelText}
             memberSinceLabelText={user.cardMemberSinceLabelText}
             scale={user.cardScale}

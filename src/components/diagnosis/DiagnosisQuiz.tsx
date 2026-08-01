@@ -72,7 +72,7 @@ export function DiagnosisQuiz() {
             この診断結果と連動した「今宵の使命」で、続けられる仕組みごと体験できます。
           </p>
           <Link href="/signup" className="neon-button block text-center">
-            招待状を受け取る
+            無料登録
           </Link>
           <button onClick={retry} className="ghost-button w-full !py-1.5 text-xs">
             もう一度診断する

@@ -24,6 +24,7 @@ type Props = {
   initialCardBgUrl: string | null;
   initialCardHeaderText: string | null;
   initialCardNameSuffixText: string | null;
+  initialCardTitleText: string | null;
   initialCardLevelLabelText: string | null;
   initialCardMemberSinceLabelText: string | null;
   initialCardScale: number;
@@ -56,6 +57,7 @@ export function ProfileCardEditor({
   initialCardBgUrl,
   initialCardHeaderText,
   initialCardNameSuffixText,
+  initialCardTitleText,
   initialCardLevelLabelText,
   initialCardMemberSinceLabelText,
   initialCardScale,
@@ -70,6 +72,7 @@ export function ProfileCardEditor({
 
   const [header, setHeader] = useState<TextOverrideState>(toOverrideState(initialCardHeaderText));
   const [nameSuffix, setNameSuffix] = useState<TextOverrideState>(toOverrideState(initialCardNameSuffixText));
+  const [titleOverride, setTitleOverride] = useState<TextOverrideState>(toOverrideState(initialCardTitleText));
   const [levelLabel, setLevelLabel] = useState<TextOverrideState>(toOverrideState(initialCardLevelLabelText));
   const [sinceLabel, setSinceLabel] = useState<TextOverrideState>(
     toOverrideState(initialCardMemberSinceLabelText)
@@ -164,6 +167,7 @@ export function ProfileCardEditor({
           links: links.filter((l) => l.label.trim() && l.url.trim()),
           cardHeaderText: textOverrideToPayload(header),
           cardNameSuffixText: textOverrideToPayload(nameSuffix),
+          cardTitleText: textOverrideToPayload(titleOverride),
           cardLevelLabelText: textOverrideToPayload(levelLabel),
           cardMemberSinceLabelText: textOverrideToPayload(sinceLabel),
           cardScale: scale,
@@ -279,6 +283,7 @@ export function ProfileCardEditor({
         <p className="text-sm font-semibold text-stone-200">会員証の文言</p>
         <TextOverrideField label="見出し" defaultText="REVERSAL 会員証" value={header} onChange={setHeader} />
         <TextOverrideField label="名前の後の敬称" defaultText="様" value={nameSuffix} onChange={setNameSuffix} />
+        <TextOverrideField label="称号(位階の呼び名)" defaultText={title} value={titleOverride} onChange={setTitleOverride} />
         <TextOverrideField label="位階ラベル" defaultText="位階" value={levelLabel} onChange={setLevelLabel} />
         <TextOverrideField
           label="入館日ラベル"
@@ -313,7 +318,12 @@ export function ProfileCardEditor({
         {saving ? "保存中…" : saved ? "保存しました" : "プロフカードを保存"}
       </button>
 
-      <p className="text-center text-xs text-stone-500">プレビュー</p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-stone-500">プレビュー</p>
+        <a href={cardLink} target="_blank" rel="noreferrer" className="text-xs text-gold-light hover:underline">
+          個別ページでプレビュー →
+        </a>
+      </div>
       <MemberCard
         name={name}
         avatarIcon={avatarIcon}
@@ -326,6 +336,7 @@ export function ProfileCardEditor({
         cardBgUrl={bgUrl}
         headerText={header.hidden ? "" : header.text.trim() || undefined}
         nameSuffixText={nameSuffix.hidden ? "" : nameSuffix.text.trim() || undefined}
+        titleText={titleOverride.hidden ? "" : titleOverride.text.trim() || undefined}
         levelLabelText={levelLabel.hidden ? "" : levelLabel.text.trim() || undefined}
         memberSinceLabelText={sinceLabel.hidden ? "" : sinceLabel.text.trim() || undefined}
         scale={scale}

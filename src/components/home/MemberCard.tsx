@@ -20,6 +20,7 @@ type Props = {
   /** 文言上書き。undefined=デフォルト文言 / ""=非表示 / それ以外=その文言を表示 */
   headerText?: string | null;
   nameSuffixText?: string | null;
+  titleText?: string | null;
   levelLabelText?: string | null;
   memberSinceLabelText?: string | null;
 
@@ -62,6 +63,7 @@ export function MemberCard({
   cardBgUrl,
   headerText,
   nameSuffixText,
+  titleText,
   levelLabelText,
   memberSinceLabelText,
   scale = 100,
@@ -70,13 +72,17 @@ export function MemberCard({
 
   const header = resolveText(headerText, "REVERSAL 会員証");
   const nameSuffix = resolveText(nameSuffixText, "様");
+  const titleDisplay = resolveText(titleText, title);
   const levelLabel = resolveText(levelLabelText, "位階");
   const sinceLabel = resolveText(memberSinceLabelText, "入館日");
   const sinceValue = memberSince ? formatDate(memberSince) : memberSinceLabel;
 
   return (
-    <div style={{ zoom: scale !== 100 ? `${scale}%` : undefined }}>
-      <section className="game-card relative overflow-hidden border-gold/40">
+    <div className="mx-auto" style={{ zoom: scale !== 100 ? `${scale}%` : undefined, width: "fit-content" }}>
+      {/* 幅を固定値にしているのは、表示倍率(zoom)が縦だけでなく横にも正しく比例して効くようにするため。
+          %指定(auto幅)のままだとzoom適用時に横幅が縦ほど伸びない不具合が起きる */}
+      <section className="game-card relative overflow-hidden border-gold/40" style={{ width: 320 }}
+      >
         {cardBgUrl && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -108,9 +114,11 @@ export function MemberCard({
                 {name}
                 {nameSuffix ? ` ${nameSuffix}` : ""}
               </p>
-              <p className="mt-0.5 inline-block rounded-full border border-wine-light/50 bg-wine/20 px-2 py-0.5 text-xs text-gold-light">
-                {title}
-              </p>
+              {titleDisplay && (
+                <p className="mt-0.5 inline-block rounded-full border border-wine-light/50 bg-wine/20 px-2 py-0.5 text-xs text-gold-light">
+                  {titleDisplay}
+                </p>
+              )}
             </div>
             {levelLabel && (
               <span className="ml-auto text-right">

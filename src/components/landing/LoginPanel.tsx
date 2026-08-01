@@ -114,7 +114,7 @@ export function LoginPanel({ title, subtitle }: Props) {
       </p>
 
       <Link href="/signup" className="neon-button block text-center">
-        招待状を受け取る
+        無料登録
       </Link>
     </div>
   );

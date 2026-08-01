@@ -175,7 +175,7 @@ function SignupForm() {
               次へ:仮面を選ぶ
             </button>
             <p className="text-center text-sm text-stone-400">
-              すでに招待状をお持ちの方は{" "}
+              すでに登録済みの方は{" "}
               <Link href="/login" className="font-semibold text-gold-light hover:underline">
                 こちらから
               </Link>

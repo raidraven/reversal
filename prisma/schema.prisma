@@ -49,6 +49,7 @@ model User {
   // 会員証の文言上書き(空文字="" で非表示、未設定=デフォルト文言を使用)
   cardHeaderText          String?
   cardNameSuffixText      String?
+  cardTitleText           String?
   cardLevelLabelText      String?
   cardMemberSinceLabelText String?
 

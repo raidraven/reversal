@@ -22,6 +22,7 @@ const bodySchema = z.object({
   links: z.array(linkSchema).max(10).optional(),
   cardHeaderText: overrideText,
   cardNameSuffixText: overrideText,
+  cardTitleText: overrideText,
   cardLevelLabelText: overrideText,
   cardMemberSinceLabelText: overrideText,
   cardScale: z.number().int().min(50).max(200).optional(),
@@ -39,8 +40,16 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "入力内容を確認してください" }, { status: 400 });
   }
 
-  const { bio, links, cardHeaderText, cardNameSuffixText, cardLevelLabelText, cardMemberSinceLabelText, cardScale } =
-    parsed.data;
+  const {
+    bio,
+    links,
+    cardHeaderText,
+    cardNameSuffixText,
+    cardTitleText,
+    cardLevelLabelText,
+    cardMemberSinceLabelText,
+    cardScale,
+  } = parsed.data;
 
   const textsToModerate = [bio, ...(links ?? []).map((l) => l.label)].filter((t): t is string => !!t);
   for (const text of textsToModerate) {
@@ -57,6 +66,7 @@ export async function PATCH(req: Request) {
       ...(links !== undefined ? { links } : {}),
       ...(cardHeaderText !== undefined ? { cardHeaderText } : {}),
       ...(cardNameSuffixText !== undefined ? { cardNameSuffixText } : {}),
+      ...(cardTitleText !== undefined ? { cardTitleText } : {}),
       ...(cardLevelLabelText !== undefined ? { cardLevelLabelText } : {}),
       ...(cardMemberSinceLabelText !== undefined ? { cardMemberSinceLabelText } : {}),
       ...(cardScale !== undefined ? { cardScale } : {}),

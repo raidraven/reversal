@@ -183,7 +183,7 @@ export function QnaBoard({ isLoggedIn }: Props) {
         <p className="rounded-md border border-gold/30 bg-gold/5 px-3 py-2 text-xs text-stone-400">
           回答するには入館が必要です。
           <Link href="/signup" className="ml-1 font-semibold text-gold-light hover:underline">
-            招待状を受け取る
+            無料登録
           </Link>
         </p>
       )}

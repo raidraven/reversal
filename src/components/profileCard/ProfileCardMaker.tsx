@@ -22,6 +22,7 @@ export function ProfileCardMaker() {
 
   const [header, setHeader] = useState<TextOverrideState>(EMPTY_OVERRIDE);
   const [nameSuffix, setNameSuffix] = useState<TextOverrideState>(EMPTY_OVERRIDE);
+  const [titleOverride, setTitleOverride] = useState<TextOverrideState>(EMPTY_OVERRIDE);
   const [levelLabel, setLevelLabel] = useState<TextOverrideState>(EMPTY_OVERRIDE);
   const [sinceLabel, setSinceLabel] = useState<TextOverrideState>(EMPTY_OVERRIDE);
 
@@ -36,7 +37,13 @@ export function ProfileCardMaker() {
   }
 
   return (
-    <div className="space-y-4" style={wallpaperUrl ? { backgroundImage: `url(${wallpaperUrl})`, backgroundSize: "cover" } : undefined}>
+    <div className="space-y-4">
+      {wallpaperUrl && (
+        <div
+          className="fixed inset-0 -z-10"
+          style={{ backgroundImage: `url(${wallpaperUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}
+        />
+      )}
       <section className="game-card space-y-3">
         <div>
           <label className="text-xs text-stone-400">表示名</label>
@@ -114,6 +121,12 @@ export function ProfileCardMaker() {
         <p className="text-sm font-semibold text-stone-200">会員証の文言</p>
         <TextOverrideField label="見出し" defaultText="REVERSAL 会員証" value={header} onChange={setHeader} />
         <TextOverrideField label="名前の後の敬称" defaultText="様" value={nameSuffix} onChange={setNameSuffix} />
+        <TextOverrideField
+          label="称号(位階の呼び名)"
+          defaultText="扉を開いた者"
+          value={titleOverride}
+          onChange={setTitleOverride}
+        />
         <TextOverrideField label="位階ラベル" defaultText="位階" value={levelLabel} onChange={setLevelLabel} />
         <TextOverrideField
           label="入館日ラベル"
@@ -153,6 +166,7 @@ export function ProfileCardMaker() {
         cardBgUrl={bgUrl}
         headerText={textOverrideToPayload(header) ?? undefined}
         nameSuffixText={textOverrideToPayload(nameSuffix) ?? undefined}
+        titleText={textOverrideToPayload(titleOverride) ?? undefined}
         levelLabelText={textOverrideToPayload(levelLabel) ?? undefined}
         memberSinceLabelText={textOverrideToPayload(sinceLabel) ?? undefined}
         scale={scale}
@@ -167,7 +181,7 @@ export function ProfileCardMaker() {
           ここでの内容(画像を含む)は保存されません。実際に会員証として公開し、紹介リンクを発行するには入館が必要です。
         </p>
         <Link href="/signup" className="neon-button block text-center">
-          招待状を受け取る
+          無料登録
         </Link>
       </div>
     </div>
