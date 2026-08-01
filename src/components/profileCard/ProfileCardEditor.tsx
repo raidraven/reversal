@@ -154,7 +154,7 @@ export function ProfileCardEditor({
     }
   }
 
-  async function save() {
+  async function save(): Promise<boolean> {
     setSaving(true);
     setError(null);
     setSaved(false);
@@ -176,15 +176,26 @@ export function ProfileCardEditor({
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         setError(data?.error ?? "保存に失敗しました");
-        return;
+        return false;
       }
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
+      return true;
     } catch {
       setError("通信エラーが発生しました");
+      return false;
     } finally {
       setSaving(false);
     }
+  }
+
+  async function saveAndPreview() {
+    // ポップアップブロックを避けるため、クリック(ユーザー操作)と同じ呼び出しスタック内で
+    // 同期的にタブを開いておく。保存の完了を待ってからそのタブの遷移先を差し替える
+    const previewWindow = window.open("", "_blank", "noopener,noreferrer");
+    await save();
+    // 保存の成否に関わらず遷移させる(失敗時は直前に保存済みの内容がそのまま見える)
+    if (previewWindow) previewWindow.location.href = cardLink;
   }
 
   return (
@@ -320,9 +331,14 @@ export function ProfileCardEditor({
 
       <div className="flex items-center justify-between">
         <p className="text-xs text-stone-500">プレビュー</p>
-        <a href={cardLink} target="_blank" rel="noreferrer" className="text-xs text-gold-light hover:underline">
-          個別ページでプレビュー →
-        </a>
+        <button
+          type="button"
+          onClick={saveAndPreview}
+          disabled={saving}
+          className="text-xs text-gold-light hover:underline disabled:opacity-50"
+        >
+          {saving ? "保存中…" : "個別ページでプレビュー →"}
+        </button>
       </div>
       <MemberCard
         name={name}

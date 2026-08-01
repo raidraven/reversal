@@ -2,18 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AVATARS, type AvatarId } from "@/lib/onboarding";
 import { MemberCard } from "@/components/home/MemberCard";
 import { Icon } from "@/components/Icon";
 import { ImagePickerField } from "./ImagePickerField";
 import { LinksEditor, type LinkField } from "./LinksEditor";
 import { TextOverrideField, textOverrideToPayload, type TextOverrideState } from "./TextOverrideField";
+import { PREVIEW_STORAGE_KEY, type DemoPreviewPayload } from "./previewPayload";
 
 const BIO_MAX = 150;
 const EMPTY_OVERRIDE: TextOverrideState = { text: "", hidden: false };
 
 /** 未登録ユーザー向けの体験版プロフカード作成ツール。DBには何も保存せず、画像もローカルプレビューのみ(アップロードしない) */
 export function ProfileCardMaker() {
+  const router = useRouter();
   const [name, setName] = useState("名も無き来賓");
   const [avatarId, setAvatarId] = useState<AvatarId>(AVATARS[0].id);
   const [bio, setBio] = useState("");
@@ -34,6 +37,32 @@ export function ProfileCardMaker() {
 
   function pickLocalPreview(setter: (url: string) => void) {
     return (file: File) => setter(URL.createObjectURL(file));
+  }
+
+  function openIndividualPreview() {
+    const payload: DemoPreviewPayload = {
+      name: name || "名も無き来賓",
+      avatarIcon: avatar.icon,
+      title: "扉を開いた者",
+      bio,
+      links: links.filter((l) => l.label.trim() && l.url.trim()),
+      iconUrl,
+      bgUrl,
+      wallpaperUrl,
+      headerText: textOverrideToPayload(header) ?? undefined,
+      nameSuffixText: textOverrideToPayload(nameSuffix) ?? undefined,
+      titleText: textOverrideToPayload(titleOverride) ?? undefined,
+      levelLabelText: textOverrideToPayload(levelLabel) ?? undefined,
+      memberSinceLabelText: textOverrideToPayload(sinceLabel) ?? undefined,
+      scale,
+    };
+    try {
+      window.sessionStorage.setItem(PREVIEW_STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // sessionStorageが使えない環境ではプレビュー先で「見つかりません」表示になる
+    }
+    // クライアント側遷移(router.push)でなければ、選択画像のblob: URLが新しいドキュメントで無効になる
+    router.push("/profile-card/preview");
   }
 
   return (
@@ -152,7 +181,12 @@ export function ProfileCardMaker() {
         />
       </section>
 
-      <p className="text-center text-xs text-stone-500">プレビュー</p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-stone-500">プレビュー</p>
+        <button type="button" onClick={openIndividualPreview} className="text-xs text-gold-light hover:underline">
+          個別ページでプレビュー →
+        </button>
+      </div>
 
       <MemberCard
         name={name || "名も無き来賓"}

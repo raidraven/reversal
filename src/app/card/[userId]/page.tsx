@@ -10,6 +10,8 @@ import { parseCardLinks } from "@/lib/profileCard";
 import { MemberCard } from "@/components/home/MemberCard";
 import { Icon } from "@/components/Icon";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: { userId: string } };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
