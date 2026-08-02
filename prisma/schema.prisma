@@ -390,3 +390,20 @@ model PostLike {
   @@unique([postId, userId])
   @@unique([postId, anonId])
 }
+
+// X/Threadsへの自動投稿下書き。生成は自動(曜日ローテーション+Claude)だが、
+// 実際の外部公開は管理画面から人間が最終確認して押すまで実行しない
+model SocialPostDraft {
+  id         String   @id @default(cuid())
+  // "x" | "threads"
+  platform   String
+  // 生成元。"rotation"(曜日ローテーション自動生成) | "manual"(管理画面から手動生成)
+  sourceType String
+  bodyText   String
+  // "draft"(未投稿) | "posted"(投稿済み) | "dismissed"(却下)
+  status     String   @default("draft")
+  externalId String?
+  errorMessage String?
+  createdAt  DateTime @default(now())
+  postedAt   DateTime?
+}
