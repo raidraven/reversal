@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminAuth";
 import { prisma } from "@/lib/prisma";
 import { generateRotationDraft } from "@/lib/socialDraftGenerator";
+import { generateDraftToken } from "@/lib/socialDraftTokens";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export async function POST() {
   }
 
   const draft = await prisma.socialPostDraft.create({
-    data: { platform: "x", sourceType: "manual", bodyText: result.bodyText },
+    data: { platform: "x", sourceType: "manual", bodyText: result.bodyText, approveToken: generateDraftToken() },
   });
   return NextResponse.json({ draft });
 }

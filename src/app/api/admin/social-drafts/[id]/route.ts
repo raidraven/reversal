@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminAuth";
 import { prisma } from "@/lib/prisma";
+import { dismissDraftById } from "@/lib/socialDraftActions";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,10 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status });
 
-  const draft = await prisma.socialPostDraft.findUnique({ where: { id: params.id } });
-  if (!draft) return NextResponse.json({ error: "下書きが見つかりません" }, { status: 404 });
-  if (draft.status !== "draft") {
-    return NextResponse.json({ error: "投稿済み・却下済みの下書きは変更できません" }, { status: 400 });
+  const result = await dismissDraftById(params.id);
+  if (!result.ok) {
+    const status = result.error === "下書きが見つかりません" ? 404 : 400;
+    return NextResponse.json({ error: result.error }, { status });
   }
-
-  await prisma.socialPostDraft.update({ where: { id: params.id }, data: { status: "dismissed" } });
   return NextResponse.json({ ok: true });
 }

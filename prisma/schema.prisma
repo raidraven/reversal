@@ -406,4 +406,7 @@ model SocialPostDraft {
   errorMessage String?
   createdAt  DateTime @default(now())
   postedAt   DateTime?
+
+  // メール内の承認/却下リンク用ワンタイムトークン。使用後はnullに戻す(=再利用不可)
+  approveToken String? @unique
 }

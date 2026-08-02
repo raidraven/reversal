@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateRotationDraft } from "@/lib/socialDraftGenerator";
+import { generateDraftToken } from "@/lib/socialDraftTokens";
 import { sendSocialDraftGeneratedEmail } from "@/lib/email";
 import { SITE_URL } from "@/lib/siteUrl";
 
@@ -20,11 +21,17 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
 
+  const approveToken = generateDraftToken();
   const draft = await prisma.socialPostDraft.create({
-    data: { platform: "x", sourceType: "rotation", bodyText: result.bodyText },
+    data: { platform: "x", sourceType: "rotation", bodyText: result.bodyText, approveToken },
   });
 
-  await sendSocialDraftGeneratedEmail(result.bodyText, `${SITE_URL}/admin`).catch((e) => {
+  await sendSocialDraftGeneratedEmail({
+    bodyText: result.bodyText,
+    adminUrl: `${SITE_URL}/admin`,
+    approveUrl: `${SITE_URL}/api/social-drafts/approve/${approveToken}`,
+    rejectUrl: `${SITE_URL}/api/social-drafts/reject/${approveToken}`,
+  }).catch((e) => {
     console.error("[cron/social-draft] 通知メール送信に失敗しました", e);
   });
 
