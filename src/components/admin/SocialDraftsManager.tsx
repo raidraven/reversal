@@ -19,6 +19,17 @@ const SOURCE_LABELS: Record<string, string> = {
   manual: "手動生成",
 };
 
+const JST_DATE_FORMATTER = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" });
+
+function jstDateStr(date: Date): string {
+  return JST_DATE_FORMATTER.format(date);
+}
+
+/** 下書きの生成日(JST)が今日と違う場合、内容が古い(曜日ズレ)可能性があるので警告対象にする */
+function isStaleDraft(createdAt: string): boolean {
+  return jstDateStr(new Date(createdAt)) !== jstDateStr(new Date());
+}
+
 export function SocialDraftsManager() {
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,8 +94,11 @@ export function SocialDraftsManager() {
     }
   }
 
-  async function handlePublish(id: string) {
-    if (!window.confirm("この内容でXへ実際に投稿します。よろしいですか?")) return;
+  async function handlePublish(id: string, createdAt: string) {
+    const confirmMessage = isStaleDraft(createdAt)
+      ? "⚠️ この下書きは生成日が今日と異なります(内容が古い可能性があります)。それでもXへ投稿しますか?"
+      : "この内容でXへ実際に投稿します。よろしいですか?";
+    if (!window.confirm(confirmMessage)) return;
     setBusyId(id);
     setError(null);
     try {
@@ -183,6 +197,11 @@ export function SocialDraftsManager() {
               {d.externalId && (
                 <p className="mt-1 text-[10px] text-stone-500">投稿ID: {d.externalId}</p>
               )}
+              {d.status === "draft" && isStaleDraft(d.createdAt) && (
+                <p className="mt-1 text-[10px] text-wine-light">
+                  ⚠️ 生成日が今日と異なります。内容が古い可能性があるので投稿前に見直してください。
+                </p>
+              )}
 
               {d.status === "draft" && (
                 <div className="mt-2 flex gap-2">
@@ -194,7 +213,7 @@ export function SocialDraftsManager() {
                     編集を保存
                   </button>
                   <button
-                    onClick={() => handlePublish(d.id)}
+                    onClick={() => handlePublish(d.id, d.createdAt)}
                     disabled={busyId === d.id}
                     className="neon-button !px-3 !py-1.5 text-xs"
                   >

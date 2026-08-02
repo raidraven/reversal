@@ -40,12 +40,22 @@ async function buildWeeklySummaryFacts(): Promise<string> {
 
 export type DraftGenerationResult = { bodyText: string } | { error: string };
 
+/**
+ * "YYYY-MM-DD"の曜日を求める。new Date(str).getDay()は実行環境のローカルタイムゾーンで
+ * 曜日を割り出すため、UTCで動くVercel本番では1日ズレる(ローカルWindowsはJST設定なので気づけなかった)。
+ * Date.UTC+getUTCDay()を使うことで、実行環境のタイムゾーンに依存せず正しい曜日を求める
+ */
+function dayOfWeekOf(dateStr: string): number {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+
 export async function generateRotationDraft(): Promise<DraftGenerationResult> {
   const client = getAnthropicClient();
   if (!client) return { error: "ANTHROPIC_API_KEYが設定されていません" };
 
   const today = todayJst();
-  const dow = new Date(`${today}T00:00:00+09:00`).getDay();
+  const dow = dayOfWeekOf(today);
   const entry = ROTATION[dow];
   const url = `${SITE_URL}${entry.path}`;
 
