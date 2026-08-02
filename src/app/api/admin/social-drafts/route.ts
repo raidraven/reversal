@@ -3,6 +3,8 @@ import { requireAdmin } from "@/lib/adminAuth";
 import { prisma } from "@/lib/prisma";
 import { generateRotationDraft } from "@/lib/socialDraftGenerator";
 import { generateDraftToken } from "@/lib/socialDraftTokens";
+import { sendSocialDraftGeneratedEmail } from "@/lib/email";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +30,19 @@ export async function POST() {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
 
+  const approveToken = generateDraftToken();
   const draft = await prisma.socialPostDraft.create({
-    data: { platform: "x", sourceType: "manual", bodyText: result.bodyText, approveToken: generateDraftToken() },
+    data: { platform: "x", sourceType: "manual", bodyText: result.bodyText, approveToken },
   });
+
+  await sendSocialDraftGeneratedEmail({
+    bodyText: result.bodyText,
+    adminUrl: `${SITE_URL}/admin`,
+    approveUrl: `${SITE_URL}/api/social-drafts/approve/${approveToken}`,
+    rejectUrl: `${SITE_URL}/api/social-drafts/reject/${approveToken}`,
+  }).catch((e) => {
+    console.error("[admin/social-drafts] 通知メール送信に失敗しました", e);
+  });
+
   return NextResponse.json({ draft });
 }
