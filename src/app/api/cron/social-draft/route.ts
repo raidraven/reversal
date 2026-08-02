@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateRotationDraft } from "@/lib/socialDraftGenerator";
+import { sendSocialDraftGeneratedEmail } from "@/lib/email";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,10 @@ export async function GET(req: Request) {
 
   const draft = await prisma.socialPostDraft.create({
     data: { platform: "x", sourceType: "rotation", bodyText: result.bodyText },
+  });
+
+  await sendSocialDraftGeneratedEmail(result.bodyText, `${SITE_URL}/admin`).catch((e) => {
+    console.error("[cron/social-draft] 通知メール送信に失敗しました", e);
   });
 
   return NextResponse.json({ ok: true, draftId: draft.id });
