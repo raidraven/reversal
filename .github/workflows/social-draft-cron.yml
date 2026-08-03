@@ -1,0 +1,17 @@
+name: Social Draft Cron
+
+# Vercel Hobbyプランのcronは1日1回までのため、管理画面で自由に時刻設定できるようにする代わりに
+# GitHub Actionsから15分おきに叩き、アプリ側(/api/cron/social-draft)で設定時刻を過ぎているか判定する
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call social-draft cron endpoint
+        run: |
+          curl -sf -X GET "https://th-reversal.com/api/cron/social-draft" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

@@ -37,6 +37,10 @@ export function SocialDraftsManager() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [editText, setEditText] = useState<Record<string, string>>({});
+  const [scheduleTime, setScheduleTime] = useState("08:00");
+  const [scheduleInput, setScheduleInput] = useState("08:00");
+  const [scheduleSaving, setScheduleSaving] = useState(false);
+  const [scheduleSaved, setScheduleSaved] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -49,9 +53,43 @@ export function SocialDraftsManager() {
     setLoading(false);
   }
 
+  async function loadSchedule() {
+    const res = await fetch("/api/admin/social-draft-schedule");
+    if (res.ok) {
+      const data = await res.json();
+      setScheduleTime(data.scheduleTime);
+      setScheduleInput(data.scheduleTime);
+    }
+  }
+
   useEffect(() => {
     load();
+    loadSchedule();
   }, []);
+
+  async function handleSaveSchedule() {
+    setScheduleSaving(true);
+    setError(null);
+    setScheduleSaved(false);
+    try {
+      const res = await fetch("/api/admin/social-draft-schedule", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scheduleTime: scheduleInput }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setError(data?.error ?? "保存に失敗しました");
+        return;
+      }
+      setScheduleTime(data.scheduleTime);
+      setScheduleSaved(true);
+    } catch {
+      setError("通信エラーが発生しました");
+    } finally {
+      setScheduleSaving(false);
+    }
+  }
 
   async function handleGenerate() {
     setGenerating(true);
@@ -140,8 +178,36 @@ export function SocialDraftsManager() {
   return (
     <>
       <p className="text-xs text-stone-500">
-        毎朝、曜日ローテーションに沿った下書きが自動生成されます。実際にXへ投稿されるのは「投稿する」ボタンを押した時だけです。
+        毎日設定した時刻(JST)に、曜日ローテーションに沿った下書きが自動生成されます。実際にXへ投稿されるのは「投稿する」ボタンを押した時だけです。
       </p>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-surface-border bg-surface-raised p-3">
+        <label htmlFor="social-draft-schedule-time" className="text-xs text-stone-400">
+          自動生成時刻(JST)
+        </label>
+        <input
+          id="social-draft-schedule-time"
+          type="time"
+          value={scheduleInput}
+          onChange={(e) => {
+            setScheduleInput(e.target.value);
+            setScheduleSaved(false);
+          }}
+          className="form-input !w-auto !py-1 text-xs"
+        />
+        <button
+          onClick={handleSaveSchedule}
+          disabled={scheduleSaving || scheduleInput === scheduleTime}
+          className="ghost-button !px-3 !py-1.5 text-xs"
+        >
+          {scheduleSaving ? "保存中…" : "保存"}
+        </button>
+        {scheduleSaved && <span className="text-xs text-gold-light">保存しました</span>}
+        <span className="basis-full text-[10px] text-stone-500">
+          現在の設定: 毎日{scheduleTime}以降、最初のチェックで生成(最大15分程度の誤差あり)
+        </span>
+      </div>
+
       <button
         onClick={handleGenerate}
         disabled={generating}

@@ -1,8 +1,1 @@
-{
-  "crons": [
-    {
-      "path": "/api/cron/social-draft",
-      "schedule": "0 23 * * *"
-    }
-  ]
-}
+{}
