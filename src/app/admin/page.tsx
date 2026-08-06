@@ -11,6 +11,7 @@ import { IncidentDaysManager } from "@/components/admin/IncidentDaysManager";
 import { PostsManager } from "@/components/admin/PostsManager";
 import { SocialDraftsManager } from "@/components/admin/SocialDraftsManager";
 import { ArticlesManager } from "@/components/admin/ArticlesManager";
+import { AnalyticsManager } from "@/components/admin/AnalyticsManager";
 import { AdminSection } from "@/components/admin/AdminSection";
 import { EditableText } from "@/components/admin/EditableText";
 import { listAllIconCandidates } from "@/lib/iconCandidates";
@@ -99,6 +100,18 @@ export default async function AdminPage() {
           }
         >
           <SocialDraftsManager />
+        </AdminSection>
+
+        <AdminSection
+          title={<EditableText siteTextKey="admin.section.analytics" value={texts["admin.section.analytics"]} />}
+          description={
+            <EditableText
+              siteTextKey="admin.section.analyticsDescription"
+              value={texts["admin.section.analyticsDescription"]}
+            />
+          }
+        >
+          <AnalyticsManager />
         </AdminSection>
 
         <AdminSection
